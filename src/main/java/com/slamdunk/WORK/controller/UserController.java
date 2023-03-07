@@ -1,9 +1,11 @@
 package com.slamdunk.WORK.controller;
 
 import com.slamdunk.WORK.dto.request.UserRequest;
+import com.slamdunk.WORK.security.UserDetailsImpl;
 import com.slamdunk.WORK.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -30,8 +32,10 @@ public class UserController {
     }
 
 //    //회원정보 조회
-//    @GetMapping("api/user/{user_id}")
-//    public ResponseEntity<?> getUser(@PathVariable("user_id") Long userId) {
-//        return userService.getUser(userId);
-//    }
+    @GetMapping("api/user/{user_id}")
+    public ResponseEntity<?> getUser(
+            @PathVariable("user_id") Long userId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.getUser(userId, userDetails);
+    }
 }
