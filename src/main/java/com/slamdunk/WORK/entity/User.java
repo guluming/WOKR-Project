@@ -3,6 +3,7 @@ package com.slamdunk.WORK.entity;
 import com.slamdunk.WORK.dto.request.UserRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 
@@ -40,5 +41,9 @@ public class User {
     public void userSecession(UserRequest params) {
         this.email = params.getEmail();
         this.secessionState = true;
+    }
+
+    public void encryptPassword(PasswordEncoder passwordEncoder) {
+        password = passwordEncoder.encode(password);
     }
 }
