@@ -40,7 +40,7 @@ public class JwtTokenProvider {
     }
 
     // Access 토큰 생성
-    public String createnewAccessToken(User user) {
+    public String createAccessToken(User user) {
         Map<String, Object> headers = new HashMap<>();
         headers.put("type", "token");
 
