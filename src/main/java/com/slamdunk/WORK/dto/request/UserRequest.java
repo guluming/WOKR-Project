@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 public class UserRequest {
     private String email;
     private String password;
+    private String confirmpassword;
     private String team;
     private String teamposition;
 }
