@@ -10,7 +10,7 @@ import java.util.Date;
 @Getter
 public class ObjectiveRequest {
     private String objective;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDate startdate;
+    private LocalDate enddate;
     private int color;
 }
