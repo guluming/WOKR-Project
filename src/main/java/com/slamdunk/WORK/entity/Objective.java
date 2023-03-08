@@ -4,8 +4,12 @@ import com.slamdunk.WORK.dto.request.ObjectiveRequest;
 import com.slamdunk.WORK.utill.TimeStamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -14,16 +18,17 @@ import java.util.Date;
 public class Objective extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "objective_id")
     private Long id;
     @Column(unique = true)
     private String objective;
     @Column(nullable = false)
-    private Date startDate;
+    private LocalDate startDate;
     @Column(nullable = false)
-    private Date endDate;
+    private LocalDate endDate;
     @Column(nullable = false)
     private int color;
+
     @Column
     private int progress;
 
