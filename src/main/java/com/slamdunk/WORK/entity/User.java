@@ -20,6 +20,8 @@ public class User {
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
+    private String name;
+    @Column(nullable = false)
     private String team;
     @Column(nullable = false)
     private String teamPosition;
@@ -29,6 +31,7 @@ public class User {
     public User(UserRequest params) {
         this.email = params.getEmail();
         this.password = params.getPassword();
+        this.name = params.getName();
         this.team = params.getTeam();
         this.teamPosition = params.getTeamposition();
     }
