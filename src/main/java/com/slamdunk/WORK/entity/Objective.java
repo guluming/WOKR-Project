@@ -28,7 +28,6 @@ public class Objective extends TimeStamped {
     private LocalDate endDate;
     @Column(nullable = false)
     private int color;
-
     @Column
     private int progress;
 
@@ -38,5 +37,9 @@ public class Objective extends TimeStamped {
         this.endDate = param.getEnddate();
         this.color = param.getColor();
         this.progress = 0;
+    }
+
+    public void objectiveProgressUpdate(int progress) {
+        this.progress = progress;
     }
 }

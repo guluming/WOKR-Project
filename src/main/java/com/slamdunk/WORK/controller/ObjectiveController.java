@@ -1,6 +1,7 @@
 package com.slamdunk.WORK.controller;
 
 import com.slamdunk.WORK.dto.request.ObjectiveRequest;
+import com.slamdunk.WORK.dto.request.ProgressRequest;
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import com.slamdunk.WORK.service.ObjectiveService;
 import lombok.RequiredArgsConstructor;
@@ -33,5 +34,14 @@ public class ObjectiveController {
             @PathVariable("objective_id") Long objectiveId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return objectiveService.detailObjective(objectiveId, userDetails);
+    }
+
+    //목표 진척도 수정
+    @PatchMapping("api/objective/progress/{objective_id}")
+    public ResponseEntity<?> objectiveProgressEdit(
+            @PathVariable("objective_id") Long objectiveId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody ProgressRequest progressRequest) {
+        return objectiveService.objectiveProgressEdit(objectiveId, userDetails, progressRequest);
     }
 }
