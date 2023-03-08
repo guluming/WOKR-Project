@@ -9,11 +9,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ObjectiveResponse {
+public class ObjectiveDetailResponse {
+    private boolean myObjective;
     private Long objectiveId;
     private String objective;
     private LocalDate startdate;
     private LocalDate enddate;
     private int color;
-    private int progress;
 }
