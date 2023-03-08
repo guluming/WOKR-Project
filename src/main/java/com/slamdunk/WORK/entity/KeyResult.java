@@ -15,7 +15,10 @@ public class KeyResult extends TimeStamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "keyResult_id")
     private Long id;
-    @Column(unique = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "objective_id")
+    private Objective objective;
+    @Column(nullable = false)
     private String keyResult;
     @Column
     private int progress;
