@@ -1,6 +1,7 @@
 package com.slamdunk.WORK.service;
 
 import com.slamdunk.WORK.dto.request.ObjectiveRequest;
+import com.slamdunk.WORK.dto.request.ProgressRequest;
 import com.slamdunk.WORK.dto.response.ObjectiveDetailResponse;
 import com.slamdunk.WORK.dto.response.ObjectiveResponse;
 import com.slamdunk.WORK.entity.Objective;
@@ -70,9 +71,9 @@ public class ObjectiveService {
         Optional<Objective> objective = objectiveRepository.findById(objectiveId);
 
         if (objective.isPresent()) {
-            boolean myObjective = userObjectiveService.checkMyObjective(objectiveId, userDetails);
+//            boolean myObjective = userObjectiveService.checkMyObjective(objectiveId, userDetails);
             ObjectiveDetailResponse objectiveDetailResponse = new ObjectiveDetailResponse(
-                    myObjective,
+                    userObjectiveService.checkMyObjective(objectiveId, userDetails),
                     objective.get().getId(),
                     objective.get().getObjective(),
                     objective.get().getStartDate(),
@@ -81,6 +82,25 @@ public class ObjectiveService {
             );
 
             return new ResponseEntity<>(objectiveDetailResponse, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("존재하지 않는 목표입니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //목표 진척도 수정
+    public ResponseEntity<?> objectiveProgressEdit(Long objectiveId, UserDetailsImpl userDetails, ProgressRequest progressRequest) {
+        Optional<Objective> objective = objectiveRepository.findById(objectiveId);
+
+        if (objective.isPresent()) {
+            boolean myObjective = userObjectiveService.checkMyObjective(objectiveId, userDetails);
+            if (userObjectiveService.checkMyObjective(objectiveId, userDetails)) {
+                objective.get().objectiveProgressUpdate(progressRequest.getProgress());
+                objectiveRepository.save(objective.get());
+
+                return new ResponseEntity<>("진척도를 수정 했습니다.", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("수정할 수 있는 권한이 없습니다.", HttpStatus.FORBIDDEN);
+            }
         } else {
             return new ResponseEntity<>("존재하지 않는 목표입니다.", HttpStatus.BAD_REQUEST);
         }
