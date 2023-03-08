@@ -45,4 +45,10 @@ public class UserObjectiveService {
 
         return objectiveId;
     }
+
+    //회원-목표 상세 조회
+    public boolean checkMyObjective(Long objectiveId, UserDetailsImpl userDetails) {
+        Optional<UserObjective> checkDate = userObjectiveRepository.findByObjectiveIdAndUserId(objectiveId, userDetails.getUser().getId());
+        return checkDate.isPresent();
+    }
 }

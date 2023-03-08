@@ -1,6 +1,7 @@
 package com.slamdunk.WORK.service;
 
 import com.slamdunk.WORK.dto.request.ObjectiveRequest;
+import com.slamdunk.WORK.dto.response.ObjectiveDetailResponse;
 import com.slamdunk.WORK.dto.response.ObjectiveResponse;
 import com.slamdunk.WORK.entity.Objective;
 import com.slamdunk.WORK.repository.ObjectiveRepository;
@@ -62,5 +63,26 @@ public class ObjectiveService {
         }
 
         return new ResponseEntity<>(objectiveResponseList, HttpStatus.OK);
+    }
+
+    //목표 상세 조회
+    public ResponseEntity<?> detailObjective(Long objectiveId, UserDetailsImpl userDetails) {
+        Optional<Objective> objective = objectiveRepository.findById(objectiveId);
+
+        if (objective.isPresent()) {
+            boolean myObjective = userObjectiveService.checkMyObjective(objectiveId, userDetails);
+            ObjectiveDetailResponse objectiveDetailResponse = new ObjectiveDetailResponse(
+                    myObjective,
+                    objective.get().getId(),
+                    objective.get().getObjective(),
+                    objective.get().getStartDate(),
+                    objective.get().getEndDate(),
+                    objective.get().getColor()
+            );
+
+            return new ResponseEntity<>(objectiveDetailResponse, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("존재하지 않는 목표입니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 }
