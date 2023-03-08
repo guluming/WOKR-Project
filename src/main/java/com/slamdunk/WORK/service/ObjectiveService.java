@@ -71,7 +71,6 @@ public class ObjectiveService {
         Optional<Objective> objective = objectiveRepository.findById(objectiveId);
 
         if (objective.isPresent()) {
-//            boolean myObjective = userObjectiveService.checkMyObjective(objectiveId, userDetails);
             ObjectiveDetailResponse objectiveDetailResponse = new ObjectiveDetailResponse(
                     userObjectiveService.checkMyObjective(objectiveId, userDetails),
                     objective.get().getId(),
@@ -92,7 +91,6 @@ public class ObjectiveService {
         Optional<Objective> objective = objectiveRepository.findById(objectiveId);
 
         if (objective.isPresent()) {
-            boolean myObjective = userObjectiveService.checkMyObjective(objectiveId, userDetails);
             if (userObjectiveService.checkMyObjective(objectiveId, userDetails)) {
                 objective.get().objectiveProgressUpdate(progressRequest.getProgress());
                 objectiveRepository.save(objective.get());
