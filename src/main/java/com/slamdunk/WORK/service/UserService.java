@@ -68,6 +68,7 @@ public class UserService {
                     true,
                     exist.get().getId(),
                     exist.get().getEmail(),
+                    exist.get().getName(),
                     exist.get().getTeam(),
                     exist.get().getTeamPosition()
             );
@@ -78,6 +79,7 @@ public class UserService {
                     false,
                     exist.get().getId(),
                     exist.get().getEmail(),
+                    exist.get().getName(),
                     exist.get().getTeam(),
                     exist.get().getTeamPosition()
             );
