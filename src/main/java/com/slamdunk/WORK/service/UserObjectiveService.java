@@ -7,9 +7,13 @@ import com.slamdunk.WORK.repository.UserObjectiveRepository;
 import com.slamdunk.WORK.repository.UserRepository;
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -28,5 +32,17 @@ public class UserObjectiveService {
             UserObjective userObjective = new UserObjective(userDetails.getUser(), objectiveCheck.get());
             userObjectiveRepository.save(userObjective);
         }
+    }
+
+    //회원-목표 전체 조회
+    public List<Long> allObjective(UserDetailsImpl userDetails) {
+        List<UserObjective> userObjectiveList = userObjectiveRepository.findAllByUserId(userDetails.getUser().getId());
+
+        List<Long> objectiveId = new ArrayList<>();
+        for (int i=0; i<userObjectiveList.size(); i++) {
+            objectiveId.add(userObjectiveList.get(i).getObjective().getId());
+        }
+
+        return objectiveId;
     }
 }

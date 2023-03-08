@@ -1,6 +1,7 @@
 package com.slamdunk.WORK.service;
 
 import com.slamdunk.WORK.dto.request.ObjectiveRequest;
+import com.slamdunk.WORK.dto.response.ObjectiveResponse;
 import com.slamdunk.WORK.entity.Objective;
 import com.slamdunk.WORK.repository.ObjectiveRepository;
 import com.slamdunk.WORK.security.UserDetailsImpl;
@@ -10,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -32,5 +35,28 @@ public class ObjectiveService {
 
             return new ResponseEntity<>(HttpStatus.CREATED);
         }
+    }
+
+    //목표 전체 조회
+    public ResponseEntity<?> allObjective(UserDetailsImpl userDetails) {
+        List<Long> objectiveId = userObjectiveService.allObjective(userDetails);
+
+        List<ObjectiveResponse> objectiveResponseList = new ArrayList<>();
+        for (int i=0; i<objectiveId.size(); i++) {
+            Optional<Objective> objective = objectiveRepository.findById(objectiveId.get(i));
+            if (objective.isPresent()) {
+                ObjectiveResponse objectiveResponse = new ObjectiveResponse(
+                        objective.get().getId(),
+                        objective.get().getObjective(),
+                        objective.get().getStartDate(),
+                        objective.get().getEndDate(),
+                        objective.get().getColor(),
+                        objective.get().getProgress()
+                );
+                objectiveResponseList.add(objectiveResponse);
+            }
+        }
+
+        return new ResponseEntity<>(objectiveResponseList, HttpStatus.OK);
     }
 }

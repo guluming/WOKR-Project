@@ -34,8 +34,8 @@ public class Objective extends TimeStamped {
 
     public Objective(ObjectiveRequest param) {
         this.objective = param.getObjective();
-        this.startDate = param.getStartDate();
-        this.endDate = param.getEndDate();
+        this.startDate = param.getStartdate();
+        this.endDate = param.getEnddate();
         this.color = param.getColor();
         this.progress = 0;
     }

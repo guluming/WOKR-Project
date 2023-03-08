@@ -6,6 +6,7 @@ import com.slamdunk.WORK.service.ObjectiveService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,5 +22,11 @@ public class ObjectiveController {
             @RequestBody ObjectiveRequest objectiveRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return objectiveService.registerObjective(objectiveRequest, userDetails);
+    }
+
+    //목표 전체 조회
+    @GetMapping("api/objective")
+    public ResponseEntity<?> allObjective(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return objectiveService.allObjective(userDetails);
     }
 }
