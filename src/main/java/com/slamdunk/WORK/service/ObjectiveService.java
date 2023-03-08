@@ -24,16 +24,20 @@ public class ObjectiveService {
     //목표 생성
     @Transactional
     public ResponseEntity<?> registerObjective(ObjectiveRequest objectiveRequest, UserDetailsImpl userDetails) {
-        Optional<Objective> objectiveCheck = objectiveRepository.findByObjective(objectiveRequest.getObjective());
-        if (objectiveCheck.isPresent()) {
-            return new ResponseEntity<>("오브젝트 이름이 중복됩니다.", HttpStatus.BAD_REQUEST);
+        if (userDetails.getUser().getTeamPosition().equals("팀장")) {
+            Optional<Objective> objectiveCheck = objectiveRepository.findByObjective(objectiveRequest.getObjective());
+            if (objectiveCheck.isPresent()) {
+                return new ResponseEntity<>("오브젝트 이름이 중복됩니다.", HttpStatus.BAD_REQUEST);
+            } else {
+                Objective newObjective = new Objective(objectiveRequest);
+                objectiveRepository.save(newObjective);
+
+                userObjectiveService.registerUserObjective(newObjective, userDetails);
+
+                return new ResponseEntity<>(HttpStatus.CREATED);
+            }
         } else {
-            Objective newObjective = new Objective(objectiveRequest);
-            objectiveRepository.save(newObjective);
-
-            userObjectiveService.registerUserObjective(newObjective, userDetails);
-
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return new ResponseEntity<>("팀장만 생성 가능합니다." ,HttpStatus.FORBIDDEN);
         }
     }
 
