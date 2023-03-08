@@ -9,5 +9,5 @@ import org.springframework.stereotype.Service;
 public class KeyResultService {
     private final KeyResultRepository keyResultRepository;
 
-    
+
 }
