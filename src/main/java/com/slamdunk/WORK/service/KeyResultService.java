@@ -1,6 +1,7 @@
 package com.slamdunk.WORK.service;
 
 import com.slamdunk.WORK.dto.request.KeyResultRequest;
+import com.slamdunk.WORK.dto.response.KeyResultResponse;
 import com.slamdunk.WORK.entity.KeyResult;
 import com.slamdunk.WORK.entity.Objective;
 import com.slamdunk.WORK.repository.KeyResultRepository;
@@ -13,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -40,5 +43,27 @@ public class KeyResultService {
             }
             return new ResponseEntity<>(HttpStatus.CREATED);
         }
+    }
+
+    //핵심결과 전체 조회
+    public ResponseEntity<?> allKeyResult(UserDetailsImpl userDetails) {
+        List<Long> keyResultId = userKeyResultService.allKeyResult(userDetails);
+
+        List<KeyResultResponse> keyResultResponseList = new ArrayList<>();
+        for (int i=0; i<keyResultId.size(); i++) {
+        Optional<KeyResult> keyResult = keyResultRepository.findById(keyResultId.get(i));
+            if (keyResult.isPresent()) {
+                KeyResultResponse keyResultResponse = KeyResultResponse.builder()
+                        .keyResultId(keyResult.get().getId())
+                        .keyResult(keyResult.get().getKeyResult())
+                        .progress(keyResult.get().getProgress())
+                        .emotion(keyResult.get().getEmoticon())
+                        .build();
+
+                keyResultResponseList.add(keyResultResponse);
+            }
+        }
+
+        return new ResponseEntity<>(keyResultResponseList, HttpStatus.OK);
     }
 }
