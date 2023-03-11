@@ -1,4 +1,7 @@
 package com.slamdunk.WORK.repository;
 
-public interface UserKeyResultRepository {
+import com.slamdunk.WORK.entity.UserKeyResult;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserKeyResultRepository extends JpaRepository<UserKeyResult, Long> {
 }
