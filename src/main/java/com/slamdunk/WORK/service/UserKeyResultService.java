@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -30,5 +32,17 @@ public class UserKeyResultService {
             UserKeyResult userKeyResult = new UserKeyResult(userDetails.getUser(), objectiveCheck.get(), keyResult);
             userKeyResultRepository.save(userKeyResult);
         }
+    }
+
+    //회원-핵심결과 중간테이블 생성
+    public List<Long> allKeyResult(UserDetailsImpl userDetails) {
+        List<UserKeyResult> userKeyResultList = userKeyResultRepository.findAllByUserId(userDetails.getUser().getId());
+
+        List<Long> keyResultId = new ArrayList<>();
+        for (int i =0; i<userKeyResultList.size(); i++) {
+            keyResultId.add(userKeyResultList.get(i).getKeyResult().getId());
+        }
+
+        return keyResultId;
     }
 }

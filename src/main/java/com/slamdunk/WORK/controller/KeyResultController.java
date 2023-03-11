@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,5 +22,11 @@ public class KeyResultController {
             @RequestBody KeyResultRequest keyResultRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return keyResultService.registerKeyResult(objectiveId, keyResultRequest, userDetails);
+    }
+
+    //핵심결과 전체 조회
+    @GetMapping("api/keyresult")
+    public ResponseEntity<?> allKeyResult(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return keyResultService.allKeyResult(userDetails);
     }
 }
