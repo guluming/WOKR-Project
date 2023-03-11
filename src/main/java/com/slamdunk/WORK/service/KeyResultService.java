@@ -23,6 +23,7 @@ public class KeyResultService {
     private final ObjectiveRepository objectiveRepository;
     private final UserKeyResultService userKeyResultService;
 
+    //핵심결과 생성
     @Transactional
     public ResponseEntity<?> registerKeyResult(Long objectiveId, KeyResultRequest keyResultRequest, UserDetailsImpl userDetails) {
         Optional<Objective> objectiveCheck = objectiveRepository.findById(objectiveId);
