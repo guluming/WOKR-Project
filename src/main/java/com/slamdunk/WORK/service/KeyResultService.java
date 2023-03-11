@@ -30,19 +30,23 @@ public class KeyResultService {
     //핵심결과 생성
     @Transactional
     public ResponseEntity<?> registerKeyResult(Long objectiveId, KeyResultRequest keyResultRequest, UserDetailsImpl userDetails) {
-        Optional<Objective> objectiveCheck = objectiveRepository.findById(objectiveId);
-        if (objectiveCheck.isEmpty()) {
-            return new ResponseEntity<>("목표가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
-        } else {
-            for (int i = 0; i< keyResultRequest.getKeyResultDate().size(); i++) {
-                KeyResult newKeyResult = new KeyResult(
-                        objectiveCheck.get(),
-                        keyResultRequest.getKeyResultDate().get(i));
-                keyResultRepository.save(newKeyResult);
+        if (userDetails.getUser().getTeamPosition().equals("팀장")) {
+            Optional<Objective> objectiveCheck = objectiveRepository.findById(objectiveId);
+            if (objectiveCheck.isEmpty()) {
+                return new ResponseEntity<>("목표가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+            } else {
+                for (int i = 0; i< keyResultRequest.getKeyResultDate().size(); i++) {
+                    KeyResult newKeyResult = new KeyResult(
+                            objectiveCheck.get(),
+                            keyResultRequest.getKeyResultDate().get(i));
+                    keyResultRepository.save(newKeyResult);
 
-                userKeyResultService.registerUserKeyResult(newKeyResult, objectiveCheck.get(), userDetails);
+                    userKeyResultService.registerUserKeyResult(newKeyResult, objectiveCheck.get(), userDetails);
+                }
+                return new ResponseEntity<>(HttpStatus.CREATED);
             }
-            return new ResponseEntity<>(HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>("팀장만 생성 가능합니다." ,HttpStatus.FORBIDDEN);
         }
     }
 
@@ -78,6 +82,7 @@ public class KeyResultService {
                     .keyResultId(keyResult.get().getId())
                     .keyResult(keyResult.get().getKeyResult())
                     .build();
+
             return new ResponseEntity<>(keyResultDetailResponse, HttpStatus.OK);
         } else {
             return new ResponseEntity<>("존재하지 않는 핵심결과입니다.", HttpStatus.BAD_REQUEST);
