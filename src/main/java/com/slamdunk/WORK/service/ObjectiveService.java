@@ -36,14 +36,15 @@ public class ObjectiveService {
 
                 userObjectiveService.registerUserObjective(newObjective, userDetails);
 
-                ObjectiveResponse objectiveResponse = new ObjectiveResponse(
-                        newObjective.getId(),
-                        newObjective.getObjective(),
-                        newObjective.getStartDate(),
-                        newObjective.getEndDate(),
-                        newObjective.getColor(),
-                        newObjective.getProgress()
-                );
+                ObjectiveResponse objectiveResponse = ObjectiveResponse.builder()
+                        .myObjective(userObjectiveService.checkMyObjective(newObjective.getId(), userDetails))
+                        .objectiveId(newObjective.getId())
+                        .objective(newObjective.getObjective())
+                        .startdate(newObjective.getStartDate())
+                        .enddate(newObjective.getEndDate())
+                        .color(newObjective.getColor())
+                        .progress(newObjective.getProgress())
+                        .build();
 
                 return new ResponseEntity<>(objectiveResponse, HttpStatus.CREATED);
             }
@@ -60,14 +61,16 @@ public class ObjectiveService {
         for (int i=0; i<objectiveId.size(); i++) {
             Optional<Objective> objective = objectiveRepository.findById(objectiveId.get(i));
             if (objective.isPresent()) {
-                ObjectiveResponse objectiveResponse = new ObjectiveResponse(
-                        objective.get().getId(),
-                        objective.get().getObjective(),
-                        objective.get().getStartDate(),
-                        objective.get().getEndDate(),
-                        objective.get().getColor(),
-                        objective.get().getProgress()
-                );
+                ObjectiveResponse objectiveResponse = ObjectiveResponse.builder()
+                        .myObjective(userObjectiveService.checkMyObjective(objective.get().getId(), userDetails))
+                        .objectiveId(objective.get().getId())
+                        .objective(objective.get().getObjective())
+                        .startdate(objective.get().getStartDate())
+                        .enddate(objective.get().getEndDate())
+                        .color(objective.get().getColor())
+                        .progress(objective.get().getProgress())
+                        .build();
+
                 objectiveResponseList.add(objectiveResponse);
             }
         }
@@ -80,14 +83,14 @@ public class ObjectiveService {
         Optional<Objective> objective = objectiveRepository.findById(objectiveId);
 
         if (objective.isPresent()) {
-            ObjectiveDetailResponse objectiveDetailResponse = new ObjectiveDetailResponse(
-                    userObjectiveService.checkMyObjective(objectiveId, userDetails),
-                    objective.get().getId(),
-                    objective.get().getObjective(),
-                    objective.get().getStartDate(),
-                    objective.get().getEndDate(),
-                    objective.get().getColor()
-            );
+            ObjectiveDetailResponse objectiveDetailResponse = ObjectiveDetailResponse.builder()
+                    .myObjective(userObjectiveService.checkMyObjective(objectiveId, userDetails))
+                    .objectiveId(objective.get().getId())
+                    .objective(objective.get().getObjective())
+                    .startdate(objective.get().getStartDate())
+                    .enddate(objective.get().getEndDate())
+                    .color(objective.get().getColor())
+                    .build();
 
             return new ResponseEntity<>(objectiveDetailResponse, HttpStatus.OK);
         } else {
