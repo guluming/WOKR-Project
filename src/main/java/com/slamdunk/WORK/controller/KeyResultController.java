@@ -29,4 +29,12 @@ public class KeyResultController {
     public ResponseEntity<?> allKeyResult(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return keyResultService.allKeyResult(userDetails);
     }
+
+    //핵심결과 상세 조회
+    @GetMapping("api/keyresult/detail/{keyresult_id}")
+    public ResponseEntity<?> detailKeyResult(
+            @PathVariable("keyresult_id") Long keyResultId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return keyResultService.detailKeyResult(keyResultId, userDetails);
+    }
 }

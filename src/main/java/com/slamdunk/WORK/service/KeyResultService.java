@@ -1,6 +1,7 @@
 package com.slamdunk.WORK.service;
 
 import com.slamdunk.WORK.dto.request.KeyResultRequest;
+import com.slamdunk.WORK.dto.response.KeyResultDetailResponse;
 import com.slamdunk.WORK.dto.response.KeyResultResponse;
 import com.slamdunk.WORK.entity.KeyResult;
 import com.slamdunk.WORK.entity.Objective;
@@ -54,6 +55,7 @@ public class KeyResultService {
         Optional<KeyResult> keyResult = keyResultRepository.findById(keyResultId.get(i));
             if (keyResult.isPresent()) {
                 KeyResultResponse keyResultResponse = KeyResultResponse.builder()
+                        .myKeyResult(userKeyResultService.checkMyKeyResult(keyResult.get().getId(), userDetails))
                         .keyResultId(keyResult.get().getId())
                         .keyResult(keyResult.get().getKeyResult())
                         .progress(keyResult.get().getProgress())
@@ -65,5 +67,20 @@ public class KeyResultService {
         }
 
         return new ResponseEntity<>(keyResultResponseList, HttpStatus.OK);
+    }
+
+    //핵심결과 상세 조회
+    public ResponseEntity<?> detailKeyResult(Long keyResultId, UserDetailsImpl userDetails) {
+        Optional<KeyResult> keyResult = keyResultRepository.findById(keyResultId);
+        if (keyResult.isPresent()) {
+            KeyResultDetailResponse keyResultDetailResponse = KeyResultDetailResponse.builder()
+                    .myKeyResult(userKeyResultService.checkMyKeyResult(keyResultId, userDetails))
+                    .keyResultId(keyResult.get().getId())
+                    .keyResult(keyResult.get().getKeyResult())
+                    .build();
+            return new ResponseEntity<>(keyResultDetailResponse, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("존재하지 않는 핵심결과입니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 }

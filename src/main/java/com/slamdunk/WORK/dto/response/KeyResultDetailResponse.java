@@ -1,22 +1,20 @@
 package com.slamdunk.WORK.dto.response;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Getter
-public class KeyResultResponse {
+public class KeyResultDetailResponse {
     private boolean myKeyResult;
     private Long keyResultId;
     private String keyResult;
-    private int progress;
-    private int emotion;
 
     @Builder
-    public KeyResultResponse(boolean myKeyResult, Long keyResultId, String keyResult, int progress, int emotion) {
+    public KeyResultDetailResponse(boolean myKeyResult, Long keyResultId, String keyResult) {
         this.myKeyResult = myKeyResult;
         this.keyResultId = keyResultId;
         this.keyResult = keyResult;
-        this.progress = progress;
-        this.emotion = emotion;
     }
 }
