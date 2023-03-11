@@ -31,7 +31,7 @@ public class UserController {
         return userService.userLogin(userRequest);
     }
 
-//    //회원정보 조회
+    //회원정보 조회
     @GetMapping("api/user/{user_id}")
     public ResponseEntity<?> getUser(
             @PathVariable("user_id") Long userId,
