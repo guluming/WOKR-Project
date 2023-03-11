@@ -34,7 +34,7 @@ public class UserKeyResultService {
         }
     }
 
-    //회원-핵심결과 중간테이블 생성
+    //회원-핵심결과 중간테이블 전체 조회
     public List<Long> allKeyResult(UserDetailsImpl userDetails) {
         List<UserKeyResult> userKeyResultList = userKeyResultRepository.findAllByUserId(userDetails.getUser().getId());
 
@@ -44,5 +44,12 @@ public class UserKeyResultService {
         }
 
         return keyResultId;
+    }
+
+    //회원-핵심결과 중간테이블 상세 조회
+    public boolean checkMyKeyResult(Long keyResultId, UserDetailsImpl userDetails) {
+        Optional<UserKeyResult> checkDate
+                = userKeyResultRepository.findByKeyResultIdAndUserId(keyResultId,userDetails.getUser().getId());
+        return checkDate.isPresent();
     }
 }
