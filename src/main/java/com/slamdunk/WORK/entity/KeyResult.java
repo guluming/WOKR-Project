@@ -1,6 +1,5 @@
 package com.slamdunk.WORK.entity;
 
-import com.slamdunk.WORK.dto.request.KeyResultRequest;
 import com.slamdunk.WORK.utill.TimeStamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +24,8 @@ public class KeyResult extends TimeStamped {
     @Column
     private int emoticon;
 
-    public KeyResult(KeyResultRequest params) {
-        this.keyResult = params.getKeyResult();
+    public KeyResult(Objective objective, String keyResult) {
+        this.objective = objective;
+        this.keyResult = keyResult;
     }
 }

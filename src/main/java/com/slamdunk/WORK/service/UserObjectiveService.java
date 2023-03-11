@@ -26,7 +26,7 @@ public class UserObjectiveService {
     //회원-목표 중간테이블 생성
     @Transactional
     public void registerUserObjective(Objective objective, UserDetailsImpl userDetails) {
-        Optional<Objective> objectiveCheck = objectiveRepository.findByObjective(objective.getObjective());
+        Optional<Objective> objectiveCheck = objectiveRepository.findById(objective.getId());
 
         if (objectiveCheck.isPresent()) {
             UserObjective userObjective = new UserObjective(userDetails.getUser(), objectiveCheck.get());
