@@ -36,7 +36,16 @@ public class ObjectiveService {
 
                 userObjectiveService.registerUserObjective(newObjective, userDetails);
 
-                return new ResponseEntity<>(HttpStatus.CREATED);
+                ObjectiveResponse objectiveResponse = new ObjectiveResponse(
+                        newObjective.getId(),
+                        newObjective.getObjective(),
+                        newObjective.getStartDate(),
+                        newObjective.getEndDate(),
+                        newObjective.getColor(),
+                        newObjective.getProgress()
+                );
+
+                return new ResponseEntity<>(objectiveResponse, HttpStatus.CREATED);
             }
         } else {
             return new ResponseEntity<>("팀장만 생성 가능합니다." ,HttpStatus.FORBIDDEN);
