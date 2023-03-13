@@ -6,13 +6,16 @@ import com.slamdunk.WORK.service.ToDoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 public class ToDoController {
 
-
     private final ToDoService toDoService;
+
+
     //투두 전체 조회
     @GetMapping("/api/todo")
     public List<ToDo> getAllToDos() {
@@ -20,29 +23,33 @@ public class ToDoController {
     }
 
     //투두 상세 조회
-    @GetMapping("/api/todo/detail/{toDo_id}")
-    public ResponseEntity<?> getToDoById(@PathVariable Long toDo_id) {
-        return toDoService.getToDoById(toDo_id);
+    @GetMapping("/api/todo/detail/{todo_id}")
+    public ResponseEntity<?> detailToDo(@PathVariable Long todo_id) {
+
+        return toDoService.detailToDo(todo_id);
     }
+
 
     //투두 생성
     @PostMapping("/api/todo")
     public ResponseEntity<?> createToDo(@RequestBody ToDoRequest toDoRequest) {
-        ToDo newToDo = toDoService.createToDo(toDoRequest);
-        return ResponseEntity.ok(newToDo);
+        ResponseEntity<?> createdToDo = toDoService.createToDo(toDoRequest);
+        return ResponseEntity.ok(createdToDo);
     }
-
 
     //투두 수정
-    @PatchMapping("/api/todo/{toDo_id}")
-    public ResponseEntity<?> updateToDo(@PathVariable Long toDo_id, @RequestBody ToDoRequest toDoRequest) {
-        toDoService.updateToDo(toDo_id, toDoRequest);
+    @PatchMapping("/api/todo/{todo_id}")
+    public ResponseEntity<Void> updateToDo(@PathVariable("todo_id") Long todo_id,
+                                           @RequestBody ToDoRequest toDoRequest) {
+        toDoService.updateToDo(todo_id, toDoRequest);
         return ResponseEntity.ok().build();
     }
+
+
     //투두 삭제
-    @PatchMapping("/api/todo/secession/{toDo_id}")
-    public ResponseEntity<?> deleteToDoById(@PathVariable Long toDo_id) {
-        toDoService.deleteToDoById(toDo_id);
+    @PatchMapping("/api/todo/secession/{todo_id}")
+    public ResponseEntity<?> deleteToDoById(@PathVariable Long todo_id) {
+        toDoService.deleteToDoById(todo_id);
         return ResponseEntity.ok().build();
     }
     //투두 완료변경

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 @Getter
@@ -14,8 +15,11 @@ import java.time.LocalDate;
 public class ToDoRequest {
     private String toDo;
     private String memo;
-    private LocalDate dDay;
+    private LocalDateTime registerDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private int priority;
+    private boolean display;
     private boolean completion;
 
 

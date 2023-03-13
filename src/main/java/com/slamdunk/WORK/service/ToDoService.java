@@ -1,12 +1,16 @@
 package com.slamdunk.WORK.service;
 
 import com.slamdunk.WORK.dto.request.ToDoRequest;
+import com.slamdunk.WORK.dto.response.ToDoDetailResponse;
+import com.slamdunk.WORK.dto.response.ToDoResponse;
 import com.slamdunk.WORK.entity.ToDo;
 import com.slamdunk.WORK.repository.ToDoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,56 +25,84 @@ public class ToDoService {
         return toDoRepository.findAll();
     }
 
-    public ResponseEntity<ToDo> getToDoById(Long toDo_id) {
-        Optional<ToDo> toDoOptional = toDoRepository.findById(toDo_id);
+    public ResponseEntity<?> detailToDo(Long todo_id) {
+        Optional<ToDo> toDo = toDoRepository.findById(todo_id);
 
-        if (toDoOptional.isPresent()) {
-            ToDo toDo = toDoOptional.get();
-            return ResponseEntity.ok(toDo);
+        if (toDo.isPresent()) {
+            ToDoDetailResponse toDoDetailResponse = ToDoDetailResponse.builder()
+                    .toDoId(toDo.get().getId())
+                    .toDo(toDo.get().getToDo())
+                    .memo(toDo.get().getMemo())
+                    .startDate(toDo.get().getStartDate())
+                    .endDate(toDo.get().getEndDate())
+                    .priority(toDo.get().getPriority())
+                    .display(toDo.get().isDisplay())
+                    .completion(toDo.get().isCompletion())
+                    .build();
+            return new ResponseEntity<>(toDoDetailResponse, HttpStatus.OK);
         } else {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>("존재하지 않는 목표입니다.", HttpStatus.BAD_REQUEST);
         }
     }
 
-    public ToDo createToDo(ToDoRequest toDoRequest) {
-        ToDo newToDo = ToDo.builder()
-                .toDo(toDoRequest.getToDo())
-                .memo(toDoRequest.getMemo())
-                .dDay(toDoRequest.getDDay())
-                .priority(toDoRequest.getPriority())
+
+
+    public ResponseEntity<?> createToDo(ToDoRequest toDoRequest) {
+        int priority = toDoRequest.getPriority();
+        if (priority < 1 || priority > 4) {
+            throw new IllegalArgumentException("Priority value must be between 1 and 4.");
+        }
+
+        ToDo newToDo = new ToDo(toDoRequest);
+        newToDo.setRegisterDate(LocalDateTime.now());
+        newToDo.setPriority(priority);
+        toDoRepository.save(newToDo);
+
+        ToDoResponse toDoResponse = ToDoResponse.builder()
+                .toDoId(newToDo.getId())
+                .toDo(newToDo.getToDo())
+                .memo(newToDo.getMemo())
+                .registerDate(newToDo.getRegisterDate())
+                .startDate(newToDo.getStartDate())
+                .endDate(newToDo.getEndDate())
+                .priority(newToDo.getPriority())
+                .display(newToDo.isDisplay())
                 .build();
-        return toDoRepository.save(newToDo);
+        return new ResponseEntity<>(toDoResponse, HttpStatus.CREATED);
     }
 
+    public void updateToDo(Long todo_id, ToDoRequest toDoRequest) {
+        int priority = toDoRequest.getPriority();
+        if (priority < 1 || priority > 4) {
+            throw new IllegalArgumentException("Priority value must be between 1 and 4.");
+        }
 
-
-    public void updateToDo(Long toDo_id, ToDoRequest toDoRequest) {
-        Optional<ToDo> toDoOptional = toDoRepository.findById(toDo_id);
+        Optional<ToDo> toDoOptional = toDoRepository.findById(todo_id);
         if (toDoOptional.isPresent()) {
-            ToDo toDo = toDoOptional.get();
-            toDo.setToDo(toDoRequest.getToDo());
-            toDo.setMemo(toDoRequest.getMemo());
-            toDo.setDDay(toDoRequest.getDDay());
-            toDo.setPriority(toDoRequest.getPriority());
-            toDoRepository.save(toDo);
+            ToDo existingToDo = toDoOptional.get();
+            existingToDo.setToDo(toDoRequest.getToDo());
+            existingToDo.setMemo(toDoRequest.getMemo());
+            existingToDo.setStartDate(toDoRequest.getStartDate());
+            existingToDo.setEndDate(toDoRequest.getEndDate());
+            existingToDo.setPriority(toDoRequest.getPriority());
+            existingToDo.setDisplay(toDoRequest.isDisplay());
+            toDoRepository.save(existingToDo);
         }
     }
 
-    public void deleteToDoById(Long toDo_id) {
-        toDoRepository.deleteById(toDo_id);
+    public void deleteToDoById (Long todo_id){
+        toDoRepository.deleteById(todo_id);
     }
 
-    public void updateCompletion(Long toDo_id, ToDoRequest toDoRequest) {
-        Optional<ToDo> toDoOptional = toDoRepository.findById(toDo_id);
+    public void updateCompletion (Long todo_id, ToDoRequest toDoRequest){
+        Optional<ToDo> toDoOptional = toDoRepository.findById(todo_id);
         if (toDoOptional.isPresent()) {
-            ToDo doneToDo = toDoOptional.get();
-            doneToDo.setCompletion(toDoRequest.isCompletion());
-            toDoRepository.save(doneToDo);
-
+            ToDo donetoDo = toDoOptional.get();
+            donetoDo.setCompletion(toDoRequest.isCompletion());
+            toDoRepository.save(donetoDo);
 
 
         }
     }
 }
-
 

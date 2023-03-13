@@ -5,7 +5,7 @@ import com.slamdunk.WORK.utill.TimeStamped;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
@@ -18,7 +18,7 @@ public class ToDo extends TimeStamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "toDo_id")
-    private Long toDo_id;
+    private Long id;
 
     @Column(unique = true)
     private String toDo;
@@ -27,24 +27,38 @@ public class ToDo extends TimeStamped {
     private String memo;
 
     @Column(nullable = false)
-    private LocalDate dDay;
+    private LocalDateTime registerDate;
+
+    @Column(nullable = false)
+    private LocalDateTime startDate;
+
+    @Column(nullable = false)
+    private LocalDateTime endDate;
 
     @Column(nullable = false)
     private int priority;
 
     @Column(nullable = false)
-    private boolean completion;
+    private boolean display;
 
     @Column(nullable = false)
-    private boolean deleteState;
+    private boolean completion;
 
 
-    public ToDo(ToDoRequest toDoRequest) {
-        this.toDo=toDoRequest.getToDo();
-        this.memo=toDoRequest.getMemo();
-        this.dDay=toDoRequest.getDDay();
-        this.priority=toDoRequest.getPriority();
+
+
+    public ToDo(ToDoRequest param){
+        this.toDo = param.getToDo();
+        this.memo = param.getMemo();
+        this.registerDate = param.getRegisterDate();
+        this.startDate = param.getStartDate();
+        this.endDate = param.getEndDate();
+        this.priority = param.getPriority();
+        this.display = param.isDisplay();
+        this.completion = false;
+
     }
+
 
 
 }
