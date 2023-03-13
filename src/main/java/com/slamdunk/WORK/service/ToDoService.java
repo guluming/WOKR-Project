@@ -5,6 +5,7 @@ import com.slamdunk.WORK.dto.response.ToDoDetailResponse;
 import com.slamdunk.WORK.dto.response.ToDoResponse;
 import com.slamdunk.WORK.entity.ToDo;
 import com.slamdunk.WORK.repository.ToDoRepository;
+import com.slamdunk.WORK.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +22,11 @@ public class ToDoService {
 
     private final ToDoRepository toDoRepository;
 
-    public List<ToDo> getAllToDos() {
+    public List<ToDo> getAllToDos(UserDetailsImpl userDetails) {
         return toDoRepository.findAll();
     }
 
-    public ResponseEntity<?> detailToDo(Long todo_id) {
+    public ResponseEntity<?> detailToDo(Long todo_id, UserDetailsImpl userDetails) {
         Optional<ToDo> toDo = toDoRepository.findById(todo_id);
 
         if (toDo.isPresent()) {
@@ -41,13 +42,13 @@ public class ToDoService {
                     .build();
             return new ResponseEntity<>(toDoDetailResponse, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("존재하지 않는 목표입니다.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("존재하지 않는 투두입니다.", HttpStatus.BAD_REQUEST);
         }
     }
 
 
 
-    public ResponseEntity<?> createToDo(ToDoRequest toDoRequest) {
+    public ResponseEntity<?> createToDo(ToDoRequest toDoRequest, UserDetailsImpl userDetails) {
         int priority = toDoRequest.getPriority();
         if (priority < 1 || priority > 4) {
             throw new IllegalArgumentException("Priority value must be between 1 and 4.");
@@ -71,7 +72,7 @@ public class ToDoService {
         return new ResponseEntity<>(toDoResponse, HttpStatus.CREATED);
     }
 
-    public void updateToDo(Long todo_id, ToDoRequest toDoRequest) {
+    public void updateToDo(Long todo_id, UserDetailsImpl userDetails, ToDoRequest toDoRequest) {
         int priority = toDoRequest.getPriority();
         if (priority < 1 || priority > 4) {
             throw new IllegalArgumentException("Priority value must be between 1 and 4.");
@@ -90,11 +91,11 @@ public class ToDoService {
         }
     }
 
-    public void deleteToDoById (Long todo_id){
+    public void deleteToDoById (Long todo_id, UserDetailsImpl userDetails){
         toDoRepository.deleteById(todo_id);
     }
 
-    public void updateCompletion (Long todo_id, ToDoRequest toDoRequest){
+    public void updateCompletion (Long todo_id, UserDetailsImpl userDetails, ToDoRequest toDoRequest){
         Optional<ToDo> toDoOptional = toDoRepository.findById(todo_id);
         if (toDoOptional.isPresent()) {
             ToDo donetoDo = toDoOptional.get();

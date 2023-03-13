@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface UserToDoRepository extends JpaRepository<UserToDo, Long> {
         List<UserToDo> findAllByUserId(Long userId);
-        Optional<UserToDo> findByKeyResultIdAndUserId(Long ToDoId, Long userId);
+        Optional<UserToDo> findByToDoIdAndUserId(Long ToDoId, Long userId);
         }
