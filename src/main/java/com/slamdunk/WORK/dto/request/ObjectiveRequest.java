@@ -12,5 +12,5 @@ public class ObjectiveRequest {
     private String objective;
     private LocalDate startdate;
     private LocalDate enddate;
-    private int color;
+    private String color;
 }

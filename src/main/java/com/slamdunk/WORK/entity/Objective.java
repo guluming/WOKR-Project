@@ -27,7 +27,7 @@ public class Objective extends TimeStamped {
     @Column(nullable = false)
     private LocalDate endDate;
     @Column(nullable = false)
-    private int color;
+    private String color;
     @Column
     private int progress;
 

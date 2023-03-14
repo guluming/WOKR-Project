@@ -12,12 +12,12 @@ public class ObjectiveDetailResponse {
     private String objective;
     private LocalDate startdate;
     private LocalDate enddate;
-    private int color;
+    private String color;
 
     @Builder
     public ObjectiveDetailResponse(
             boolean myObjective, Long objectiveId, String objective,
-            LocalDate startdate, LocalDate enddate, int color) {
+            LocalDate startdate, LocalDate enddate, String color) {
         this.myObjective = myObjective;
         this.objectiveId = objectiveId;
         this.objective = objective;
