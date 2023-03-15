@@ -1,6 +1,7 @@
 package com.slamdunk.WORK.controller;
 
 import com.slamdunk.WORK.dto.request.EmoticonRequest;
+import com.slamdunk.WORK.dto.request.KeyResultEditRequest;
 import com.slamdunk.WORK.dto.request.KeyResultRequest;
 import com.slamdunk.WORK.dto.request.ProgressRequest;
 import com.slamdunk.WORK.security.UserDetailsImpl;
@@ -56,5 +57,14 @@ public class KeyResultController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody EmoticonRequest emoticonRequest) {
         return keyResultService.keyResultEmoticonEdit(keyResultId, userDetails, emoticonRequest);
+    }
+
+    //핵심결과 수정
+    @PatchMapping("api/keyresult/{keyresult_id}")
+    public ResponseEntity<?> keyResultEdit(
+            @PathVariable("keyresult_id") Long keyResultId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody KeyResultEditRequest keyResultEditRequest) {
+        return keyResultService.keyResultEdit(keyResultId, userDetails, keyResultEditRequest);
     }
 }

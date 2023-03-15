@@ -2,6 +2,7 @@ package com.slamdunk.WORK.service;
 
 import com.slamdunk.WORK.Editor.KeyResultEditor;
 import com.slamdunk.WORK.dto.request.EmoticonRequest;
+import com.slamdunk.WORK.dto.request.KeyResultEditRequest;
 import com.slamdunk.WORK.dto.request.KeyResultRequest;
 import com.slamdunk.WORK.dto.request.ProgressRequest;
 import com.slamdunk.WORK.dto.response.KeyResultDetailResponse;
@@ -155,6 +156,29 @@ public class KeyResultService {
             }
         } else {
             return new ResponseEntity<>("존재하지 않는 핵심결과입니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //핵심결과 수정
+    @Transactional
+    public ResponseEntity<?> keyResultEdit(Long keyResultId, UserDetailsImpl userDetails, KeyResultEditRequest keyResultEditRequest) {
+        if (userKeyResultService.checkMyKeyResult(keyResultId, userDetails)) {
+            Optional<KeyResult> editKeyResult = keyResultRepository.findById(keyResultId);
+            if (editKeyResult.isPresent()) {
+                KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = editKeyResult.get().KeyResultToEditor();
+                if (keyResultEditRequest.getKeyResult() != null) {
+                    KeyResultEditor keyResultEditor = keyResultEditorBuilder
+                            .keyResult(keyResultEditRequest.getKeyResult())
+                            .build();
+                    editKeyResult.get().KeyResultEdit(keyResultEditor);
+                }
+
+                return new ResponseEntity<>("핵심결과가 수정 되었습니다.", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("존재하지 않는 핵심결과입니다.", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity<>("수정 권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
     }
 }
