@@ -43,15 +43,16 @@ public class Objective extends TimeStamped {
         this.progress = 0;
     }
 
-    public void objectiveProgressUpdate(int progress) {
-        this.progress = progress;
-    }
+//    public void objectiveProgressUpdate(int progress) {
+//        this.progress = progress;
+//    }
 
     public void ObjectiveEdit(ObjectiveEditor objectiveEditor) {
         objective = objectiveEditor.getObjective();
         startDate = objectiveEditor.getStartdate();
         endDate = objectiveEditor.getEnddate();
         color = objectiveEditor.getColor();
+        progress = objectiveEditor.getProgress();
     }
 
     public ObjectiveEditor.ObjectiveEditorBuilder ObjectiveToEditor() {
@@ -60,6 +61,7 @@ public class Objective extends TimeStamped {
                 .objective(objective)
                 .startdate(startDate)
                 .enddate(endDate)
-                .color(color);
+                .color(color)
+                .progress(progress);
     }
 }

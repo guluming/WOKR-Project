@@ -11,12 +11,14 @@ public class ObjectiveEditor {
     private LocalDate startdate;
     private LocalDate enddate;
     private String color;
+    private int progress;
 
     @Builder
-    public ObjectiveEditor(String objective, LocalDate startdate, LocalDate enddate, String color) {
+    public ObjectiveEditor(String objective, LocalDate startdate, LocalDate enddate, String color, int progress) {
         this.objective = objective;
         this.startdate = startdate;
         this.enddate = enddate;
         this.color = color;
+        this.progress = progress;
     }
 }

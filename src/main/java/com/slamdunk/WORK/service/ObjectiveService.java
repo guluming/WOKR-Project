@@ -13,15 +13,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -113,9 +109,22 @@ public class ObjectiveService {
 
         if (objective.isPresent()) {
             if (userObjectiveService.checkMyObjective(objectiveId, userDetails)) {
-                objective.get().objectiveProgressUpdate(progressRequest.getProgress());
-                objectiveRepository.save(objective.get());
+                ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = objective.get().ObjectiveToEditor();
 
+                if (progressRequest.getProgress() > 0) {
+                    ObjectiveEditor objectiveEditor = objectiveEditorBuilder
+                            .progress(progressRequest.getProgress())
+                            .build();
+                    objective.get().ObjectiveEdit(objectiveEditor);
+                } else if (progressRequest.getProgress() == 0) {
+                    ObjectiveEditor objectiveEditor = objectiveEditorBuilder
+                            .progress(0)
+                            .build();
+                    objective.get().ObjectiveEdit(objectiveEditor);
+                    return new ResponseEntity<>("진척도가 초기화 되었습니다.", HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("입력된 진척도가 없습니다.", HttpStatus.BAD_REQUEST);
+                }
                 return new ResponseEntity<>("진척도를 수정 했습니다.", HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("수정할 수 있는 권한이 없습니다.", HttpStatus.FORBIDDEN);
