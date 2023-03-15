@@ -57,8 +57,6 @@ public class OKRService {
                                 .build();
 
                         okrKeyResultResponseList.add(okrKeyResultResponse);
-                    } else {
-                        return new ResponseEntity<>("생성한 핵심결과가 없습니다.", HttpStatus.BAD_REQUEST);
                     }
                 }
 
