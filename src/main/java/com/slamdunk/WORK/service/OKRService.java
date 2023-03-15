@@ -4,9 +4,11 @@ import com.slamdunk.WORK.dto.response.OKRResponse;
 import com.slamdunk.WORK.entity.KeyResult;
 import com.slamdunk.WORK.entity.Objective;
 import com.slamdunk.WORK.entity.UserKeyResult;
+import com.slamdunk.WORK.entity.UserObjective;
 import com.slamdunk.WORK.repository.KeyResultRepository;
 import com.slamdunk.WORK.repository.ObjectiveRepository;
 import com.slamdunk.WORK.repository.UserKeyResultRepository;
+import com.slamdunk.WORK.repository.UserObjectiveRepository;
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,46 +25,37 @@ import java.util.stream.Collectors;
 public class OKRService {
     private final ObjectiveRepository objectiveRepository;
     private final KeyResultRepository keyResultRepository;
+    private final UserObjectiveRepository userObjectiveRepository;
     private final UserKeyResultRepository userKeyResultRepository;
     private final UserObjectiveService userObjectiveService;
     private final UserKeyResultService userKeyResultService;
 
     //목표-핵심결과 전체 조회
     public ResponseEntity<?> allObjectiveKeyResult(UserDetailsImpl userDetails) {
-        List<UserKeyResult> allOKRList = userKeyResultRepository.findAllByUserId(userDetails.getUser().getId());
+        List<UserObjective> checkCreateObjective = userObjectiveRepository.findAllByUserId(userDetails.getUser().getId());
 
         List<OKRResponse> okrResponseList = new ArrayList<>();
-        if (allOKRList.isEmpty()) {
+        if (checkCreateObjective.isEmpty()) {
             return new ResponseEntity<>(okrResponseList, HttpStatus.OK);
         } else {
-            List<Long> useObjectiveList = new ArrayList<>();
-            for (int i=0; i<allOKRList.size(); i++) {
-                useObjectiveList.add(allOKRList.get(i).getObjective().getId());
-            }
-            useObjectiveList = useObjectiveList.stream().distinct().collect(Collectors.toList());
-
-            for (int i=0; i<useObjectiveList.size(); i++) {
-                List<UserKeyResult> OKRList = userKeyResultRepository.findAllByObjectiveId(useObjectiveList.get(i));
-
+            for (int i=0; i<checkCreateObjective.size(); i++) {
                 List<OKRResponse.keyResult> okrKeyResultResponseList = new ArrayList<>();
-                for (int k=0; k<OKRList.size(); k++) {
-                    Optional<KeyResult> checkKeyResult = keyResultRepository.findById(OKRList.get(k).getKeyResult().getId());
-                    if (checkKeyResult.isPresent()) {
+                List<KeyResult> checkCreateKeyResult = keyResultRepository.findAllByObjectiveId(checkCreateObjective.get(i).getObjective().getId());
+                if (!checkCreateKeyResult.isEmpty()) {
+                    for (int k=0; k<checkCreateKeyResult.size(); k++) {
                         OKRResponse.keyResult okrKeyResultResponse = OKRResponse.keyResult.builder()
-                                .myKeyResult(userKeyResultService.checkMyKeyResult(checkKeyResult.get().getId(), userDetails))
-                                .keyResultId(checkKeyResult.get().getId())
-                                .keyResult(checkKeyResult.get().getKeyResult())
-                                .progress(checkKeyResult.get().getProgress())
-                                .emotion(checkKeyResult.get().getEmoticon())
+                                .myKeyResult(userKeyResultService.checkMyKeyResult(checkCreateKeyResult.get(k).getId(), userDetails))
+                                .keyResultId(checkCreateKeyResult.get(k).getId())
+                                .keyResult(checkCreateKeyResult.get(k).getKeyResult())
+                                .progress(checkCreateKeyResult.get(k).getProgress())
+                                .emotion(checkCreateKeyResult.get(k).getEmoticon())
                                 .build();
 
                         okrKeyResultResponseList.add(okrKeyResultResponse);
-                    } else {
-                        return new ResponseEntity<>("생성한 핵심결과가 없습니다.", HttpStatus.BAD_REQUEST);
                     }
                 }
 
-                Optional<Objective> checkObjective = objectiveRepository.findById(useObjectiveList.get(i));
+                Optional<Objective> checkObjective = objectiveRepository.findById(checkCreateObjective.get(i).getObjective().getId());
                 if (checkObjective.isPresent()) {
                     OKRResponse okrResponse = OKRResponse.builder()
                             .myObjective(userObjectiveService.checkMyObjective(checkObjective.get().getId(), userDetails))
@@ -80,6 +73,7 @@ public class OKRService {
                     return new ResponseEntity<>("생성한 목표가 없습니다.", HttpStatus.BAD_REQUEST);
                 }
             }
+
             return new ResponseEntity<>(okrResponseList, HttpStatus.OK);
         }
     }
