@@ -166,8 +166,10 @@ public class ObjectiveService {
                             .build();
                     editObjective.get().ObjectiveEdit(objectiveEditor);
                 }
+                return new ResponseEntity<>("목표가 수정 되었습니다.", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("존재하지 않는 목표입니다.", HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>("목표가 수정 되었습니다.", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("수정 권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
