@@ -19,6 +19,8 @@ public class UserObjective {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "objective_id")
     private Objective objective;
+    @Column
+    private boolean deleteState;
 
     public UserObjective(User user, Objective objective) {
         this.user = user;

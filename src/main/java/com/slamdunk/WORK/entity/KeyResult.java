@@ -23,6 +23,8 @@ public class KeyResult extends TimeStamped {
     private int progress;
     @Column
     private int emoticon;
+    @Column
+    private boolean deleteState;
 
     public KeyResult(Objective objective, String keyResult) {
         this.objective = objective;

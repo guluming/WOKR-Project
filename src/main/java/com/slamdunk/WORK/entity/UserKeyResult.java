@@ -22,6 +22,8 @@ public class UserKeyResult {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "keyResult_id")
     private KeyResult keyResult;
+    @Column
+    private boolean deleteState;
 
     public UserKeyResult(User user, Objective objective, KeyResult keyResult) {
         this.user = user;

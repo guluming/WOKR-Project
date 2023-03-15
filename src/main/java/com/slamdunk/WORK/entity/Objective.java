@@ -20,7 +20,7 @@ public class Objective extends TimeStamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "objective_id")
     private Long id;
-    @Column(unique = true)
+    @Column(nullable = false)
     private String objective;
     @Column(nullable = false)
     private LocalDate startDate;
@@ -30,6 +30,8 @@ public class Objective extends TimeStamped {
     private String color;
     @Column
     private int progress;
+    @Column
+    private boolean deleteState;
 
     public Objective(ObjectiveRequest param) {
         this.objective = param.getObjective();
