@@ -1,6 +1,7 @@
 package com.slamdunk.WORK.service;
 
 import com.slamdunk.WORK.Editor.KeyResultEditor;
+import com.slamdunk.WORK.dto.request.EmoticonRequest;
 import com.slamdunk.WORK.dto.request.KeyResultRequest;
 import com.slamdunk.WORK.dto.request.ProgressRequest;
 import com.slamdunk.WORK.dto.response.KeyResultDetailResponse;
@@ -94,6 +95,7 @@ public class KeyResultService {
     }
 
     //핵심결과 진척도 수정
+    @Transactional
     public ResponseEntity<String> keyResultProgressEdit(Long keyResultId, UserDetailsImpl userDetails, ProgressRequest progressRequest) {
         Optional<KeyResult> keyResult = keyResultRepository.findById(keyResultId);
 
@@ -116,6 +118,38 @@ public class KeyResultService {
                     return new ResponseEntity<>("입력된 진척도가 없습니다.", HttpStatus.BAD_REQUEST);
                 }
                 return new ResponseEntity<>("진척도를 수정 했습니다.", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("수정할 수 있는 권한이 없습니다.", HttpStatus.FORBIDDEN);
+            }
+        } else {
+            return new ResponseEntity<>("존재하지 않는 핵심결과입니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //핵심결과 자신감 수정
+    @Transactional
+    public ResponseEntity<String> keyResultEmoticonEdit(Long keyResultId, UserDetailsImpl userDetails, EmoticonRequest emoticonRequest) {
+        Optional<KeyResult> keyResult = keyResultRepository.findById(keyResultId);
+
+        if (keyResult.isPresent()) {
+            if (userKeyResultService.checkMyKeyResult(keyResultId, userDetails)) {
+                KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = keyResult.get().KeyResultToEditor();
+
+                if (emoticonRequest.getEmoticon() > 0) {
+                    KeyResultEditor keyResultEditor = keyResultEditorBuilder
+                            .emoticon(emoticonRequest.getEmoticon())
+                            .build();
+                    keyResult.get().KeyResultEdit(keyResultEditor);
+                } else if (emoticonRequest.getEmoticon() == 0) {
+                    KeyResultEditor keyResultEditor = keyResultEditorBuilder
+                            .emoticon(0)
+                            .build();
+                    keyResult.get().KeyResultEdit(keyResultEditor);
+                    return new ResponseEntity<>("자신감이 초기화 되었습니다.", HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("입력된 자신감이 없습니다.", HttpStatus.BAD_REQUEST);
+                }
+                return new ResponseEntity<>("자신감을 수정 했습니다.", HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("수정할 수 있는 권한이 없습니다.", HttpStatus.FORBIDDEN);
             }
