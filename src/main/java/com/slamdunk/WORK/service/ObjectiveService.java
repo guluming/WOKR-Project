@@ -1,5 +1,7 @@
 package com.slamdunk.WORK.service;
 
+import com.slamdunk.WORK.Editor.ObjectiveEditor;
+import com.slamdunk.WORK.dto.request.ObjectiveEditRequest;
 import com.slamdunk.WORK.dto.request.ObjectiveRequest;
 import com.slamdunk.WORK.dto.request.ProgressRequest;
 import com.slamdunk.WORK.dto.response.ObjectiveDetailResponse;
@@ -8,15 +10,21 @@ import com.slamdunk.WORK.entity.Objective;
 import com.slamdunk.WORK.repository.ObjectiveRepository;
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ObjectiveService {
@@ -99,7 +107,8 @@ public class ObjectiveService {
     }
 
     //목표 진척도 수정
-    public ResponseEntity<?> objectiveProgressEdit(Long objectiveId, UserDetailsImpl userDetails, ProgressRequest progressRequest) {
+    @Transactional
+    public ResponseEntity<String> objectiveProgressEdit(Long objectiveId, UserDetailsImpl userDetails, ProgressRequest progressRequest) {
         Optional<Objective> objective = objectiveRepository.findById(objectiveId);
 
         if (objective.isPresent()) {
@@ -113,6 +122,45 @@ public class ObjectiveService {
             }
         } else {
             return new ResponseEntity<>("존재하지 않는 목표입니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //목표 수정
+    @Transactional
+    public ResponseEntity<String> objectiveEdit(Long objectiveId, UserDetailsImpl userDetails, ObjectiveEditRequest objectiveEditRequest) {
+        if (userObjectiveService.checkMyObjective(objectiveId, userDetails)) {
+            Optional<Objective> editObjective = objectiveRepository.findById(objectiveId);
+            if (editObjective.isPresent()) {
+                ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = editObjective.get().ObjectiveToEditor();
+
+                if (objectiveEditRequest.getObjective() != null) {
+                    ObjectiveEditor objectiveEditor = objectiveEditorBuilder
+                            .objective(objectiveEditRequest.getObjective())
+                            .build();
+                    editObjective.get().ObjectiveEdit(objectiveEditor);
+                }
+                if (objectiveEditRequest.getStartdate() != null) {
+                    ObjectiveEditor objectiveEditor = objectiveEditorBuilder
+                            .startdate(objectiveEditRequest.getStartdate())
+                            .build();
+                    editObjective.get().ObjectiveEdit(objectiveEditor);
+                }
+                if (objectiveEditRequest.getEnddate() != null) {
+                    ObjectiveEditor objectiveEditor = objectiveEditorBuilder
+                            .enddate(objectiveEditRequest.getEnddate())
+                            .build();
+                    editObjective.get().ObjectiveEdit(objectiveEditor);
+                }
+                if (objectiveEditRequest.getColor() != null) {
+                    ObjectiveEditor objectiveEditor = objectiveEditorBuilder
+                            .color(objectiveEditRequest.getColor())
+                            .build();
+                    editObjective.get().ObjectiveEdit(objectiveEditor);
+                }
+            }
+            return new ResponseEntity<>("목표가 수정 되었습니다.", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("수정 권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
     }
 }

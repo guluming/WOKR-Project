@@ -1,7 +1,9 @@
 package com.slamdunk.WORK.entity;
 
+import com.slamdunk.WORK.Editor.ObjectiveEditor;
 import com.slamdunk.WORK.dto.request.ObjectiveRequest;
 import com.slamdunk.WORK.utill.TimeStamped;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -43,5 +45,21 @@ public class Objective extends TimeStamped {
 
     public void objectiveProgressUpdate(int progress) {
         this.progress = progress;
+    }
+
+    public void ObjectiveEdit(ObjectiveEditor objectiveEditor) {
+        objective = objectiveEditor.getObjective();
+        startDate = objectiveEditor.getStartdate();
+        endDate = objectiveEditor.getEnddate();
+        color = objectiveEditor.getColor();
+    }
+
+    public ObjectiveEditor.ObjectiveEditorBuilder ObjectiveToEditor() {
+        return ObjectiveEditor
+                .builder()
+                .objective(objective)
+                .startdate(startDate)
+                .enddate(endDate)
+                .color(color);
     }
 }
