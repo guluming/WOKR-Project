@@ -1,5 +1,6 @@
 package com.slamdunk.WORK.entity;
 
+import com.slamdunk.WORK.Editor.KeyResultEditor;
 import com.slamdunk.WORK.utill.TimeStamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,5 +30,21 @@ public class KeyResult extends TimeStamped {
     public KeyResult(Objective objective, String keyResult) {
         this.objective = objective;
         this.keyResult = keyResult;
+        this.progress = 0;
+        this.emoticon = 0;
+    }
+
+    public void KeyResultEdit(KeyResultEditor keyResultEditor) {
+        keyResult = keyResultEditor.getKeyResult();
+        progress = keyResultEditor.getProgress();
+        emoticon = keyResultEditor.getEmoticon();
+    }
+
+    public KeyResultEditor.KeyResultEditorBuilder KeyResultToEditor() {
+        return KeyResultEditor
+                .builder()
+                .keyResult(keyResult)
+                .progress(progress)
+                .emoticon(emoticon);
     }
 }
