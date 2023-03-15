@@ -36,12 +36,14 @@ public class KeyResultService {
                 return new ResponseEntity<>("목표가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
             } else {
                 for (int i = 0; i< keyResultRequest.getKeyResultDate().size(); i++) {
-                    KeyResult newKeyResult = new KeyResult(
-                            objectiveCheck.get(),
-                            keyResultRequest.getKeyResultDate().get(i));
-                    keyResultRepository.save(newKeyResult);
+                    if (keyResultRequest.getKeyResultDate().get(i) != null) {
+                        KeyResult newKeyResult = new KeyResult(
+                                objectiveCheck.get(),
+                                keyResultRequest.getKeyResultDate().get(i));
+                        keyResultRepository.save(newKeyResult);
 
-                    userKeyResultService.registerUserKeyResult(newKeyResult, objectiveCheck.get(), userDetails);
+                        userKeyResultService.registerUserKeyResult(newKeyResult, objectiveCheck.get(), userDetails);
+                    }
                 }
                 return new ResponseEntity<>(HttpStatus.CREATED);
             }
