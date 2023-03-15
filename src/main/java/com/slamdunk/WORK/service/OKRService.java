@@ -30,8 +30,10 @@ public class OKRService {
     //목표-핵심결과 전체 조회
     public ResponseEntity<?> allObjectiveKeyResult(UserDetailsImpl userDetails) {
         List<UserKeyResult> allOKRList = userKeyResultRepository.findAllByUserId(userDetails.getUser().getId());
+
+        List<OKRResponse> okrResponseList = new ArrayList<>();
         if (allOKRList.isEmpty()) {
-            return new ResponseEntity<>("생성한 목표-핵심결과가 없습니다.", HttpStatus.OK);
+            return new ResponseEntity<>(okrResponseList, HttpStatus.OK);
         } else {
             List<Long> useObjectiveList = new ArrayList<>();
             for (int i=0; i<allOKRList.size(); i++) {
@@ -39,7 +41,6 @@ public class OKRService {
             }
             useObjectiveList = useObjectiveList.stream().distinct().collect(Collectors.toList());
 
-            List<OKRResponse> okrResponseList = new ArrayList<>();
             for (int i=0; i<useObjectiveList.size(); i++) {
                 List<UserKeyResult> OKRList = userKeyResultRepository.findAllByObjectiveId(useObjectiveList.get(i));
 
