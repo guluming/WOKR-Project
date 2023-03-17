@@ -36,7 +36,7 @@ public class UserObjectiveService {
 
     //회원-목표 전체 조회
     public List<Long> allObjective(UserDetailsImpl userDetails) {
-        List<UserObjective> userObjectiveList = userObjectiveRepository.findAllByUserId(userDetails.getUser().getId());
+        List<UserObjective> userObjectiveList = userObjectiveRepository.findAllByTeam(userDetails.getUser().getTeam());
 
         List<Long> objectiveId = new ArrayList<>();
         for (int i=0; i<userObjectiveList.size(); i++) {

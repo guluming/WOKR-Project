@@ -59,11 +59,11 @@ public class ObjectiveService {
 
     //목표 전체 조회
     public ResponseEntity<?> allObjective(UserDetailsImpl userDetails) {
-        List<Long> objectiveId = userObjectiveService.allObjective(userDetails);
+        List<Long> objectiveIdList = userObjectiveService.allObjective(userDetails);
 
         List<ObjectiveResponse> objectiveResponseList = new ArrayList<>();
-        for (int i=0; i<objectiveId.size(); i++) {
-            Optional<Objective> objective = objectiveRepository.findById(objectiveId.get(i));
+        for (int i=0; i<objectiveIdList.size(); i++) {
+            Optional<Objective> objective = objectiveRepository.findById(objectiveIdList.get(i));
             if (objective.isPresent()) {
                 ObjectiveResponse objectiveResponse = ObjectiveResponse.builder()
                         .myObjective(userObjectiveService.checkMyObjective(objective.get().getId(), userDetails))

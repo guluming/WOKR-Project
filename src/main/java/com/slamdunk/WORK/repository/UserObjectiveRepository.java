@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserObjectiveRepository extends JpaRepository<UserObjective, Long> {
-    List<UserObjective> findAllByUserId(Long userId);
+    List<UserObjective> findAllByTeam(String team);
     Optional<UserObjective> findByObjectiveIdAndUserId(Long ObjectiveId, Long userId);
 }
