@@ -29,7 +29,7 @@ public class UserObjectiveService {
         Optional<Objective> objectiveCheck = objectiveRepository.findById(objective.getId());
 
         if (objectiveCheck.isPresent()) {
-            UserObjective userObjective = new UserObjective(userDetails.getUser(), objectiveCheck.get());
+            UserObjective userObjective = new UserObjective(userDetails.getUser(), objectiveCheck.get(), userDetails.getUser().getTeam());
             userObjectiveRepository.save(userObjective);
         }
     }
