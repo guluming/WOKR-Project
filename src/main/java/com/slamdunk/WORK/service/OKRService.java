@@ -32,15 +32,15 @@ public class OKRService {
 
     //목표-핵심결과 전체 조회
     public ResponseEntity<?> allObjectiveKeyResult(UserDetailsImpl userDetails) {
-        List<UserObjective> checkCreateObjective = userObjectiveRepository.findAllByUserId(userDetails.getUser().getId());
+        List<Long> objectiveIdList = userObjectiveService.allObjective(userDetails);
 
         List<OKRResponse> okrResponseList = new ArrayList<>();
-        if (checkCreateObjective.isEmpty()) {
+        if (objectiveIdList.isEmpty()) {
             return new ResponseEntity<>(okrResponseList, HttpStatus.OK);
         } else {
-            for (int i=0; i<checkCreateObjective.size(); i++) {
+            for (int i=0; i<objectiveIdList.size(); i++) {
                 List<OKRResponse.keyResult> okrKeyResultResponseList = new ArrayList<>();
-                List<KeyResult> checkCreateKeyResult = keyResultRepository.findAllByObjectiveId(checkCreateObjective.get(i).getObjective().getId());
+                List<KeyResult> checkCreateKeyResult = keyResultRepository.findAllByObjectiveId(objectiveIdList.get(i));
                 if (!checkCreateKeyResult.isEmpty()) {
                     for (int k=0; k<checkCreateKeyResult.size(); k++) {
                         OKRResponse.keyResult okrKeyResultResponse = OKRResponse.keyResult.builder()
@@ -55,7 +55,7 @@ public class OKRService {
                     }
                 }
 
-                Optional<Objective> checkObjective = objectiveRepository.findById(checkCreateObjective.get(i).getObjective().getId());
+                Optional<Objective> checkObjective = objectiveRepository.findById(objectiveIdList.get(i));
                 if (checkObjective.isPresent()) {
                     OKRResponse okrResponse = OKRResponse.builder()
                             .myObjective(userObjectiveService.checkMyObjective(checkObjective.get().getId(), userDetails))
