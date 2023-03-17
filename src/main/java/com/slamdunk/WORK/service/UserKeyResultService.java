@@ -29,7 +29,7 @@ public class UserKeyResultService {
         Optional<KeyResult> keyResultCheck = keyResultRepository.findById(keyResult.getId());
 
         if (objectiveCheck.isPresent() && keyResultCheck.isPresent()) {
-            UserKeyResult userKeyResult = new UserKeyResult(userDetails.getUser(), objectiveCheck.get(), keyResult);
+            UserKeyResult userKeyResult = new UserKeyResult(userDetails.getUser(), objectiveCheck.get(), keyResult, userDetails.getUser().getTeam());
             userKeyResultRepository.save(userKeyResult);
         }
     }
