@@ -36,7 +36,7 @@ public class UserKeyResultService {
 
     //회원-핵심결과 중간테이블 전체 조회
     public List<Long> allKeyResult(UserDetailsImpl userDetails) {
-        List<UserKeyResult> userKeyResultList = userKeyResultRepository.findAllByUserId(userDetails.getUser().getId());
+        List<UserKeyResult> userKeyResultList = userKeyResultRepository.findAllByTeam(userDetails.getUser().getTeam());
 
         List<Long> keyResultId = new ArrayList<>();
         for (int i =0; i<userKeyResultList.size(); i++) {
