@@ -20,10 +20,13 @@ public class UserObjective {
     @JoinColumn(name = "objective_id")
     private Objective objective;
     @Column
+    private String team;
+    @Column
     private boolean deleteState;
 
-    public UserObjective(User user, Objective objective) {
+    public UserObjective(User user, Objective objective, String team) {
         this.user = user;
         this.objective = objective;
+        this.team = team;
     }
 }
