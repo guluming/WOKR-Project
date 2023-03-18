@@ -5,7 +5,6 @@ import com.slamdunk.WORK.utill.TimeStamped;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor
@@ -27,10 +26,10 @@ public class ToDo extends TimeStamped {
     private String memo;
 
     @Column(nullable = false)
-    private LocalDateTime startDate;
+    private String startDate;
 
     @Column(nullable = false)
-    private LocalDateTime endDate;
+    private String endDate;
 
     @Column
     private int priority;
@@ -55,6 +54,7 @@ public class ToDo extends TimeStamped {
         this.priority = param.getPriority();
         this.display = param.isDisplay();
         this.completion = false;
+
 
     }
 

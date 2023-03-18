@@ -17,11 +17,10 @@ import java.util.List;
 public class ToDoRequest {
     private String toDo;
     private String memo;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private String startDate;
+    private String endDate;
     private int priority;
-    private boolean completion;
     private boolean display;
+    private boolean completion;
     private Long keyResultId;
-
 }

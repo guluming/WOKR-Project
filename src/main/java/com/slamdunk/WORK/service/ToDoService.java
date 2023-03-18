@@ -4,7 +4,6 @@ import com.slamdunk.WORK.dto.request.ToDoRequest;
 import com.slamdunk.WORK.dto.response.ToDoDetailResponse;
 import com.slamdunk.WORK.dto.response.ToDoResponse;
 import com.slamdunk.WORK.entity.KeyResult;
-import com.slamdunk.WORK.entity.Objective;
 import com.slamdunk.WORK.entity.ToDo;
 import com.slamdunk.WORK.repository.KeyResultRepository;
 import com.slamdunk.WORK.repository.ObjectiveRepository;
@@ -106,7 +105,7 @@ public class ToDoService {
     @Transactional
     public ResponseEntity<?>createToDo(ToDoRequest toDoRequest, UserDetailsImpl userDetails) {
         KeyResult keyResultCheck = keyResultRepository.findById(toDoRequest.getKeyResultId()).orElse(null);
-        if (keyResultCheck != null) {
+        if (keyResultCheck !=null) {
             KeyResult keyResult = keyResultCheck;
             ToDo toDo = new ToDo(toDoRequest);
             toDo.setKeyResult(keyResult);
@@ -122,6 +121,7 @@ public class ToDoService {
                     .endDate(toDo.getEndDate())
                     .priority(toDo.getPriority())
                     .display(toDo.isDisplay())
+                    .completion(toDo.isCompletion())
                     .build();
             return new ResponseEntity<>(toDoResponse, HttpStatus.CREATED);
         } else {
@@ -138,6 +138,7 @@ public class ToDoService {
                     .endDate(toDo.getEndDate())
                     .priority(toDo.getPriority())
                     .display(toDo.isDisplay())
+                    .completion(toDo.isCompletion())
                     .build();
             return new ResponseEntity<>(toDoResponse, HttpStatus.CREATED);
         }
@@ -159,6 +160,7 @@ public class ToDoService {
                         .endDate(toDoRequest.getEndDate())
                         .priority(toDoRequest.getPriority())
                         .display(toDoRequest.isDisplay())
+                        .completion(toDoRequest.isCompletion())
                         .build();
                 toDoRepository.save(updatedToDo);
             }
