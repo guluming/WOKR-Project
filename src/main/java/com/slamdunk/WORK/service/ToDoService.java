@@ -73,76 +73,76 @@ public class ToDoService {
     }
 
     //투두 생성
-    @Transactional
-    public ResponseEntity<?> createToDo(Long objectiveId, Long keyResultId, ToDoRequest toDoRequest, UserDetailsImpl userDetails) {
-        ToDo toDo = new ToDo(toDoRequest);
-        if (objectiveId != null) {
-            Optional<Objective> objectiveCheck = objectiveRepository.findById(objectiveId);
-            objectiveCheck.ifPresent(objective -> toDo.setObjective(objective));
-        }
-        if (keyResultId != null) {
-            Optional<KeyResult> keyResultCheck = keyResultRepository.findById(keyResultId);
-            keyResultCheck.ifPresent(keyResult -> {
-                toDo.setKeyResult(keyResult);
-                userToDoService.registerUserToDo(toDo, keyResult, userDetails);
-            });
-        }
-        toDoRepository.save(toDo);
-        userToDoService.registerUserToDo(toDo, null, userDetails);
-
-        ToDoResponse toDoResponse = ToDoResponse.builder()
-                .myToDo(userToDoService.checkMyToDo(toDo.getId(), userDetails))
-                .toDoId(toDo.getId())
-                .toDo(toDo.getToDo())
-                .memo(toDo.getMemo())
-                .startDate(toDo.getStartDate())
-                .endDate(toDo.getEndDate())
-                .priority(toDo.getPriority())
-                //.display(toDo.isDisplay())
-                .build();
-        return new ResponseEntity<>(toDoResponse, HttpStatus.CREATED);
-    }
-
 //    @Transactional
-//    public ResponseEntity<?>createToDo(Long objectiveId, Long keyResultId,ToDoRequest toDoRequest, UserDetailsImpl userDetails) {
-//        Optional<Objective> objectiveCheck = objectiveRepository.findById(objectiveId);
-//        Optional<KeyResult> keyResultCheck = keyResultRepository.findById(keyResultId);
-//        if (objectiveCheck.isPresent()&& keyResultCheck.isPresent()) {
-//            KeyResult keyResult = keyResultCheck.get();
-//            ToDo toDo = new ToDo(toDoRequest);
-//            toDo.setKeyResult(keyResult);
-//            toDoRepository.save(toDo);
-//            userToDoService.registerUserToDo(toDo, keyResult, userDetails);
-//
-//            ToDoResponse toDoResponse = ToDoResponse.builder()
-//                    .myToDo(userToDoService.checkMyToDo(toDo.getId(), userDetails))
-//                    .toDoId(toDo.getId())
-//                    .toDo(toDo.getToDo())
-//                    .memo(toDo.getMemo())
-//                    .startDate(toDo.getStartDate())
-//                    .endDate(toDo.getEndDate())
-//                    .priority(toDo.getPriority())
-//                    //.display(toDo.isDisplay())
-//                    .build();
-//            return new ResponseEntity<>(toDoResponse, HttpStatus.CREATED);
-//        } else {
-//            ToDo toDo = new ToDo(toDoRequest);
-//            toDoRepository.save(toDo);
-//            userToDoService.registerUserToDo(toDo, null, userDetails);
-//
-//            ToDoResponse toDoResponse = ToDoResponse.builder()
-//                    .myToDo(userToDoService.checkMyToDo(toDo.getId(), userDetails))
-//                    .toDoId(toDo.getId())
-//                    .toDo(toDo.getToDo())
-//                    .memo(toDo.getMemo())
-//                    .startDate(toDo.getStartDate())
-//                    .endDate(toDo.getEndDate())
-//                    .priority(toDo.getPriority())
-//                    //.display(toDo.isDisplay())
-//                    .build();
-//            return new ResponseEntity<>(toDoResponse, HttpStatus.CREATED);
+//    public ResponseEntity<?> createToDo(Long objectiveId, Long keyResultId, ToDoRequest toDoRequest, UserDetailsImpl userDetails) {
+//        ToDo toDo = new ToDo(toDoRequest);
+//        if (objectiveId != null) {
+//            Optional<Objective> objectiveCheck = objectiveRepository.findById(objectiveId);
+//            objectiveCheck.ifPresent(objective -> toDo.setObjective(objective));
 //        }
+//        if (keyResultId != null) {
+//            Optional<KeyResult> keyResultCheck = keyResultRepository.findById(keyResultId);
+//            keyResultCheck.ifPresent(keyResult -> {
+//                toDo.setKeyResult(keyResult);
+//                userToDoService.registerUserToDo(toDo, keyResult, userDetails);
+//            });
+//        }
+//        toDoRepository.save(toDo);
+//        userToDoService.registerUserToDo(toDo, null, userDetails);
+//
+//        ToDoResponse toDoResponse = ToDoResponse.builder()
+//                .myToDo(userToDoService.checkMyToDo(toDo.getId(), userDetails))
+//                .toDoId(toDo.getId())
+//                .toDo(toDo.getToDo())
+//                .memo(toDo.getMemo())
+//                .startDate(toDo.getStartDate())
+//                .endDate(toDo.getEndDate())
+//                .priority(toDo.getPriority())
+//                //.display(toDo.isDisplay())
+//                .build();
+//        return new ResponseEntity<>(toDoResponse, HttpStatus.CREATED);
 //    }
+
+    @Transactional
+    public ResponseEntity<?>createToDo(Long objectiveId, Long keyResultId,ToDoRequest toDoRequest, UserDetailsImpl userDetails) {
+        Optional<Objective> objectiveCheck = objectiveRepository.findById(objectiveId);
+        Optional<KeyResult> keyResultCheck = keyResultRepository.findById(keyResultId);
+        if (objectiveCheck.isPresent()&& keyResultCheck.isPresent()) {
+            KeyResult keyResult = keyResultCheck.get();
+            ToDo toDo = new ToDo(toDoRequest);
+            toDo.setKeyResult(keyResult);
+            toDoRepository.save(toDo);
+            userToDoService.registerUserToDo(toDo, keyResult, userDetails);
+
+            ToDoResponse toDoResponse = ToDoResponse.builder()
+                    .myToDo(userToDoService.checkMyToDo(toDo.getId(), userDetails))
+                    .toDoId(toDo.getId())
+                    .toDo(toDo.getToDo())
+                    .memo(toDo.getMemo())
+                    .startDate(toDo.getStartDate())
+                    .endDate(toDo.getEndDate())
+                    .priority(toDo.getPriority())
+//                    .display(toDo.isDisplay())
+                    .build();
+            return new ResponseEntity<>(toDoResponse, HttpStatus.CREATED);
+        } else {
+            ToDo toDo = new ToDo(toDoRequest);
+            toDoRepository.save(toDo);
+            userToDoService.registerUserToDo(toDo, null, userDetails);
+
+            ToDoResponse toDoResponse = ToDoResponse.builder()
+                    .myToDo(userToDoService.checkMyToDo(toDo.getId(), userDetails))
+                    .toDoId(toDo.getId())
+                    .toDo(toDo.getToDo())
+                    .memo(toDo.getMemo())
+                    .startDate(toDo.getStartDate())
+                    .endDate(toDo.getEndDate())
+                    .priority(toDo.getPriority())
+//                    .display(toDo.isDisplay())
+                    .build();
+            return new ResponseEntity<>(toDoResponse, HttpStatus.CREATED);
+        }
+    }
 
 
 
@@ -166,17 +166,17 @@ public class ToDoService {
         }
     }
         //투두 완료 상태
-//        public void updateCompletion (Long todo_id, UserDetailsImpl userDetails, ToDoRequestDone toDoRequest) {
-//            Optional<ToDo> toDoOptional = toDoRepository.findById(todo_id);
-//            if (toDoOptional.isPresent()) {
-//                ToDo donetoDo = toDoOptional.get();
-//                if (donetoDo.getId().equals(userDetails.getUser().getId())) {
-//                    donetoDo.setCompletion(toDoRequest.isCompletion());
-//                    toDoRepository.save(donetoDo);
-//
-//                }
-//            }
-//        }
+        public void updateCompletion (Long todo_id, UserDetailsImpl userDetails, ToDoRequest toDoRequest) {
+            Optional<ToDo> toDoOptional = toDoRepository.findById(todo_id);
+            if (toDoOptional.isPresent()) {
+                ToDo donetoDo = toDoOptional.get();
+                if (donetoDo.getId().equals(userDetails.getUser().getId())) {
+                    donetoDo.setCompletion(toDoRequest.isCompletion());
+                    toDoRepository.save(donetoDo);
+
+                }
+            }
+        }
 }
 
 
@@ -184,15 +184,6 @@ public class ToDoService {
 //        toDoRepository.deleteById(todo_id);
 //    }
 //
-//    public void updateCompletion (Long todo_id, UserDetailsImpl userDetails, ToDoRequest toDoRequest){
-//        Optional<ToDo> toDoOptional = toDoRepository.findById(todo_id);
-//        if (toDoOptional.isPresent()) {
-//            ToDo donetoDo = toDoOptional.get();
-//            donetoDo.setCompletion(toDoRequest.isCompletion());
-//            toDoRepository.save(donetoDo);
-//
-//
-//        }
-//    }
+
 
 

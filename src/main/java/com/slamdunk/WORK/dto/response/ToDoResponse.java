@@ -24,7 +24,7 @@ public class ToDoResponse {
     private boolean display;
     private boolean completion;
 
-    private KeyResult keyResult;
+
 
 
 //    public ToDoResponse(boolean myToDo,Long toDoId,
@@ -39,11 +39,7 @@ public class ToDoResponse {
 //        this.priority =priority;
 //        this.display = display;
 //    }
-//
-//    public void ToDoResponseCom(boolean completion){
-//        this.completion = completion;
-//    }
-//
+
 
 
 }

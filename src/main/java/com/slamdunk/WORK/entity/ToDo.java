@@ -27,9 +27,6 @@ public class ToDo extends TimeStamped {
     private String memo;
 
     @Column(nullable = false)
-    private LocalDateTime registerDate;
-
-    @Column(nullable = false)
     private LocalDateTime startDate;
 
     @Column(nullable = false)
@@ -64,7 +61,7 @@ public class ToDo extends TimeStamped {
 
     }
 
-        public void setKeyResult(KeyResult keyResult) {
+    public void setKeyResult(KeyResult keyResult) {
         this.keyResult = keyResult;
     }
     public void setObjective(Objective objective) {

@@ -20,7 +20,7 @@ public class UserToDoService {
     private final KeyResultRepository keyResultRepository;
     private final UserToDoRepository userToDoRepository;
 
-    //회원-핵심결과 중간테이블 생성
+    //회원-투두 중간테이블 생성
     @Transactional
     public void registerUserToDo(ToDo toDo,KeyResult keyResult, UserDetailsImpl userDetails) {
         Optional<KeyResult> keyResultCheck = keyResultRepository.findById(keyResult.getId());

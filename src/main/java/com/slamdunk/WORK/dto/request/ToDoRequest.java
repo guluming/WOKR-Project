@@ -20,17 +20,6 @@ public class ToDoRequest {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private int priority;
-
-
-    public static ToDoRequest fromEntity(ToDo toDo){
-        return new ToDoRequest(
-                toDo.getToDo(),
-                toDo.getMemo(),
-                toDo.getStartDate(),
-                toDo.getEndDate(),
-                toDo.getPriority());
-
-    }
-
+    private boolean completion;
 
 }
