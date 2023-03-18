@@ -20,14 +20,11 @@ public class ToDo extends TimeStamped {
     @Column(name = "toDo_id")
     private Long id;
 
-    @Column(unique = true)
+    @Column
     private String toDo;
 
     @Column(nullable = false)
     private String memo;
-
-    @Column(nullable = false)
-    private LocalDateTime registerDate;
 
     @Column(nullable = false)
     private LocalDateTime startDate;
@@ -35,8 +32,9 @@ public class ToDo extends TimeStamped {
     @Column(nullable = false)
     private LocalDateTime endDate;
 
-    @Column(nullable = false)
+    @Column
     private int priority;
+
 
     @Column(nullable = false)
     private boolean display;
@@ -44,13 +42,14 @@ public class ToDo extends TimeStamped {
     @Column(nullable = false)
     private boolean completion;
 
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "key_result_id")
+    private KeyResult keyResult;
 
 
     public ToDo(ToDoRequest param){
         this.toDo = param.getToDo();
         this.memo = param.getMemo();
-        this.registerDate = param.getRegisterDate();
         this.startDate = param.getStartDate();
         this.endDate = param.getEndDate();
         this.priority = param.getPriority();
@@ -59,6 +58,22 @@ public class ToDo extends TimeStamped {
 
     }
 
+    public void setKeyResult(KeyResult keyResult) {
+        this.keyResult = keyResult;
+    }
+
+
+    public void updateToDo(ToDoRequest toDoRequest) {
+
+        this.toDo = toDoRequest.getToDo();
+        this.memo = toDoRequest.getMemo();
+        this.startDate = toDoRequest.getStartDate();
+        this.endDate = toDoRequest.getEndDate();
+        this.priority = toDoRequest.getPriority();
+        this.display = toDoRequest.isDisplay();
+
+    }
 
 
 }
+

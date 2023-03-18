@@ -28,11 +28,14 @@ public class UserToDo {
 
 
 
-    public UserToDo(User user, Objective objective, KeyResult keyResult, ToDo toDo){
-           this.user = user;
-           this.objective = objective;
-           this.keyResult = keyResult;
-           this.toDo = toDo;
-        }
+    public UserToDo(User user, KeyResult keyResult, ToDo toDo) {
+        this.user = user;
+        this.keyResult = keyResult;
+        this.toDo = toDo;
+    }
 
+    public UserToDo(User user, ToDo toDo) {
+        this.user = user;
+        this.toDo = toDo;
+    }
 }

@@ -17,19 +17,21 @@ import java.util.Optional;
 @Service
 public class UserToDoService {
     private final ToDoRepository toDoRepository;
-    private final ObjectiveRepository objectiveRepository;
     private final KeyResultRepository keyResultRepository;
     private final UserToDoRepository userToDoRepository;
 
-    //회원-핵심결과 중간테이블 생성
+    //회원-투두 중간테이블 생성
     @Transactional
-    public void registerUserToDo(ToDo toDo, KeyResult keyResult, Objective objective, UserDetailsImpl userDetails) {
-        Optional<Objective> objectiveCheck = objectiveRepository.findById(objective.getId());
-        Optional<KeyResult> keyResultCheck = keyResultRepository.findById(keyResult.getId());
+    public void registerUserToDo(ToDo toDo,KeyResult keyResult, UserDetailsImpl userDetails) {
         Optional<ToDo> toDoCheck = toDoRepository.findById(toDo.getId());
 
-        if (objectiveCheck.isPresent() && keyResultCheck.isPresent() && toDoCheck.isPresent()) {
-            UserToDo userToDo = new UserToDo(userDetails.getUser(), objectiveCheck.get(), keyResultCheck.get(), toDo);
+        if (keyResult !=null && toDoCheck.isPresent()) {
+            UserToDo userToDo = new UserToDo(userDetails.getUser(), null, toDo);
+            userToDoRepository.save(userToDo);
+        } else if (toDoCheck.isEmpty()) {
+            throw new IllegalArgumentException("존재하지 않는 투두입니다.");
+        } else {
+            UserToDo userToDo = new UserToDo(userDetails.getUser(), toDo);
             userToDoRepository.save(userToDo);
         }
     }
@@ -39,8 +41,8 @@ public class UserToDoService {
         List<UserToDo> userToDoList = userToDoRepository.findAllByUserId(userDetails.getUser().getId());
 
         List<Long> toDoId = new ArrayList<>();
-        for (int i = 0; i < userToDoList.size(); i++) {
-            toDoId.add(userToDoList.get(i).getToDo().getId());
+        for (UserToDo userToDo : userToDoList) {
+            toDoId.add(userToDo.getToDo().getId());
         }
 
         return toDoId;
@@ -52,6 +54,7 @@ public class UserToDoService {
         Optional<UserToDo> checkDate = userToDoRepository.findByToDoIdAndUserId(toDoId, userDetails.getUser().getId());
         return checkDate.isPresent();
     }
+
 
 
 }
