@@ -32,7 +32,7 @@ public class ToDo extends TimeStamped {
     @Column(nullable = false)
     private LocalDateTime endDate;
 
-    @Column(nullable = false)
+    @Column
     private int priority;
 
 
@@ -53,7 +53,7 @@ public class ToDo extends TimeStamped {
         this.startDate = param.getStartDate();
         this.endDate = param.getEndDate();
         this.priority = param.getPriority();
-       // this.display = param.isDisplay();
+        this.display = param.isDisplay();
         this.completion = false;
 
     }
@@ -70,10 +70,9 @@ public class ToDo extends TimeStamped {
         this.startDate = toDoRequest.getStartDate();
         this.endDate = toDoRequest.getEndDate();
         this.priority = toDoRequest.getPriority();
-        //this.display = toDoRequest.isDisplay();
+        this.display = toDoRequest.isDisplay();
 
     }
-
 
 
 }

@@ -43,7 +43,7 @@ public class ToDoService {
                         .startDate(toDo.get().getStartDate())
                         .endDate(toDo.get().getEndDate())
                         .priority(toDo.get().getPriority())
-                       // .display(toDo.get().isDisplay())
+                        .display(toDo.get().isDisplay())
                         .build();
                 toDoResponseList.add(toDoResponse);
             }
@@ -121,7 +121,7 @@ public class ToDoService {
                     .startDate(toDo.getStartDate())
                     .endDate(toDo.getEndDate())
                     .priority(toDo.getPriority())
-//                    .display(toDo.isDisplay())
+                    .display(toDo.isDisplay())
                     .build();
             return new ResponseEntity<>(toDoResponse, HttpStatus.CREATED);
         } else {
@@ -137,7 +137,7 @@ public class ToDoService {
                     .startDate(toDo.getStartDate())
                     .endDate(toDo.getEndDate())
                     .priority(toDo.getPriority())
-//                    .display(toDo.isDisplay())
+                    .display(toDo.isDisplay())
                     .build();
             return new ResponseEntity<>(toDoResponse, HttpStatus.CREATED);
         }
@@ -158,7 +158,7 @@ public class ToDoService {
                         .startDate(toDoRequest.getStartDate())
                         .endDate(toDoRequest.getEndDate())
                         .priority(toDoRequest.getPriority())
-//                        .display(toDoRequest.isDisplay())
+                        .display(toDoRequest.isDisplay())
                         .build();
                 toDoRepository.save(updatedToDo);
             }
