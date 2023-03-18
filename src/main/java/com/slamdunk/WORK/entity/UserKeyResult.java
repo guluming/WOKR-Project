@@ -22,10 +22,15 @@ public class UserKeyResult {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "keyResult_id")
     private KeyResult keyResult;
+    @Column
+    private String team;
+    @Column
+    private boolean deleteState;
 
-    public UserKeyResult(User user, Objective objective, KeyResult keyResult) {
+    public UserKeyResult(User user, Objective objective, KeyResult keyResult, String team) {
         this.user = user;
         this.objective = objective;
         this.keyResult = keyResult;
+        this.team = team;
     }
 }

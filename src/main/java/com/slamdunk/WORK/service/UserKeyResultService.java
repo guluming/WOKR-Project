@@ -29,14 +29,14 @@ public class UserKeyResultService {
         Optional<KeyResult> keyResultCheck = keyResultRepository.findById(keyResult.getId());
 
         if (objectiveCheck.isPresent() && keyResultCheck.isPresent()) {
-            UserKeyResult userKeyResult = new UserKeyResult(userDetails.getUser(), objectiveCheck.get(), keyResult);
+            UserKeyResult userKeyResult = new UserKeyResult(userDetails.getUser(), objectiveCheck.get(), keyResult, userDetails.getUser().getTeam());
             userKeyResultRepository.save(userKeyResult);
         }
     }
 
     //회원-핵심결과 중간테이블 전체 조회
     public List<Long> allKeyResult(UserDetailsImpl userDetails) {
-        List<UserKeyResult> userKeyResultList = userKeyResultRepository.findAllByUserId(userDetails.getUser().getId());
+        List<UserKeyResult> userKeyResultList = userKeyResultRepository.findAllByTeam(userDetails.getUser().getTeam());
 
         List<Long> keyResultId = new ArrayList<>();
         for (int i =0; i<userKeyResultList.size(); i++) {

@@ -1,7 +1,9 @@
 package com.slamdunk.WORK.entity;
 
+import com.slamdunk.WORK.Editor.ObjectiveEditor;
 import com.slamdunk.WORK.dto.request.ObjectiveRequest;
 import com.slamdunk.WORK.utill.TimeStamped;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,7 +18,7 @@ public class Objective extends TimeStamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "objective_id")
     private Long id;
-    @Column(unique = true)
+    @Column(nullable = false)
     private String objective;
     @Column(nullable = false)
     private LocalDate startDate;
@@ -26,6 +28,8 @@ public class Objective extends TimeStamped {
     private String color;
     @Column
     private int progress;
+    @Column
+    private boolean deleteState;
 
     public Objective(ObjectiveRequest param) {
         this.objective = param.getObjective();
@@ -35,7 +39,21 @@ public class Objective extends TimeStamped {
         this.progress = 0;
     }
 
-    public void objectiveProgressUpdate(int progress) {
-        this.progress = progress;
+    public void ObjectiveEdit(ObjectiveEditor objectiveEditor) {
+        objective = objectiveEditor.getObjective();
+        startDate = objectiveEditor.getStartdate();
+        endDate = objectiveEditor.getEnddate();
+        color = objectiveEditor.getColor();
+        progress = objectiveEditor.getProgress();
+    }
+
+    public ObjectiveEditor.ObjectiveEditorBuilder ObjectiveToEditor() {
+        return ObjectiveEditor
+                .builder()
+                .objective(objective)
+                .startdate(startDate)
+                .enddate(endDate)
+                .color(color)
+                .progress(progress);
     }
 }

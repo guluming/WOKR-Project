@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @NoArgsConstructor
 @Getter
-public class ObjectiveRequest {
+public class ObjectiveEditRequest {
     private String objective;
     private LocalDate startdate;
     private LocalDate enddate;

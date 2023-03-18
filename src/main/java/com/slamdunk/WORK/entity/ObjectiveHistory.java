@@ -8,25 +8,19 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Entity
-public class UserObjective {
+public class ObjectiveHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "UserObjective_id")
+    @Column(name = "objective_id")
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(nullable = false)
+    private String name;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "objective_id")
     private Objective objective;
-    @Column
-    private String team;
-    @Column
-    private boolean deleteState;
 
-    public UserObjective(User user, Objective objective, String team) {
-        this.user = user;
+    public ObjectiveHistory(String name, Objective objective) {
+        this.name = name;
         this.objective = objective;
-        this.team = team;
     }
 }

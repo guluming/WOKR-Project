@@ -1,6 +1,9 @@
 package com.slamdunk.WORK.controller;
 
+import com.slamdunk.WORK.dto.request.EmoticonRequest;
+import com.slamdunk.WORK.dto.request.KeyResultEditRequest;
 import com.slamdunk.WORK.dto.request.KeyResultRequest;
+import com.slamdunk.WORK.dto.request.ProgressRequest;
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import com.slamdunk.WORK.service.KeyResultService;
 import lombok.RequiredArgsConstructor;
@@ -36,5 +39,32 @@ public class KeyResultController {
             @PathVariable("keyresult_id") Long keyResultId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return keyResultService.detailKeyResult(keyResultId, userDetails);
+    }
+
+    //핵심결과 진척도 수정
+    @PatchMapping("api/keyresult/progress/{keyresult_id}")
+    public ResponseEntity<?> keyResultProgressEdit(
+            @PathVariable("keyresult_id") Long keyResultId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody ProgressRequest progressRequest) {
+        return keyResultService.keyResultProgressEdit(keyResultId, userDetails, progressRequest);
+    }
+
+    //핵심결과 자신감 수정
+    @PatchMapping("api/keyresult/emoticon/{keyresult_id}")
+    public ResponseEntity<?> keyResultEmoticonEdit(
+            @PathVariable("keyresult_id") Long keyResultId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody EmoticonRequest emoticonRequest) {
+        return keyResultService.keyResultEmoticonEdit(keyResultId, userDetails, emoticonRequest);
+    }
+
+    //핵심결과 수정
+    @PatchMapping("api/keyresult/{keyresult_id}")
+    public ResponseEntity<?> keyResultEdit(
+            @PathVariable("keyresult_id") Long keyResultId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody KeyResultEditRequest keyResultEditRequest) {
+        return keyResultService.keyResultEdit(keyResultId, userDetails, keyResultEditRequest);
     }
 }
