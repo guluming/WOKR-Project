@@ -1,6 +1,7 @@
 package com.slamdunk.WORK.controller;
 
 import com.slamdunk.WORK.dto.request.ToDoRequest;
+
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import com.slamdunk.WORK.service.ToDoService;
 import lombok.RequiredArgsConstructor;
@@ -33,10 +34,15 @@ public class ToDoController {
 
     //투두 생성
     @PostMapping("/api/{objective_id}/{keyresult_id}/todo/")
-    public ResponseEntity<?> createToDo(@PathVariable("keyresult_id") Long keyResultId, ToDoRequest toDoRequest,
-                                        @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return toDoService.createToDo( keyResultId,toDoRequest,userDetails);
+    public ResponseEntity<?> createToDo(@PathVariable("objective_id") Long objectiveId, @PathVariable("keyresult_id") Long keyResultId,
+                                        @RequestBody ToDoRequest toDoRequest, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return toDoService.createToDo(objectiveId, keyResultId, toDoRequest, userDetails);
     }
+//    @PostMapping("/api/{objective_id}/{keyresult_id}/todo/")
+//    public ResponseEntity<?> createToDo(@PathVariable("objective_id") Long objectiveId,@PathVariable("keyresult_id") Long keyResultId, ToDoRequest toDoRequest,
+//                                        @AuthenticationPrincipal UserDetailsImpl userDetails){
+//        return toDoService.createToDo( objectiveId,keyResultId,toDoRequest,userDetails);
+//    }
 
 
     //투두 수정
@@ -48,12 +54,12 @@ public class ToDoController {
         return ResponseEntity.ok().build();
     }
     //투두 완료변경
-    @PatchMapping("/api/todo/check/{todo_id}")
-    public ResponseEntity<?> updateCompletion(@PathVariable("todo_id") Long todo_id,
-                                              @AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody ToDoRequest toDoRequest) {
-        toDoService.updateCompletion(todo_id, userDetails ,toDoRequest);
-        return ResponseEntity.ok().build();
-    }
+//    @PatchMapping("/api/todo/check/{todo_id}")
+//    public ResponseEntity<?> updateCompletion(@PathVariable("todo_id") Long todo_id,
+//                                              @AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody ToDoRequestDone toDoRequestDo) {
+//        toDoService.updateCompletion(todo_id, userDetails ,toDoRequestDo);
+//        return ResponseEntity.ok().build();
+//    }
 }
 
 //    //투두 삭제

@@ -4,13 +4,9 @@ import com.slamdunk.WORK.dto.request.ObjectiveRequest;
 import com.slamdunk.WORK.utill.TimeStamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @NoArgsConstructor

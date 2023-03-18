@@ -20,7 +20,7 @@ public class ToDo extends TimeStamped {
     @Column(name = "toDo_id")
     private Long id;
 
-    @Column(unique = true)
+    @Column
     private String toDo;
 
     @Column(nullable = false)
@@ -46,6 +46,9 @@ public class ToDo extends TimeStamped {
     private boolean completion;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "objective_id")
+    private Objective objective;
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "key_result_id")
     private KeyResult keyResult;
 
@@ -56,25 +59,30 @@ public class ToDo extends TimeStamped {
         this.startDate = param.getStartDate();
         this.endDate = param.getEndDate();
         this.priority = param.getPriority();
-        this.display = param.isDisplay();
+       // this.display = param.isDisplay();
         this.completion = false;
 
     }
 
-//    public void updateToDo(ToDoRequest toDoRequest) {
-//
-//        this.toDo = toDoRequest.getToDo();
-//        this.memo = toDoRequest.getMemo();
-//        this.startDate = toDoRequest.getStartDate();
-//        this.endDate = toDoRequest.getEndDate();
-//        this.priority = toDoRequest.getPriority();
-//        this.display = toDoRequest.isDisplay();
-//
-//    }
-//
-//
-//    public void setKeyResult(KeyResult keyResult) {
-//        this.keyResult = keyResult;
-//    }
+        public void setKeyResult(KeyResult keyResult) {
+        this.keyResult = keyResult;
+    }
+    public void setObjective(Objective objective) {
+        this.objective = objective;
+    }
+
+    public void updateToDo(ToDoRequest toDoRequest) {
+
+        this.toDo = toDoRequest.getToDo();
+        this.memo = toDoRequest.getMemo();
+        this.startDate = toDoRequest.getStartDate();
+        this.endDate = toDoRequest.getEndDate();
+        this.priority = toDoRequest.getPriority();
+        //this.display = toDoRequest.isDisplay();
+
+    }
+
+
+
 }
 

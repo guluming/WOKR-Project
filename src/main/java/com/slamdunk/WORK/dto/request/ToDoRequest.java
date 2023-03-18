@@ -1,5 +1,6 @@
 package com.slamdunk.WORK.dto.request;
 
+import com.slamdunk.WORK.entity.ToDo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,14 +17,20 @@ import java.util.List;
 public class ToDoRequest {
     private String toDo;
     private String memo;
-    private LocalDateTime registerDate;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private int priority;
-    private boolean display;
-    private boolean completion;
 
-    private List<String> toDoDate;
+
+    public static ToDoRequest fromEntity(ToDo toDo){
+        return new ToDoRequest(
+                toDo.getToDo(),
+                toDo.getMemo(),
+                toDo.getStartDate(),
+                toDo.getEndDate(),
+                toDo.getPriority());
+
+    }
 
 
 }
