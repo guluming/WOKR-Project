@@ -43,9 +43,6 @@ public class ToDo extends TimeStamped {
     private boolean completion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "objective_id")
-    private Objective objective;
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "key_result_id")
     private KeyResult keyResult;
 
@@ -64,9 +61,7 @@ public class ToDo extends TimeStamped {
     public void setKeyResult(KeyResult keyResult) {
         this.keyResult = keyResult;
     }
-    public void setObjective(Objective objective) {
-        this.objective = objective;
-    }
+
 
     public void updateToDo(ToDoRequest toDoRequest) {
 

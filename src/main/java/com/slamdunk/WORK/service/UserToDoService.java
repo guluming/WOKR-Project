@@ -23,11 +23,10 @@ public class UserToDoService {
     //회원-투두 중간테이블 생성
     @Transactional
     public void registerUserToDo(ToDo toDo,KeyResult keyResult, UserDetailsImpl userDetails) {
-        Optional<KeyResult> keyResultCheck = keyResultRepository.findById(keyResult.getId());
         Optional<ToDo> toDoCheck = toDoRepository.findById(toDo.getId());
 
-        if (keyResultCheck.isPresent() && toDoCheck.isPresent()) {
-            UserToDo userToDo = new UserToDo(userDetails.getUser(), keyResultCheck.get(), toDo);
+        if (keyResult !=null && toDoCheck.isPresent()) {
+            UserToDo userToDo = new UserToDo(userDetails.getUser(), null, toDo);
             userToDoRepository.save(userToDo);
         } else if (toDoCheck.isEmpty()) {
             throw new IllegalArgumentException("존재하지 않는 투두입니다.");

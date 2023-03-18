@@ -33,10 +33,9 @@ public class ToDoController {
 
 
     //투두 생성
-    @PostMapping("/api/{objective_id}/{keyresult_id}/todo")
-    public ResponseEntity<?> createToDo(@PathVariable("objective_id") Long objectiveId, @PathVariable("keyresult_id") Long keyResultId,
-                                        @RequestBody ToDoRequest toDoRequest, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return toDoService.createToDo(objectiveId, keyResultId, toDoRequest, userDetails);
+    @PostMapping("/api/todo")
+    public ResponseEntity<?> createToDo(@RequestBody ToDoRequest toDoRequest, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return toDoService.createToDo(toDoRequest, userDetails);
     }
 
 

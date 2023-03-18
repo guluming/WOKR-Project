@@ -104,11 +104,10 @@ public class ToDoService {
 //    }
 
     @Transactional
-    public ResponseEntity<?>createToDo(Long objectiveId, Long keyResultId,ToDoRequest toDoRequest, UserDetailsImpl userDetails) {
-        Optional<Objective> objectiveCheck = objectiveRepository.findById(objectiveId);
-        Optional<KeyResult> keyResultCheck = keyResultRepository.findById(keyResultId);
-        if (objectiveCheck.isPresent()&& keyResultCheck.isPresent()) {
-            KeyResult keyResult = keyResultCheck.get();
+    public ResponseEntity<?>createToDo(ToDoRequest toDoRequest, UserDetailsImpl userDetails) {
+        KeyResult keyResultCheck = keyResultRepository.findById(toDoRequest.getKeyResultId()).orElse(null);
+        if (keyResultCheck != null) {
+            KeyResult keyResult = keyResultCheck;
             ToDo toDo = new ToDo(toDoRequest);
             toDo.setKeyResult(keyResult);
             toDoRepository.save(toDo);

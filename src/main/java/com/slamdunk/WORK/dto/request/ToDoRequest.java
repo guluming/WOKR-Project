@@ -21,5 +21,6 @@ public class ToDoRequest {
     private LocalDateTime endDate;
     private int priority;
     private boolean completion;
+    private Long keyResultId;
 
 }
