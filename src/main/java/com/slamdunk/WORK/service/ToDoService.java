@@ -65,7 +65,7 @@ public class ToDoService {
     //투두 상세 조회
     public ResponseEntity<?> detailToDo(Long toDoId, UserDetailsImpl userDetails) {
         Optional<ToDo> toDo = toDoRepository.findById(toDoId);
-
+        KeyResult gAcolor= toDo.get().getKeyResult();
         if (toDo.isPresent()) {
             ToDoDetailResponse toDoDetailResponse = ToDoDetailResponse.builder()
                     .myToDo(userToDoService.checkMyToDo(toDoId, userDetails))
@@ -77,7 +77,7 @@ public class ToDoService {
                     .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
                     .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
                     .priority(toDo.get().getPriority())
-                    .color(toDo.get().getKeyResult().getObjective().getColor())
+                    .color(gAcolor != null ? gAcolor.getObjective().getColor() : null)
                     .build();
             return new ResponseEntity<>(toDoDetailResponse, HttpStatus.OK);
         } else {
@@ -85,36 +85,6 @@ public class ToDoService {
         }
     }
 
-    //투두 생성
-//    @Transactional
-//    public ResponseEntity<?> createToDo(Long objectiveId, Long keyResultId, ToDoRequest toDoRequest, UserDetailsImpl userDetails) {
-//        ToDo toDo = new ToDo(toDoRequest);
-//        if (objectiveId != null) {
-//            Optional<Objective> objectiveCheck = objectiveRepository.findById(objectiveId);
-//            objectiveCheck.ifPresent(objective -> toDo.setObjective(objective));
-//        }
-//        if (keyResultId != null) {
-//            Optional<KeyResult> keyResultCheck = keyResultRepository.findById(keyResultId);
-//            keyResultCheck.ifPresent(keyResult -> {
-//                toDo.setKeyResult(keyResult);
-//                userToDoService.registerUserToDo(toDo, keyResult, userDetails);
-//            });
-//        }
-//        toDoRepository.save(toDo);
-//        userToDoService.registerUserToDo(toDo, null, userDetails);
-//
-//        ToDoResponse toDoResponse = ToDoResponse.builder()
-//                .myToDo(userToDoService.checkMyToDo(toDo.getId(), userDetails))
-//                .toDoId(toDo.getId())
-//                .toDo(toDo.getToDo())
-//                .memo(toDo.getMemo())
-//                .startDate(toDo.getStartDate())
-//                .endDate(toDo.getEndDate())
-//                .priority(toDo.getPriority())
-//                //.display(toDo.isDisplay())
-//                .build();
-//        return new ResponseEntity<>(toDoResponse, HttpStatus.CREATED);
-//    }
 
     @Transactional
     public ResponseEntity<?>createToDo(ToDoRequest toDoRequest, UserDetailsImpl userDetails) {
