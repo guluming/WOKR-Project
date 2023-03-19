@@ -25,6 +25,9 @@ public class ToDoResponse {
     private int priority;
     private boolean display;
     private boolean completion;
+    private String fstartDate;
+    private String fendDate;
+    private String color;
 
 
 

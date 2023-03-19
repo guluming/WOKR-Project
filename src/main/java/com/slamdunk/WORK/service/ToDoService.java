@@ -4,10 +4,13 @@ import com.slamdunk.WORK.dto.request.ToDoRequest;
 import com.slamdunk.WORK.dto.response.ToDoDetailResponse;
 import com.slamdunk.WORK.dto.response.ToDoResponse;
 import com.slamdunk.WORK.entity.KeyResult;
+import com.slamdunk.WORK.entity.Objective;
 import com.slamdunk.WORK.entity.ToDo;
+import com.slamdunk.WORK.entity.UserToDo;
 import com.slamdunk.WORK.repository.KeyResultRepository;
 import com.slamdunk.WORK.repository.ObjectiveRepository;
 import com.slamdunk.WORK.repository.ToDoRepository;
+import com.slamdunk.WORK.repository.UserToDoRepository;
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +29,7 @@ import java.util.Optional;
 public class ToDoService {
     private final ObjectiveRepository objectiveRepository;
     private final KeyResultRepository keyResultRepository;
+    private final UserToDoRepository userToDoRepository;
     private final ToDoRepository toDoRepository;
     private final UserToDoService userToDoService;
 
@@ -33,16 +39,21 @@ public class ToDoService {
         List<ToDoResponse> toDoResponseList = new ArrayList<>();
         for (int i=0; i<todoId.size(); i++) {
             Optional<ToDo> toDo = toDoRepository.findById(todoId.get(i));
+            KeyResult gAcolor= toDo.get().getKeyResult();
             if (toDo.isPresent()) {
                 ToDoResponse toDoResponse = ToDoResponse.builder()
                         .myToDo(userToDoService.checkMyToDo(toDo.get().getId(), userDetails))
                         .toDoId(toDo.get().getId())
                         .toDo(toDo.get().getToDo())
                         .memo(toDo.get().getMemo())
-                        .startDate(toDo.get().getStartDate())
-                        .endDate(toDo.get().getEndDate())
+                        .startDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                        .endDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                        .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
+                        .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
                         .priority(toDo.get().getPriority())
                         .display(toDo.get().isDisplay())
+                        .completion(toDo.get().isCompletion())
+                        .color(gAcolor != null ? gAcolor.getObjective().getColor() : null)
                         .build();
                 toDoResponseList.add(toDoResponse);
             }
@@ -61,9 +72,12 @@ public class ToDoService {
                     .toDoId(toDo.get().getId())
                     .toDo(toDo.get().getToDo())
                     .memo(toDo.get().getMemo())
-                    .startDate(toDo.get().getStartDate())
-                    .endDate(toDo.get().getEndDate())
+                    .startDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                    .endDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                    .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
+                    .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
                     .priority(toDo.get().getPriority())
+                    .color(toDo.get().getKeyResult().getObjective().getColor())
                     .build();
             return new ResponseEntity<>(toDoDetailResponse, HttpStatus.OK);
         } else {
@@ -117,11 +131,14 @@ public class ToDoService {
                     .toDoId(toDo.getId())
                     .toDo(toDo.getToDo())
                     .memo(toDo.getMemo())
-                    .startDate(toDo.getStartDate())
-                    .endDate(toDo.getEndDate())
+                    .startDate(toDo.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                    .endDate(toDo.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                    .fstartDate(toDo.getStartDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
+                    .fendDate(toDo.getEndDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
                     .priority(toDo.getPriority())
                     .display(toDo.isDisplay())
                     .completion(toDo.isCompletion())
+                    .color(keyResult.getObjective().getColor())
                     .build();
             return new ResponseEntity<>(toDoResponse, HttpStatus.CREATED);
         } else {
@@ -134,8 +151,10 @@ public class ToDoService {
                     .toDoId(toDo.getId())
                     .toDo(toDo.getToDo())
                     .memo(toDo.getMemo())
-                    .startDate(toDo.getStartDate())
-                    .endDate(toDo.getEndDate())
+                    .startDate(toDo.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                    .endDate(toDo.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                    .fstartDate(toDo.getStartDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
+                    .fendDate(toDo.getEndDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
                     .priority(toDo.getPriority())
                     .display(toDo.isDisplay())
                     .completion(toDo.isCompletion())
@@ -156,8 +175,8 @@ public class ToDoService {
                         .id(existingToDo.getId())
                         .toDo(toDoRequest.getToDo())
                         .memo(toDoRequest.getMemo())
-                        .startDate(toDoRequest.getStartDate())
-                        .endDate(toDoRequest.getEndDate())
+                        .startDate(LocalDateTime.parse(toDoRequest.getStartDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                        .endDate(LocalDateTime.parse(toDoRequest.getEndDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                         .priority(toDoRequest.getPriority())
                         .display(toDoRequest.isDisplay())
                         .completion(toDoRequest.isCompletion())
@@ -169,9 +188,10 @@ public class ToDoService {
         //투두 완료 상태
         public void updateCompletion (Long todo_id, UserDetailsImpl userDetails, ToDoRequest toDoRequest) {
             Optional<ToDo> toDoOptional = toDoRepository.findById(todo_id);
+            Optional<UserToDo> doneUser = userToDoRepository.findByToDoId(todo_id);
             if (toDoOptional.isPresent()) {
                 ToDo donetoDo = toDoOptional.get();
-                if (donetoDo.getId().equals(userDetails.getUser().getId())) {
+                if (doneUser.get().getUser().getId().equals(userDetails.getUser().getId())) {
                     donetoDo.setCompletion(toDoRequest.isCompletion());
                     toDoRepository.save(donetoDo);
 

@@ -21,6 +21,10 @@ public class ToDoDetailResponse {
     private String startDate;
     private String endDate;
     private int priority;
+    private String color;
+    private String fstartDate;
+    private String fendDate;
+
 
 
 }
