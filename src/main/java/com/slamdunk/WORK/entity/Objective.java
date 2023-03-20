@@ -45,6 +45,7 @@ public class Objective extends TimeStamped {
         endDate = objectiveEditor.getEnddate();
         color = objectiveEditor.getColor();
         progress = objectiveEditor.getProgress();
+        deleteState = objectiveEditor.isDeleteState();
     }
 
     public ObjectiveEditor.ObjectiveEditorBuilder ObjectiveToEditor() {
@@ -54,6 +55,7 @@ public class Objective extends TimeStamped {
                 .startdate(startDate)
                 .enddate(endDate)
                 .color(color)
-                .progress(progress);
+                .progress(progress)
+                .deleteState(deleteState);
     }
 }
