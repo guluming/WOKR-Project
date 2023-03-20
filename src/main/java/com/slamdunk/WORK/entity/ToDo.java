@@ -34,11 +34,11 @@ public class ToDo extends TimeStamped {
     @Column(nullable = false)
     private LocalDate startDate;
     @Column
-    private String startDateTime = "00:00";
+    private String startDateTime;
     @Column(nullable = false)
     private LocalDate endDate;
     @Column
-    private String endDateTime = "00:00";
+    private String endDateTime;
     @Column
     private int priority;
     @Column

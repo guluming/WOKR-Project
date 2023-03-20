@@ -15,23 +15,20 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ToDoResponse {
-
     private boolean myToDo;
     private Long toDoId;
+    private Long keyResultId;
     private String toDo;
     private String memo;
-    private String startDate;
-    private String endDate;
-    private int priority;
-    private boolean display;
-    private boolean completion;
+    private LocalDate startDate;
+    private String startDateTime;
+    private LocalDate endDate;
+    private String endDateTime;
     private String fstartDate;
     private String fendDate;
+    private int priority;
+    private boolean completion;
     private String color;
-
-
-
-
 
 //    public ToDoResponse(boolean myToDo,Long toDoId,
 //                        String toDo, String memo, LocalDateTime startDate,
