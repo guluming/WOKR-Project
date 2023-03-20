@@ -1,5 +1,6 @@
 package com.slamdunk.WORK.controller;
 
+import com.slamdunk.WORK.dto.request.ToDoEditRequest;
 import com.slamdunk.WORK.dto.request.ToDoRequest;
 
 import com.slamdunk.WORK.security.UserDetailsImpl;
@@ -42,20 +43,19 @@ public class ToDoController {
 
     //투두 완료변경
     @PatchMapping("/api/todo/check/{todo_id}")
-    public ResponseEntity<?> updateCompletion(@PathVariable("todo_id") Long todo_id,
+    public ResponseEntity<?> updateCompletion(@PathVariable("todo_id") Long todoId,
                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return toDoService.updateCompletion(todo_id, userDetails);
+        return toDoService.updateCompletion(todoId, userDetails);
     }
 
-//    //투두 수정
-//    @PatchMapping("/api/todo/{todo_id}")
-//    public ResponseEntity<Void> updateToDo(@PathVariable("todo_id") Long todo_id,
-//                                           @AuthenticationPrincipal UserDetailsImpl userDetails,
-//                                           @RequestBody ToDoRequest toDoRequest) {
-//        toDoService.updateToDo(todo_id, userDetails, toDoRequest);
-//        return ResponseEntity.ok().build();
-//    }
-//
+    //투두 수정
+    @PatchMapping("/api/todo/{todo_id}")
+    public ResponseEntity<?> updateToDo(@PathVariable("todo_id") Long todoId,
+                                        @AuthenticationPrincipal UserDetailsImpl userDetails,
+                                        @RequestBody ToDoEditRequest toDoEditRequest) {
+        return toDoService.updateToDo(todoId, userDetails, toDoEditRequest);
+    }
+
 
 }
 

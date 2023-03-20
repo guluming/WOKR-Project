@@ -1,18 +1,13 @@
 package com.slamdunk.WORK.dto.request;
 
-import com.slamdunk.WORK.entity.ToDo;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-@Builder
-@Getter
 @NoArgsConstructor
-@AllArgsConstructor
-public class ToDoRequest {
+@Getter
+public class ToDoEditRequest {
     private String toDo;
     private String memo;
     private LocalDate startDate;
