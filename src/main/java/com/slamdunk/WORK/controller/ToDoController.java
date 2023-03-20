@@ -40,6 +40,13 @@ public class ToDoController {
         return toDoService.detailToDo(toDoId, userDetails);
     }
 
+    //투두 완료변경
+    @PatchMapping("/api/todo/check/{todo_id}")
+    public ResponseEntity<?> updateCompletion(@PathVariable("todo_id") Long todo_id,
+                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return toDoService.updateCompletion(todo_id, userDetails);
+    }
+
 //    //투두 수정
 //    @PatchMapping("/api/todo/{todo_id}")
 //    public ResponseEntity<Void> updateToDo(@PathVariable("todo_id") Long todo_id,
@@ -49,13 +56,7 @@ public class ToDoController {
 //        return ResponseEntity.ok().build();
 //    }
 //
-//    //투두 완료변경
-//    @PatchMapping("/api/todo/check/{todo_id}")
-//    public ResponseEntity<?> updateCompletion(@PathVariable("todo_id") Long todo_id,
-//                                              @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody ToDoRequest toDoRequest) {
-//        toDoService.updateCompletion(todo_id, userDetails ,toDoRequest);
-//        return ResponseEntity.ok().build();
-//    }
+
 }
 
 //    //투두 삭제

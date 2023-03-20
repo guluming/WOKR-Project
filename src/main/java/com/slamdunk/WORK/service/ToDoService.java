@@ -1,5 +1,6 @@
 package com.slamdunk.WORK.service;
 
+import com.slamdunk.WORK.Editor.ToDoEditor;
 import com.slamdunk.WORK.dto.request.ToDoRequest;
 import com.slamdunk.WORK.dto.response.ToDoDetailResponse;
 import com.slamdunk.WORK.dto.response.ToDoResponse;
@@ -112,6 +113,35 @@ public class ToDoService {
         }
     }
 
+    //투두 완료 상태
+    @Transactional
+    public ResponseEntity<?> updateCompletion (Long todo_id, UserDetailsImpl userDetails) {
+        Optional<ToDo> deletedToDoCheck = toDoRepository.findByIdAndDeleteStateFalse(todo_id);
+        if (deletedToDoCheck.isPresent()) {
+            if (userToDoService.checkMyToDo(deletedToDoCheck.get().getId(), userDetails)) {
+                if (!deletedToDoCheck.get().isCompletion()) {
+                    ToDoEditor.ToDoEditorBuilder toDoEditorBuilder = deletedToDoCheck.get().ToDoToEditor();
+                    ToDoEditor toDoEditor = toDoEditorBuilder
+                            .completion(true)
+                            .build();
+                    deletedToDoCheck.get().ToDoEdit(toDoEditor);
+                    return new ResponseEntity<>("완료 되었습니다.", HttpStatus.OK);
+                } else {
+                    ToDoEditor.ToDoEditorBuilder toDoEditorBuilder = deletedToDoCheck.get().ToDoToEditor();
+                    ToDoEditor toDoEditor = toDoEditorBuilder
+                            .completion(false)
+                            .build();
+                    deletedToDoCheck.get().ToDoEdit(toDoEditor);
+                    return new ResponseEntity<>("완료가 취소 되었습니다.", HttpStatus.OK);
+                }
+            } else {
+                return new ResponseEntity<>("완료 권한이 없습니다.", HttpStatus.FORBIDDEN);
+            }
+        } else {
+            return new ResponseEntity<>("삭제된 할일 입니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
 //    //투두 수정
 //    public void updateToDo(Long todo_id, UserDetailsImpl userDetails, ToDoRequest toDoRequest) {
 //        Optional<ToDo> toDoOptional = toDoRepository.findById(todo_id);
@@ -128,19 +158,6 @@ public class ToDoService {
 //                        .completion(toDoRequest.isCompletion())
 //                        .build();
 //                toDoRepository.save(updatedToDo);
-//            }
-//        }
-//    }
-//        //투두 완료 상태
-//    public void updateCompletion (Long todo_id, UserDetailsImpl userDetails, ToDoRequest toDoRequest) {
-//        Optional<ToDo> toDoOptional = toDoRepository.findById(todo_id);
-//        Optional<UserToDo> doneUser = userToDoRepository.findByToDoId(todo_id);
-//        if (toDoOptional.isPresent()) {
-//            ToDo donetoDo = toDoOptional.get();
-//            if (doneUser.get().getUser().getId().equals(userDetails.getUser().getId())) {
-//                donetoDo.setCompletion(toDoRequest.isCompletion());
-//                toDoRepository.save(donetoDo);
-//
 //            }
 //        }
 //    }

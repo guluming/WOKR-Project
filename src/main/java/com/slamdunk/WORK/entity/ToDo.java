@@ -1,5 +1,6 @@
 package com.slamdunk.WORK.entity;
 
+import com.slamdunk.WORK.Editor.ToDoEditor;
 import com.slamdunk.WORK.dto.request.ToDoRequest;
 import com.slamdunk.WORK.utill.TimeStamped;
 import lombok.*;
@@ -58,14 +59,30 @@ public class ToDo extends TimeStamped {
         this.keyResult = keyResult;
     }
 
-//    public void updateToDo(ToDoRequest toDoRequest) {
-//        this.toDo = toDoRequest.getToDo();
-//        this.memo = toDoRequest.getMemo();
-//        this.startDate = toDoRequest.getStartDate();
-//        this.startDateTime = toDoRequest.getStartDateTime();
-//        this.endDate = toDoRequest.getEndDate();
-//        this.endDateTime = toDoRequest.getEndDateTime();
-//        this.priority = toDoRequest.getPriority();
-//    }
+   public void ToDoEdit(ToDoEditor toDoEditor) {
+        toDo = toDoEditor.getToDo();
+        memo = toDoEditor.getMemo();
+        startDate = toDoEditor.getStartDate();
+        startDateTime = toDoEditor.getStartDateTime();
+        endDate = toDoEditor.getEndDate();
+        endDateTime = toDoEditor.getEndDateTime();
+        priority = toDoEditor.getPriority();
+        completion = toDoEditor.isCompletion();
+        deleteState = toDoEditor.isDeleteState();
+   }
+
+   public ToDoEditor.ToDoEditorBuilder ToDoToEditor() {
+        return ToDoEditor
+                .builder()
+                .toDo(toDo)
+                .memo(memo)
+                .startDate(startDate)
+                .startDateTime(startDateTime)
+                .endDate(endDate)
+                .endDateTime(endDateTime)
+                .priority(priority)
+                .completion(completion)
+                .deleteState(deleteState);
+   }
 }
 

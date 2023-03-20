@@ -62,7 +62,4 @@ public class UserToDoService {
         Optional<UserToDo> checkDate = userToDoRepository.findByToDoIdAndUserId(toDoId, userDetails.getUser().getId());
         return checkDate.isPresent();
     }
-
-
-
 }
