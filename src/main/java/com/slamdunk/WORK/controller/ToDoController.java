@@ -50,7 +50,7 @@ public class ToDoController {
     //투두 완료변경
     @PatchMapping("/api/todo/check/{todo_id}")
     public ResponseEntity<?> updateCompletion(@PathVariable("todo_id") Long todo_id,
-                                              @AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody ToDoRequest toDoRequest) {
+                                              @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody ToDoRequest toDoRequest) {
         toDoService.updateCompletion(todo_id, userDetails ,toDoRequest);
         return ResponseEntity.ok().build();
     }

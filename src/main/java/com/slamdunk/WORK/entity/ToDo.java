@@ -6,6 +6,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @AllArgsConstructor
@@ -19,42 +20,35 @@ public class ToDo extends TimeStamped {
     @Id
     @Column(name = "toDo_id")
     private Long id;
-
     @Column
     private String toDo;
-
     @Column(nullable = false)
     private String memo;
-
     @Column(nullable = false)
     private LocalDateTime startDate;
-
     @Column(nullable = false)
     private LocalDateTime endDate;
-
     @Column
     private int priority;
-
-
     @Column(nullable = false)
     private boolean display;
-
     @Column(nullable = false)
     private boolean completion;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "key_result_id")
     private KeyResult keyResult;
 
 
+
     public ToDo(ToDoRequest param){
         this.toDo = param.getToDo();
         this.memo = param.getMemo();
-        this.startDate = param.getStartDate();
-        this.endDate = param.getEndDate();
+        this.startDate =LocalDateTime.parse(param.getStartDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        this.endDate = LocalDateTime.parse(param.getEndDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.priority = param.getPriority();
         this.display = param.isDisplay();
         this.completion = false;
+
 
     }
 
@@ -67,8 +61,8 @@ public class ToDo extends TimeStamped {
 
         this.toDo = toDoRequest.getToDo();
         this.memo = toDoRequest.getMemo();
-        this.startDate = toDoRequest.getStartDate();
-        this.endDate = toDoRequest.getEndDate();
+        this.startDate = LocalDateTime.parse(toDoRequest.getStartDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        this.endDate =  LocalDateTime.parse(toDoRequest.getEndDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.priority = toDoRequest.getPriority();
         this.display = toDoRequest.isDisplay();
 
