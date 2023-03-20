@@ -63,7 +63,7 @@ public class ObjectiveService {
 
         List<ObjectiveResponse> objectiveResponseList = new ArrayList<>();
         for (int i=0; i<objectiveIdList.size(); i++) {
-            Optional<Objective> objective = objectiveRepository.findById(objectiveIdList.get(i));
+            Optional<Objective> objective = objectiveRepository.findByIdAndDeleteStateFalse(objectiveIdList.get(i));
             if (objective.isPresent()) {
                 ObjectiveResponse objectiveResponse = ObjectiveResponse.builder()
                         .myObjective(userObjectiveService.checkMyObjective(objective.get().getId(), userDetails))
@@ -84,7 +84,7 @@ public class ObjectiveService {
 
     //목표 상세 조회
     public ResponseEntity<?> detailObjective(Long objectiveId, UserDetailsImpl userDetails) {
-        Optional<Objective> objective = objectiveRepository.findById(objectiveId);
+        Optional<Objective> objective = objectiveRepository.findByIdAndDeleteStateFalse(objectiveId);
 
         if (objective.isPresent()) {
             ObjectiveDetailResponse objectiveDetailResponse = ObjectiveDetailResponse.builder()
@@ -105,7 +105,7 @@ public class ObjectiveService {
     //목표 진척도 수정
     @Transactional
     public ResponseEntity<String> objectiveProgressEdit(Long objectiveId, UserDetailsImpl userDetails, ProgressRequest progressRequest) {
-        Optional<Objective> objective = objectiveRepository.findById(objectiveId);
+        Optional<Objective> objective = objectiveRepository.findByIdAndDeleteStateFalse(objectiveId);
 
         if (objective.isPresent()) {
             if (userObjectiveService.checkMyObjective(objectiveId, userDetails)) {
@@ -138,7 +138,7 @@ public class ObjectiveService {
     @Transactional
     public ResponseEntity<String> objectiveEdit(Long objectiveId, UserDetailsImpl userDetails, ObjectiveEditRequest objectiveEditRequest) {
         if (userObjectiveService.checkMyObjective(objectiveId, userDetails)) {
-            Optional<Objective> editObjective = objectiveRepository.findById(objectiveId);
+            Optional<Objective> editObjective = objectiveRepository.findByIdAndDeleteStateFalse(objectiveId);
             if (editObjective.isPresent()) {
                 ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = editObjective.get().ObjectiveToEditor();
 
