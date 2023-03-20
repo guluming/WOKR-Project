@@ -62,7 +62,7 @@ public class KeyResultService {
 
         List<KeyResultResponse> keyResultResponseList = new ArrayList<>();
         for (int i=0; i<keyResultId.size(); i++) {
-        Optional<KeyResult> keyResult = keyResultRepository.findById(keyResultId.get(i));
+        Optional<KeyResult> keyResult = keyResultRepository.findByIdAndDeleteStateFalse(keyResultId.get(i));
             if (keyResult.isPresent()) {
                 KeyResultResponse keyResultResponse = KeyResultResponse.builder()
                         .myKeyResult(userKeyResultService.checkMyKeyResult(keyResult.get().getId(), userDetails))
@@ -81,7 +81,7 @@ public class KeyResultService {
 
     //핵심결과 상세 조회
     public ResponseEntity<?> detailKeyResult(Long keyResultId, UserDetailsImpl userDetails) {
-        Optional<KeyResult> keyResult = keyResultRepository.findById(keyResultId);
+        Optional<KeyResult> keyResult = keyResultRepository.findByIdAndDeleteStateFalse(keyResultId);
         if (keyResult.isPresent()) {
             KeyResultDetailResponse keyResultDetailResponse = KeyResultDetailResponse.builder()
                     .myKeyResult(userKeyResultService.checkMyKeyResult(keyResultId, userDetails))
@@ -98,7 +98,7 @@ public class KeyResultService {
     //핵심결과 진척도 수정
     @Transactional
     public ResponseEntity<String> keyResultProgressEdit(Long keyResultId, UserDetailsImpl userDetails, ProgressRequest progressRequest) {
-        Optional<KeyResult> keyResult = keyResultRepository.findById(keyResultId);
+        Optional<KeyResult> keyResult = keyResultRepository.findByIdAndDeleteStateFalse(keyResultId);
 
         if (keyResult.isPresent()) {
             if (userKeyResultService.checkMyKeyResult(keyResultId, userDetails)) {
@@ -130,7 +130,7 @@ public class KeyResultService {
     //핵심결과 자신감 수정
     @Transactional
     public ResponseEntity<String> keyResultEmoticonEdit(Long keyResultId, UserDetailsImpl userDetails, EmoticonRequest emoticonRequest) {
-        Optional<KeyResult> keyResult = keyResultRepository.findById(keyResultId);
+        Optional<KeyResult> keyResult = keyResultRepository.findByIdAndDeleteStateFalse(keyResultId);
 
         if (keyResult.isPresent()) {
             if (userKeyResultService.checkMyKeyResult(keyResultId, userDetails)) {
@@ -163,7 +163,7 @@ public class KeyResultService {
     @Transactional
     public ResponseEntity<?> keyResultEdit(Long keyResultId, UserDetailsImpl userDetails, KeyResultEditRequest keyResultEditRequest) {
         if (userKeyResultService.checkMyKeyResult(keyResultId, userDetails)) {
-            Optional<KeyResult> editKeyResult = keyResultRepository.findById(keyResultId);
+            Optional<KeyResult> editKeyResult = keyResultRepository.findByIdAndDeleteStateFalse(keyResultId);
             if (editKeyResult.isPresent()) {
                 KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = editKeyResult.get().KeyResultToEditor();
                 if (keyResultEditRequest.getKeyResult() != null) {
