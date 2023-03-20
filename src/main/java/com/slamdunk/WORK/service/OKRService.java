@@ -55,7 +55,7 @@ public class OKRService {
                     }
                 }
 
-                Optional<Objective> checkObjective = objectiveRepository.findById(objectiveIdList.get(i));
+                Optional<Objective> checkObjective = objectiveRepository.findByIdAndDeleteStateFalse(objectiveIdList.get(i));
                 if (checkObjective.isPresent()) {
                     OKRResponse okrResponse = OKRResponse.builder()
                             .myObjective(userObjectiveService.checkMyObjective(checkObjective.get().getId(), userDetails))

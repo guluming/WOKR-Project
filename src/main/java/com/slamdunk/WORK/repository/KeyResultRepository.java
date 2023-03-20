@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface KeyResultRepository extends JpaRepository<KeyResult, Long> {
-    List<KeyResult> findAllByObjectiveId(Long ObjectiveId);
+    @Query("SELECT k FROM KeyResult k WHERE k.objective.id = :ObjectiveId AND k.deleteState = false")
+    List<KeyResult> findAllByObjectiveId(@Param("ObjectiveId") Long ObjectiveId);
     @Query("SELECT k FROM KeyResult k WHERE k.id = :keyResultId AND k.deleteState = false")
     Optional<KeyResult> findByIdAndDeleteStateFalse(@Param("keyResultId")Long keyResultId);
 }

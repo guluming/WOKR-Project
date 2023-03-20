@@ -38,12 +38,15 @@ public class UserObjectiveService {
     public List<Long> allObjective(UserDetailsImpl userDetails) {
         List<UserObjective> userObjectiveList = userObjectiveRepository.findAllByTeam(userDetails.getUser().getTeam());
 
-        List<Long> objectiveId = new ArrayList<>();
+        List<Long> objectiveIdList = new ArrayList<>();
         for (int i=0; i<userObjectiveList.size(); i++) {
-            objectiveId.add(userObjectiveList.get(i).getObjective().getId());
+            Optional<Objective> objective = objectiveRepository.findByIdAndDeleteStateFalse(userObjectiveList.get(i).getObjective().getId());
+            if (objective.isPresent()) {
+                objectiveIdList.add(userObjectiveList.get(i).getObjective().getId());
+            }
         }
 
-        return objectiveId;
+        return objectiveIdList;
     }
 
     //회원-목표 상세 조회
