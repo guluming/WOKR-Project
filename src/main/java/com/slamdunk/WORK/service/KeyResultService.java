@@ -35,7 +35,7 @@ public class KeyResultService {
     @Transactional
     public ResponseEntity<?> registerKeyResult(Long objectiveId, KeyResultRequest keyResultRequest, UserDetailsImpl userDetails) {
         if (userDetails.getUser().getTeamPosition().equals("팀장")) {
-            Optional<Objective> objectiveCheck = objectiveRepository.findById(objectiveId);
+            Optional<Objective> objectiveCheck = objectiveRepository.findByIdAndDeleteStateFalse(objectiveId);
             if (objectiveCheck.isEmpty()) {
                 return new ResponseEntity<>("목표가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
             } else {
