@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -166,6 +167,30 @@ public class ObjectiveService {
                     editObjective.get().ObjectiveEdit(objectiveEditor);
                 }
                 return new ResponseEntity<>("목표가 수정 되었습니다.", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("존재하지 않는 목표입니다.", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity<>("수정 권한이 없습니다.", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    //목표 삭제
+    @Transactional
+    public ResponseEntity<String> objectiveDelete(Long objectiveId, UserDetailsImpl userDetails) {
+        if (userObjectiveService.checkMyObjective(objectiveId, userDetails)) {
+            Optional<Objective> deleteObjective = objectiveRepository.findById(objectiveId);
+            if (deleteObjective.isPresent()) {
+                if (!deleteObjective.get().isDeleteState()) {
+                    ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = deleteObjective.get().ObjectiveToEditor();
+                    ObjectiveEditor objectiveEditor = objectiveEditorBuilder
+                            .deleteState(true)
+                            .build();
+                    deleteObjective.get().ObjectiveEdit(objectiveEditor);
+                    return new ResponseEntity<>("목표가 삭제 되었습니다.", HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("이미 삭제된 목표입니다.", HttpStatus.BAD_REQUEST);
+                }
             } else {
                 return new ResponseEntity<>("존재하지 않는 목표입니다.", HttpStatus.BAD_REQUEST);
             }

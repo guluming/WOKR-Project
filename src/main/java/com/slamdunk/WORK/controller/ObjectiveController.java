@@ -54,4 +54,12 @@ public class ObjectiveController {
             @RequestBody ObjectiveEditRequest objectiveEditRequest) {
         return objectiveService.objectiveEdit(objectiveId, userDetails, objectiveEditRequest);
     }
+
+    //목표 삭제
+    @DeleteMapping("api/objective/{objective_id}")
+    public ResponseEntity<String> objectiveDelete(
+            @PathVariable("objective_id") Long objectiveId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return objectiveService.objectiveDelete(objectiveId, userDetails);
+    }
 }
