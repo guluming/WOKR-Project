@@ -181,4 +181,29 @@ public class KeyResultService {
             return new ResponseEntity<>("수정 권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
     }
+
+    //핵심결과 삭제
+    @Transactional
+    public ResponseEntity<?> keyResultDelete(Long keyResultId, UserDetailsImpl userDetails) {
+        if (userKeyResultService.checkMyKeyResult(keyResultId, userDetails)) {
+            Optional<KeyResult> deleteKeyResult = keyResultRepository.findById(keyResultId);
+            if (deleteKeyResult.isPresent()) {
+                if (!deleteKeyResult.get().isDeleteState()) {
+                    KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = deleteKeyResult.get().KeyResultToEditor();
+                    KeyResultEditor keyResultEditor = keyResultEditorBuilder
+                            .deleteState(true)
+                            .build();
+                    deleteKeyResult.get().KeyResultEdit(keyResultEditor);
+                    
+                    return new ResponseEntity<>("핵심결과가 삭제 되었습니다.", HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("이미 삭제된 핵심결과입니다.", HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>("존재하지 않는 핵심결과입니다.", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity<>("삭제 권한이 없습니다.", HttpStatus.FORBIDDEN);
+        }
+    }
 }
