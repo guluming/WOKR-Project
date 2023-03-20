@@ -187,6 +187,7 @@ public class ObjectiveService {
                             .deleteState(true)
                             .build();
                     deleteObjective.get().ObjectiveEdit(objectiveEditor);
+
                     return new ResponseEntity<>("목표가 삭제 되었습니다.", HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>("이미 삭제된 목표입니다.", HttpStatus.BAD_REQUEST);
@@ -195,7 +196,7 @@ public class ObjectiveService {
                 return new ResponseEntity<>("존재하지 않는 목표입니다.", HttpStatus.BAD_REQUEST);
             }
         } else {
-            return new ResponseEntity<>("수정 권한이 없습니다.", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("삭제 권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
     }
 }

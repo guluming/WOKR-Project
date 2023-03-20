@@ -38,6 +38,7 @@ public class KeyResult extends TimeStamped {
         keyResult = keyResultEditor.getKeyResult();
         progress = keyResultEditor.getProgress();
         emoticon = keyResultEditor.getEmoticon();
+        deleteState = keyResultEditor.isDeleteState();
     }
 
     public KeyResultEditor.KeyResultEditorBuilder KeyResultToEditor() {
@@ -45,6 +46,7 @@ public class KeyResult extends TimeStamped {
                 .builder()
                 .keyResult(keyResult)
                 .progress(progress)
-                .emoticon(emoticon);
+                .emoticon(emoticon)
+                .deleteState(deleteState);
     }
 }

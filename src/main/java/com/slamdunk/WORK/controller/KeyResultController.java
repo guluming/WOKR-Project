@@ -67,4 +67,12 @@ public class KeyResultController {
             @RequestBody KeyResultEditRequest keyResultEditRequest) {
         return keyResultService.keyResultEdit(keyResultId, userDetails, keyResultEditRequest);
     }
+
+    //핵심결과 삭제
+    @DeleteMapping("api/keyresult/{keyresult_id}")
+    public ResponseEntity<?> keyResultDelete(
+            @PathVariable("keyresult_id") Long keyResultId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return keyResultService.keyResultDelete(keyResultId, userDetails);
+    }
 }
