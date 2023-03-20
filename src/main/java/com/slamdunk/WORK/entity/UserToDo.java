@@ -21,21 +21,16 @@ public class UserToDo {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "keyResult_id")
     private KeyResult keyResult;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "todo_id")
+    @JoinColumn(name = "toDo_id")
     private ToDo toDo;
+    @Column
+    private boolean deleteState;
 
-
-
-    public UserToDo(User user, KeyResult keyResult, ToDo toDo) {
+    public UserToDo(User user, Objective objective, KeyResult keyResult, ToDo toDo) {
         this.user = user;
+        this.objective = objective;
         this.keyResult = keyResult;
-        this.toDo = toDo;
-    }
-
-    public UserToDo(User user, ToDo toDo) {
-        this.user = user;
         this.toDo = toDo;
     }
 }

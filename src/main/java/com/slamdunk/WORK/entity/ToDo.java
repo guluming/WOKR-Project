@@ -5,6 +5,7 @@ import com.slamdunk.WORK.utill.TimeStamped;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -20,54 +21,51 @@ public class ToDo extends TimeStamped {
     @Id
     @Column(name = "toDo_id")
     private Long id;
-    @Column
-    private String toDo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "objective_id")
+    private Objective objective;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "keyResult_id")
+    private KeyResult keyResult;
     @Column(nullable = false)
+    private String toDo;
+    @Column
     private String memo;
     @Column(nullable = false)
-    private LocalDateTime startDate;
+    private LocalDate startDate;
+    @Column
+    private String startDateTime = "00:00";
     @Column(nullable = false)
-    private LocalDateTime endDate;
+    private LocalDate endDate;
+    @Column
+    private String endDateTime = "00:00";
     @Column
     private int priority;
-    @Column(nullable = false)
-    private boolean display;
-    @Column(nullable = false)
+    @Column
     private boolean completion;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "key_result_id")
-    private KeyResult keyResult;
+    @Column
+    private boolean deleteState;
 
-
-
-    public ToDo(ToDoRequest param){
+    public ToDo(ToDoRequest param, Objective objective, KeyResult keyResult){
         this.toDo = param.getToDo();
         this.memo = param.getMemo();
-        this.startDate =LocalDateTime.parse(param.getStartDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        this.endDate = LocalDateTime.parse(param.getEndDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        this.startDate = param.getStartDate();
+        this.startDateTime = param.getStartDateTime();
+        this.endDate = param.getEndDate();
+        this.endDateTime = param.getEndDateTime();
         this.priority = param.getPriority();
-        this.display = param.isDisplay();
-        this.completion = false;
-
-
-    }
-
-    public void setKeyResult(KeyResult keyResult) {
+        this.objective = objective;
         this.keyResult = keyResult;
     }
 
-
-    public void updateToDo(ToDoRequest toDoRequest) {
-
-        this.toDo = toDoRequest.getToDo();
-        this.memo = toDoRequest.getMemo();
-        this.startDate = LocalDateTime.parse(toDoRequest.getStartDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        this.endDate =  LocalDateTime.parse(toDoRequest.getEndDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        this.priority = toDoRequest.getPriority();
-        this.display = toDoRequest.isDisplay();
-
-    }
-
-
+//    public void updateToDo(ToDoRequest toDoRequest) {
+//        this.toDo = toDoRequest.getToDo();
+//        this.memo = toDoRequest.getMemo();
+//        this.startDate = toDoRequest.getStartDate();
+//        this.startDateTime = toDoRequest.getStartDateTime();
+//        this.endDate = toDoRequest.getEndDate();
+//        this.endDateTime = toDoRequest.getEndDateTime();
+//        this.priority = toDoRequest.getPriority();
+//    }
 }
 

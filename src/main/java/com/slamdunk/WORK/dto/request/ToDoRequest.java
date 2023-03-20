@@ -17,10 +17,9 @@ import java.util.List;
 public class ToDoRequest {
     private String toDo;
     private String memo;
-    private String startDate;
-    private String endDate;
+    private LocalDate startDate;
+    private String startDateTime;
+    private LocalDate endDate;
+    private String endDateTime;
     private int priority;
-    private boolean display;
-    private boolean completion;
-    private Long keyResultId;
 }

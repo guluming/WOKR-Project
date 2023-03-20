@@ -11,7 +11,7 @@ import javax.persistence.*;
 public class ObjectiveHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "objectivehistory_id")
+    @Column(name = "objectiveHistory_id")
     private Long id;
     @Column(nullable = false)
     private String name;
