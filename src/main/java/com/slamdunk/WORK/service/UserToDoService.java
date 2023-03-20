@@ -49,11 +49,12 @@ public class UserToDoService {
 
         List<Long> toDoId = new ArrayList<>();
         for (UserToDo userToDo : userToDoList) {
-            toDoId.add(userToDo.getToDo().getId());
+            Optional<ToDo> toDoDeleteCheck = toDoRepository.findByIdAndDeleteStateFalse(userToDo.getToDo().getId());
+            if (toDoDeleteCheck.isPresent()) {
+                toDoId.add(userToDo.getToDo().getId());
+            }
         }
-
         return toDoId;
-
     }
 
     //회원-투두 상세 조회

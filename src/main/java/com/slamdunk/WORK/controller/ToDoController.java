@@ -26,19 +26,19 @@ public class ToDoController {
         return toDoService.createToDo(objectiveId, keyResultId, toDoRequest, userDetails);
     }
 
-//    //투두 전체 조회
-//    @GetMapping("/api/todo")
-//    public ResponseEntity<?> getAllToDos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        return toDoService.getAllToDos(userDetails);
-//    }
-//
-//    //투두 상세 조회
-//    @GetMapping("/api/todo/detail/{todo_id}")
-//    public ResponseEntity<?> detailToDo(@PathVariable("todo_id") Long toDoId,
-//                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//
-//        return toDoService.detailToDo(toDoId, userDetails);
-//    }
+    //대시보드용 투두 전체 조회
+    @GetMapping("/api/todo")
+    public ResponseEntity<?> getAllToDos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return toDoService.getAllToDos(userDetails);
+    }
+
+    //투두 상세 조회
+    @GetMapping("/api/todo/detail/{todo_id}")
+    public ResponseEntity<?> detailToDo(@PathVariable("todo_id") Long toDoId,
+                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        return toDoService.detailToDo(toDoId, userDetails);
+    }
 
 //    //투두 수정
 //    @PatchMapping("/api/todo/{todo_id}")

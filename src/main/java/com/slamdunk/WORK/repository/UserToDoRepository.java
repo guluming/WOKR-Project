@@ -11,5 +11,5 @@ public interface UserToDoRepository extends JpaRepository<UserToDo, Long> {
         Optional<UserToDo> findByToDoIdAndUserId(Long ToDoId, Long userId);
         List<UserToDo> findAllByKeyResult(KeyResult keyResult);
         Optional<UserToDo> findByToDoId(Long ToDoId);
-        }
+}
 

@@ -60,57 +60,57 @@ public class ToDoService {
         }
     }
 
-//    //투두 전체 조회
-//    public ResponseEntity<?> getAllToDos(UserDetailsImpl userDetails) {
-//        List<Long> todoId = userToDoService.allToDo(userDetails);
-//        List<ToDoResponse> toDoResponseList = new ArrayList<>();
-//        for (int i=0; i<todoId.size(); i++) {
-//            Optional<ToDo> toDo = toDoRepository.findById(todoId.get(i));
-//            KeyResult gAcolor= toDo.get().getKeyResult();
-//            if (toDo.isPresent()) {
-//                ToDoResponse toDoResponse = ToDoResponse.builder()
-//                        .myToDo(userToDoService.checkMyToDo(toDo.get().getId(), userDetails))
-//                        .toDoId(toDo.get().getId())
-//                        .toDo(toDo.get().getToDo())
-//                        .memo(toDo.get().getMemo())
-//                        .startDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
-//                        .endDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
-//                        .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
-//                        .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
-//                        .priority(toDo.get().getPriority())
-//                        .display(toDo.get().isDisplay())
-//                        .completion(toDo.get().isCompletion())
-//                        .color(gAcolor != null ? gAcolor.getObjective().getColor() : null)
-//                        .build();
-//                toDoResponseList.add(toDoResponse);
-//            }
-//        }
-//        return new ResponseEntity<>(toDoResponseList, HttpStatus.OK);
-//
-//    }
-//
-//    //투두 상세 조회
-//    public ResponseEntity<?> detailToDo(Long toDoId, UserDetailsImpl userDetails) {
-//        Optional<ToDo> toDo = toDoRepository.findById(toDoId);
-//        KeyResult gAcolor= toDo.get().getKeyResult();
-//        if (toDo.isPresent()) {
-//            ToDoDetailResponse toDoDetailResponse = ToDoDetailResponse.builder()
-//                    .myToDo(userToDoService.checkMyToDo(toDoId, userDetails))
-//                    .toDoId(toDo.get().getId())
-//                    .toDo(toDo.get().getToDo())
-//                    .memo(toDo.get().getMemo())
-//                    .startDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
-//                    .endDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
-//                    .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
-//                    .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
-//                    .priority(toDo.get().getPriority())
-//                    .color(gAcolor != null ? gAcolor.getObjective().getColor() : null)
-//                    .build();
-//            return new ResponseEntity<>(toDoDetailResponse, HttpStatus.OK);
-//        } else {
-//            return new ResponseEntity<>("존재하지 않는 투두입니다.", HttpStatus.BAD_REQUEST);
-//        }
-//    }
+    //투두 전체 조회
+    public ResponseEntity<?> getAllToDos(UserDetailsImpl userDetails) {
+        List<Long> todoId = userToDoService.allToDo(userDetails);
+        List<ToDoResponse> toDoResponseList = new ArrayList<>();
+        for (int i=0; i<todoId.size(); i++) {
+            Optional<ToDo> toDo = toDoRepository.findByIdAndDeleteStateFalse(todoId.get(i));
+            if (toDo.isPresent()) {
+                ToDoResponse toDoResponse = ToDoResponse.builder()
+                        .myToDo(userToDoService.checkMyToDo(toDo.get().getId(), userDetails))
+                        .toDoId(toDo.get().getId())
+                        .keyResultId(toDo.get().getKeyResult() != null ? toDo.get().getKeyResult().getId() : null)
+                        .toDo(toDo.get().getToDo())
+                        .memo(toDo.get().getMemo())
+                        .startDate(toDo.get().getStartDate())
+                        .startDateTime(toDo.get().getStartDateTime())
+                        .endDate(toDo.get().getEndDate())
+                        .endDateTime(toDo.get().getEndDateTime())
+                        .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
+                        .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
+                        .priority(toDo.get().getPriority())
+                        .completion(toDo.get().isCompletion())
+                        .color(toDo.get().getObjective() != null ? toDo.get().getObjective().getColor() : null)
+                        .build();
+                toDoResponseList.add(toDoResponse);
+            }
+        }
+        return new ResponseEntity<>(toDoResponseList, HttpStatus.OK);
+    }
+
+    //투두 상세 조회
+    public ResponseEntity<?> detailToDo(Long toDoId, UserDetailsImpl userDetails) {
+        Optional<ToDo> toDo = toDoRepository.findByIdAndDeleteStateFalse(toDoId);
+        if (toDo.isPresent()) {
+            ToDoDetailResponse toDoDetailResponse = ToDoDetailResponse.builder()
+                    .myToDo(userToDoService.checkMyToDo(toDoId, userDetails))
+                    .toDoId(toDo.get().getId())
+                    .toDo(toDo.get().getToDo())
+                    .memo(toDo.get().getMemo())
+                    .startDate(toDo.get().getStartDate())
+                    .startDateTime(toDo.get().getStartDateTime())
+                    .endDate(toDo.get().getEndDate())
+                    .endDateTime(toDo.get().getEndDateTime())
+                    .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
+                    .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
+                    .priority(toDo.get().getPriority())
+                    .build();
+            return new ResponseEntity<>(toDoDetailResponse, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("존재하지 않는 투두입니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
 
 //    //투두 수정
 //    public void updateToDo(Long todo_id, UserDetailsImpl userDetails, ToDoRequest toDoRequest) {
