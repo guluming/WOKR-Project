@@ -1,6 +1,7 @@
 package com.slamdunk.WORK.service;
 
 import com.slamdunk.WORK.Editor.ToDoEditor;
+import com.slamdunk.WORK.dto.request.ToDoEditRequest;
 import com.slamdunk.WORK.dto.request.ToDoRequest;
 import com.slamdunk.WORK.dto.response.ToDoDetailResponse;
 import com.slamdunk.WORK.dto.response.ToDoResponse;
@@ -115,8 +116,8 @@ public class ToDoService {
 
     //투두 완료 상태
     @Transactional
-    public ResponseEntity<?> updateCompletion (Long todo_id, UserDetailsImpl userDetails) {
-        Optional<ToDo> deletedToDoCheck = toDoRepository.findByIdAndDeleteStateFalse(todo_id);
+    public ResponseEntity<?> updateCompletion (Long todoId, UserDetailsImpl userDetails) {
+        Optional<ToDo> deletedToDoCheck = toDoRepository.findByIdAndDeleteStateFalse(todoId);
         if (deletedToDoCheck.isPresent()) {
             if (userToDoService.checkMyToDo(deletedToDoCheck.get().getId(), userDetails)) {
                 if (!deletedToDoCheck.get().isCompletion()) {
@@ -142,25 +143,31 @@ public class ToDoService {
         }
     }
 
-//    //투두 수정
-//    public void updateToDo(Long todo_id, UserDetailsImpl userDetails, ToDoRequest toDoRequest) {
-//        Optional<ToDo> toDoOptional = toDoRepository.findById(todo_id);
-//        if (toDoOptional.isPresent()) {
-//            ToDo existingToDo = toDoOptional.get();
-//            if (existingToDo.getId().equals(userDetails.getUser().getId())) {
-//                ToDo updatedToDo = ToDo.builder()
-//                        .id(existingToDo.getId())
-//                        .toDo(toDoRequest.getToDo())
-//                        .memo(toDoRequest.getMemo())
-//                        .startDate(LocalDateTime.parse(toDoRequest.getStartDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
-//                        .endDate(LocalDateTime.parse(toDoRequest.getEndDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
-//                        .priority(toDoRequest.getPriority())
-//                        .completion(toDoRequest.isCompletion())
-//                        .build();
-//                toDoRepository.save(updatedToDo);
-//            }
-//        }
-//    }
+    //투두 수정
+    @Transactional
+    public ResponseEntity<?> updateToDo(Long todoId, UserDetailsImpl userDetails, ToDoEditRequest toDoEditRequest) {
+        Optional<ToDo> editToDo = toDoRepository.findByIdAndDeleteStateFalse(todoId);
+        if (editToDo.isPresent()) {
+            if (userToDoService.checkMyToDo(editToDo.get().getId(), userDetails)) {
+                ToDoEditor.ToDoEditorBuilder toDoEditorBuilder = editToDo.get().ToDoToEditor();
+                ToDoEditor toDoEditor = toDoEditorBuilder
+                        .toDo(toDoEditRequest.getToDo())
+                        .memo(toDoEditRequest.getMemo())
+                        .startDate(toDoEditRequest.getStartDate())
+                        .startDateTime(toDoEditRequest.getStartDateTime())
+                        .endDate(toDoEditRequest.getEndDate())
+                        .endDateTime(toDoEditRequest.getEndDateTime())
+                        .priority(toDoEditRequest.getPriority())
+                        .build();
+                editToDo.get().ToDoEdit(toDoEditor);
+                return new ResponseEntity<>("수정이 완료 되었습니다.", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("수정 권한이 없습니다.", HttpStatus.FORBIDDEN);
+            }
+        } else {
+            return new ResponseEntity<>("삭제된 할일 입니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
 }
 
 
