@@ -142,25 +142,25 @@ public class ObjectiveService {
             if (editObjective.isPresent()) {
                 ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = editObjective.get().ObjectiveToEditor();
 
-                if (objectiveEditRequest.getObjective() != null) {
+                if (objectiveEditRequest.getObjective() != null && !objectiveEditRequest.getObjective().equals("")) {
                     ObjectiveEditor objectiveEditor = objectiveEditorBuilder
                             .objective(objectiveEditRequest.getObjective())
                             .build();
                     editObjective.get().ObjectiveEdit(objectiveEditor);
                 }
-                if (objectiveEditRequest.getStartdate() != null) {
+                if (objectiveEditRequest.getStartdate() != null && !objectiveEditRequest.getStartdate().equals("")) {
                     ObjectiveEditor objectiveEditor = objectiveEditorBuilder
                             .startdate(objectiveEditRequest.getStartdate())
                             .build();
                     editObjective.get().ObjectiveEdit(objectiveEditor);
                 }
-                if (objectiveEditRequest.getEnddate() != null) {
+                if (objectiveEditRequest.getEnddate() != null && !objectiveEditRequest.getEnddate().equals("")) {
                     ObjectiveEditor objectiveEditor = objectiveEditorBuilder
                             .enddate(objectiveEditRequest.getEnddate())
                             .build();
                     editObjective.get().ObjectiveEdit(objectiveEditor);
                 }
-                if (objectiveEditRequest.getColor() != null) {
+                if (objectiveEditRequest.getColor() != null && !objectiveEditRequest.getColor().equals("")) {
                     ObjectiveEditor objectiveEditor = objectiveEditorBuilder
                             .color(objectiveEditRequest.getColor())
                             .build();

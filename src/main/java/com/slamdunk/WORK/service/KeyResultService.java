@@ -162,7 +162,7 @@ public class KeyResultService {
             Optional<KeyResult> editKeyResult = keyResultRepository.findByIdAndDeleteStateFalse(keyResultId);
             if (editKeyResult.isPresent()) {
                 KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = editKeyResult.get().KeyResultToEditor();
-                if (keyResultEditRequest.getKeyResult() != null) {
+                if (keyResultEditRequest.getKeyResult() != null && !keyResultEditRequest.getKeyResult().equals("")) {
                     KeyResultEditor keyResultEditor = keyResultEditorBuilder
                             .keyResult(keyResultEditRequest.getKeyResult())
                             .build();
