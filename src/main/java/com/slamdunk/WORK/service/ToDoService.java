@@ -202,7 +202,7 @@ public class ToDoService {
         for (UserToDo userToDo : userToDoList) {
             Long todoId = userToDo.getToDo().getId();
             Optional<ToDo> toDo = toDoRepository.findByIdAndDeleteStateFalse(todoId);
-            if (toDo.isPresent() && toDo.get().getEndDate().isBefore(today)) {
+            if (toDo.isPresent() && toDo.get().getEndDate().isBefore(today) && !toDo.get().isCompletion()) {
                 ToDoResponse toDoResponse = ToDoResponse.builder()
                         .myToDo(userToDoService.checkMyToDo(toDo.get().getId(), userDetails))
                         .keyResultId(toDo.get().getKeyResult() != null ? toDo.get().getKeyResult().getId() : null)
