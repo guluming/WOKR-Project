@@ -8,25 +8,31 @@ import com.slamdunk.WORK.dto.response.ToDoResponse;
 import com.slamdunk.WORK.entity.KeyResult;
 import com.slamdunk.WORK.entity.Objective;
 import com.slamdunk.WORK.entity.ToDo;
+import com.slamdunk.WORK.entity.UserToDo;
 import com.slamdunk.WORK.repository.KeyResultRepository;
 import com.slamdunk.WORK.repository.ObjectiveRepository;
 import com.slamdunk.WORK.repository.ToDoRepository;
+import com.slamdunk.WORK.repository.UserToDoRepository;
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ToDoService {
     private final ObjectiveRepository objectiveRepository;
     private final KeyResultRepository keyResultRepository;
+    private final UserToDoRepository userToDoRepository;
     private final ToDoRepository toDoRepository;
     private final UserToDoService userToDoService;
 
@@ -186,55 +192,37 @@ public class ToDoService {
         }
         return new ResponseEntity<>("삭제 권한이 없습니다.", HttpStatus.FORBIDDEN);
     }
+
+    //할일 기간만료 조회
+    public ResponseEntity<?> getExpirationToDo(UserDetailsImpl userDetails) {
+        List<UserToDo> userToDoList = userToDoRepository.findAllByUserId(userDetails.getUser().getId());
+        List<ToDoResponse> toDoResponseExpList = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+
+        for (UserToDo userToDo : userToDoList) {
+            Long todoId = userToDo.getToDo().getId();
+            Optional<ToDo> toDo = toDoRepository.findByIdAndDeleteStateFalse(todoId);
+            if (toDo.isPresent() && toDo.get().getEndDate().isBefore(today)) {
+                ToDoResponse toDoResponse = ToDoResponse.builder()
+                        .myToDo(userToDoService.checkMyToDo(toDo.get().getId(), userDetails))
+                        .keyResultId(toDo.get().getKeyResult() != null ? toDo.get().getKeyResult().getId() : null)
+                        .toDoId(toDo.get().getId())
+                        .toDo(toDo.get().getToDo())
+                        .memo(toDo.get().getMemo())
+                        .startDate(toDo.get().getStartDate())
+                        .startDateTime(toDo.get().getStartDateTime())
+                        .endDate(toDo.get().getEndDate())
+                        .endDateTime(toDo.get().getEndDateTime())
+                        .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .priority(toDo.get().getPriority())
+                        .completion(toDo.get().isCompletion())
+                        .color(toDo.get().getObjective() != null ? toDo.get().getObjective().getColor() : null)
+                        .build();
+                toDoResponseExpList.add(toDoResponse);
+            }
+        }
+        return new ResponseEntity<>(toDoResponseExpList, HttpStatus.OK);
+    }
 }
 
-//    //할일 오늘날짜 조회
-//    public ResponseEntity<?> getTodayToDos(UserDetailsImpl userDetails) {
-//        List<Long> todoId = userToDoService.allToDo(userDetails);
-//        List<ToDoResponse> toDoResponseList = new ArrayList<>();
-//        LocalDate today = LocalDate.now();
-//        System.out.println(today);
-//        for (int i = 0; i < todoId.size(); i++) {
-//            Optional<ToDo> toDo = toDoRepository.findByIdAndDeleteStateFalse(todoId.get(i));
-//            if (toDo.isPresent()) {
-//                if (today.isAfter(toDo.get().getStartDate()) && today.isBefore(toDo.get().getEndDate())
-//                        ||today.isEqual(toDo.get().getStartDate()) ||today.isEqual(toDo.get().getEndDate())) {
-//                    ToDoResponse toDoResponse = ToDoResponse.builder()
-//                            .myToDo(userToDoService.checkMyToDo(toDo.get().getId(), userDetails))
-//                            .toDoId(toDo.get().getId())
-//                            .keyResultId(toDo.get().getKeyResult() != null ? toDo.get().getKeyResult().getId() : null)
-//                            .toDo(toDo.get().getToDo())
-//                            .memo(toDo.get().getMemo())
-//                            .startDate(toDo.get().getStartDate())
-//                            .startDateTime(toDo.get().getStartDateTime())
-//                            .endDate(toDo.get().getEndDate())
-//                            .endDateTime(toDo.get().getEndDateTime())
-//                            .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-//                            .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-//                            .priority(toDo.get().getPriority())
-//                            .completion(toDo.get().isCompletion())
-//                            .color(toDo.get().getObjective() != null ? toDo.get().getObjective().getColor() : null)
-//                            .build();
-//                    toDoResponseList.add(toDoResponse);
-//                }
-//            }
-//        }
-//        return new ResponseEntity<>(toDoResponseList, HttpStatus.OK);
-//    }
-//}
-
-//        public ResponseEntity<?> getAllToDosAndTeam (UserDetailsImpl userDetails){
-//            List<Long> todoId = userToDoService.allToDo(userDetails);
-//           List<ToDoResponse> toDoResponseTeamToDoList = new ArrayList<>();
-//            for (int t = 0; t < todoId.size(); t++) {
-//                Optional<ToDo> teamToDo = toDoRepository.findByIdAndDeleteStateFalse(todoId.get(t));
-//                if (teamToDo.isPresent()) {
-//                    if (teamToDo.get().) {
-//
-//                    }
-//                }
-//                return new ResponseEntity<>(toDoResponseTodayList, HttpStatus.OK);
-//            }
-//
-//        }
-//    }
