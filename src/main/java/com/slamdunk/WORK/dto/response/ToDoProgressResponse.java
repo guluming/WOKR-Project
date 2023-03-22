@@ -17,6 +17,7 @@ public class ToDoProgressResponse {
     @Getter
     public static class progressTodo{
         private boolean myToDo;
+        private String createUser;
         private Long keyResultId;
         private Long toDoId;
         private String toDo;
@@ -32,10 +33,11 @@ public class ToDoProgressResponse {
         private String color;
 
         @Builder
-        public progressTodo(boolean myToDo, Long keyResultId, Long toDoId, String toDo, String memo,
+        public progressTodo(boolean myToDo, String createUser, Long keyResultId, Long toDoId, String toDo, String memo,
                             LocalDate startDate, String startDateTime, LocalDate endDate, String endDateTime,
                             String fstartDate, String fendDate, int priority, boolean completion, String color ) {
             this.myToDo = myToDo;
+            this.createUser = createUser;
             this.keyResultId = keyResultId;
             this.toDoId = toDoId;
             this.toDo = toDo;
@@ -56,6 +58,7 @@ public class ToDoProgressResponse {
     @Getter
     public static class completionTodo{
         private boolean myToDo;
+        private String createUser;
         private Long keyResultId;
         private Long toDoId;
         private String toDo;
@@ -71,10 +74,11 @@ public class ToDoProgressResponse {
         private String color;
 
         @Builder
-        public completionTodo(boolean myToDo, Long keyResultId, Long toDoId, String toDo, String memo,
+        public completionTodo(boolean myToDo, String createUser, Long keyResultId, Long toDoId, String toDo, String memo,
                             LocalDate startDate, String startDateTime, LocalDate endDate, String endDateTime,
                             String fstartDate, String fendDate, int priority, boolean completion, String color ) {
             this.myToDo = myToDo;
+            this.createUser = createUser;
             this.keyResultId = keyResultId;
             this.toDoId = toDoId;
             this.toDo = toDo;
