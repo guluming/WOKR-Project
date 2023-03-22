@@ -8,19 +8,15 @@ import com.slamdunk.WORK.dto.response.ToDoResponse;
 import com.slamdunk.WORK.entity.KeyResult;
 import com.slamdunk.WORK.entity.Objective;
 import com.slamdunk.WORK.entity.ToDo;
-import com.slamdunk.WORK.entity.UserToDo;
 import com.slamdunk.WORK.repository.KeyResultRepository;
 import com.slamdunk.WORK.repository.ObjectiveRepository;
 import com.slamdunk.WORK.repository.ToDoRepository;
-import com.slamdunk.WORK.repository.UserToDoRepository;
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,17 +27,16 @@ import java.util.Optional;
 public class ToDoService {
     private final ObjectiveRepository objectiveRepository;
     private final KeyResultRepository keyResultRepository;
-    private final UserToDoRepository userToDoRepository;
     private final ToDoRepository toDoRepository;
     private final UserToDoService userToDoService;
 
     //할일 생성
     @Transactional
-    public ResponseEntity<?>createToDo(Long objectiveId, Long keyResultId, ToDoRequest toDoRequest, UserDetailsImpl userDetails) {
+    public ResponseEntity<?> createToDo(Long objectiveId, Long keyResultId, ToDoRequest toDoRequest,
+                                        UserDetailsImpl userDetails) {
         if (objectiveId == 0 && keyResultId == 0) {
             ToDo toDo = new ToDo(toDoRequest, null, null);
             toDoRepository.save(toDo);
-
             userToDoService.registerUserToDo(userDetails, null, null, toDo);
             return new ResponseEntity<>("할일이 생성 되었습니다.", HttpStatus.CREATED);
         } else if (objectiveId != 0 && keyResultId != 0) {
@@ -66,21 +61,21 @@ public class ToDoService {
     public ResponseEntity<?> getAllToDos(UserDetailsImpl userDetails) {
         List<Long> todoId = userToDoService.allToDo(userDetails);
         List<ToDoResponse> toDoResponseList = new ArrayList<>();
-        for (int i=0; i<todoId.size(); i++) {
+        for (int i = 0; i < todoId.size(); i++) {
             Optional<ToDo> toDo = toDoRepository.findByIdAndDeleteStateFalse(todoId.get(i));
             if (toDo.isPresent()) {
                 ToDoResponse toDoResponse = ToDoResponse.builder()
                         .myToDo(userToDoService.checkMyToDo(toDo.get().getId(), userDetails))
-                        .toDoId(toDo.get().getId())
                         .keyResultId(toDo.get().getKeyResult() != null ? toDo.get().getKeyResult().getId() : null)
+                        .toDoId(toDo.get().getId())
                         .toDo(toDo.get().getToDo())
                         .memo(toDo.get().getMemo())
                         .startDate(toDo.get().getStartDate())
                         .startDateTime(toDo.get().getStartDateTime())
                         .endDate(toDo.get().getEndDate())
                         .endDateTime(toDo.get().getEndDateTime())
-                        .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
-                        .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
+                        .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
                         .priority(toDo.get().getPriority())
                         .completion(toDo.get().isCompletion())
                         .color(toDo.get().getObjective() != null ? toDo.get().getObjective().getColor() : null)
@@ -104,19 +99,19 @@ public class ToDoService {
                     .startDateTime(toDo.get().getStartDateTime())
                     .endDate(toDo.get().getEndDate())
                     .endDateTime(toDo.get().getEndDateTime())
-                    .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
-                    .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")))
+                    .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                    .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
                     .priority(toDo.get().getPriority())
                     .build();
             return new ResponseEntity<>(toDoDetailResponse, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("존재하지 않는 투두입니다.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("존재하지 않는 할일 입니다.", HttpStatus.BAD_REQUEST);
         }
     }
 
     //투두 완료 상태
     @Transactional
-    public ResponseEntity<?> updateCompletion (Long todoId, UserDetailsImpl userDetails) {
+    public ResponseEntity<?> updateCompletion(Long todoId, UserDetailsImpl userDetails) {
         Optional<ToDo> deletedToDoCheck = toDoRepository.findByIdAndDeleteStateFalse(todoId);
         if (deletedToDoCheck.isPresent()) {
             if (userToDoService.checkMyToDo(deletedToDoCheck.get().getId(), userDetails)) {
@@ -168,13 +163,78 @@ public class ToDoService {
             return new ResponseEntity<>("삭제된 할일 입니다.", HttpStatus.BAD_REQUEST);
         }
     }
+
+    //할일 삭제
+    @Transactional
+    public ResponseEntity<String> toDoDelete(Long todoId, UserDetailsImpl userDetails) {
+        Optional<ToDo> deletedToDoCheck = toDoRepository.findByIdAndDeleteStateFalse(todoId);
+        if (deletedToDoCheck.isPresent()) {
+            if (userToDoService.checkMyToDo(deletedToDoCheck.get().getId(), userDetails)) {
+                if (!deletedToDoCheck.get().isDeleteState()) {
+                    ToDoEditor.ToDoEditorBuilder toDoEditorBuilder = deletedToDoCheck.get().ToDoToEditor();
+                    ToDoEditor toDoEditor = toDoEditorBuilder
+                            .deleteState(true)
+                            .build();
+                    deletedToDoCheck.get().ToDoEdit(toDoEditor);
+                    return new ResponseEntity<>("삭제 되었습니다.", HttpStatus.OK);
+                }
+            } else {
+                return new ResponseEntity<>("이미 삭제된 할일 입니다.", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity<>("존재하지 않는 할일 입니다.", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>("삭제 권한이 없습니다.", HttpStatus.FORBIDDEN);
+    }
 }
 
-
-//    public void deleteToDoById (Long todo_id, UserDetailsImpl userDetails){
-//        toDoRepository.deleteById(todo_id);
+//    //할일 오늘날짜 조회
+//    public ResponseEntity<?> getTodayToDos(UserDetailsImpl userDetails) {
+//        List<Long> todoId = userToDoService.allToDo(userDetails);
+//        List<ToDoResponse> toDoResponseList = new ArrayList<>();
+//        LocalDate today = LocalDate.now();
+//        System.out.println(today);
+//        for (int i = 0; i < todoId.size(); i++) {
+//            Optional<ToDo> toDo = toDoRepository.findByIdAndDeleteStateFalse(todoId.get(i));
+//            if (toDo.isPresent()) {
+//                if (today.isAfter(toDo.get().getStartDate()) && today.isBefore(toDo.get().getEndDate())
+//                        ||today.isEqual(toDo.get().getStartDate()) ||today.isEqual(toDo.get().getEndDate())) {
+//                    ToDoResponse toDoResponse = ToDoResponse.builder()
+//                            .myToDo(userToDoService.checkMyToDo(toDo.get().getId(), userDetails))
+//                            .toDoId(toDo.get().getId())
+//                            .keyResultId(toDo.get().getKeyResult() != null ? toDo.get().getKeyResult().getId() : null)
+//                            .toDo(toDo.get().getToDo())
+//                            .memo(toDo.get().getMemo())
+//                            .startDate(toDo.get().getStartDate())
+//                            .startDateTime(toDo.get().getStartDateTime())
+//                            .endDate(toDo.get().getEndDate())
+//                            .endDateTime(toDo.get().getEndDateTime())
+//                            .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+//                            .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+//                            .priority(toDo.get().getPriority())
+//                            .completion(toDo.get().isCompletion())
+//                            .color(toDo.get().getObjective() != null ? toDo.get().getObjective().getColor() : null)
+//                            .build();
+//                    toDoResponseList.add(toDoResponse);
+//                }
+//            }
+//        }
+//        return new ResponseEntity<>(toDoResponseList, HttpStatus.OK);
 //    }
+//}
+
+//        public ResponseEntity<?> getAllToDosAndTeam (UserDetailsImpl userDetails){
+//            List<Long> todoId = userToDoService.allToDo(userDetails);
+//           List<ToDoResponse> toDoResponseTeamToDoList = new ArrayList<>();
+//            for (int t = 0; t < todoId.size(); t++) {
+//                Optional<ToDo> teamToDo = toDoRepository.findByIdAndDeleteStateFalse(todoId.get(t));
+//                if (teamToDo.isPresent()) {
+//                    if (teamToDo.get().) {
 //
-
-
-
+//                    }
+//                }
+//                return new ResponseEntity<>(toDoResponseTodayList, HttpStatus.OK);
+//            }
+//
+//        }
+//    }

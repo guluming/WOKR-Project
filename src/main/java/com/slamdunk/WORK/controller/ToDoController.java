@@ -2,7 +2,6 @@ package com.slamdunk.WORK.controller;
 
 import com.slamdunk.WORK.dto.request.ToDoEditRequest;
 import com.slamdunk.WORK.dto.request.ToDoRequest;
-
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import com.slamdunk.WORK.service.ToDoService;
 import lombok.RequiredArgsConstructor;
@@ -10,11 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-
 @RequiredArgsConstructor
 @RestController
 public class ToDoController {
-
     private final ToDoService toDoService;
 
     //할일 생성
@@ -23,17 +20,17 @@ public class ToDoController {
             @PathVariable("objective_id") Long objectiveId,
             @PathVariable("keyresult_id") Long keyResultId,
             @RequestBody ToDoRequest toDoRequest,
-            @AuthenticationPrincipal UserDetailsImpl userDetails){
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return toDoService.createToDo(objectiveId, keyResultId, toDoRequest, userDetails);
     }
 
-    //대시보드용 투두 전체 조회
+    //할일 전체 조회
     @GetMapping("/api/todo")
     public ResponseEntity<?> getAllToDos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return toDoService.getAllToDos(userDetails);
     }
 
-    //투두 상세 조회
+    //할일 상세 조회
     @GetMapping("/api/todo/detail/{todo_id}")
     public ResponseEntity<?> detailToDo(@PathVariable("todo_id") Long toDoId,
                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -41,14 +38,14 @@ public class ToDoController {
         return toDoService.detailToDo(toDoId, userDetails);
     }
 
-    //투두 완료변경
+    //할일 완료변경
     @PatchMapping("/api/todo/check/{todo_id}")
     public ResponseEntity<?> updateCompletion(@PathVariable("todo_id") Long todoId,
                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return toDoService.updateCompletion(todoId, userDetails);
     }
 
-    //투두 수정
+    //할일 수정
     @PatchMapping("/api/todo/{todo_id}")
     public ResponseEntity<?> updateToDo(@PathVariable("todo_id") Long todoId,
                                         @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -56,14 +53,23 @@ public class ToDoController {
         return toDoService.updateToDo(todoId, userDetails, toDoEditRequest);
     }
 
+    //할일 삭제
+    @DeleteMapping("/api/todo/{todo_id}")
+    public ResponseEntity<String> toDoDelete(@PathVariable("todo_id") Long todoId,
+                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return toDoService.toDoDelete(todoId, userDetails);
+    }
 
-}
 
-//    //투두 삭제
-//    @PatchMapping("/api/todo/secession/{todo_id}")
-//    public ResponseEntity<?> deleteToDoById(@PathVariable("todo_id") Long todo_id,
-//                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        toDoService.deleteToDoById(todo_id,userDetails);
-//        return ResponseEntity.ok().build();
+    //할일 오늘날짜 조회
+//    @GetMapping("/api/today/todo")
+//    public ResponseEntity<?> getTodayToDos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+//        return toDoService.getTodayToDos(userDetails);
 //    }
 
+    //할일 전체페이지 팀원연동 조회
+//    @GetMapping("/api/todo/team")
+//    public ResponseEntity<?> getAllToDosAndTeam(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+//        return toDoService.getAllToDosAndTeam(userDetails);
+//    }
+}
