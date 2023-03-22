@@ -46,6 +46,7 @@ public class OKRService {
                         OKRResponse.keyResult okrKeyResultResponse = OKRResponse.keyResult.builder()
                                 .myKeyResult(userKeyResultService.checkMyKeyResult(checkCreateKeyResult.get(k).getId(), userDetails))
                                 .keyResultId(checkCreateKeyResult.get(k).getId())
+                                .krNumber(checkCreateKeyResult.get(k).getKrNumber())
                                 .keyResult(checkCreateKeyResult.get(k).getKeyResult())
                                 .progress(checkCreateKeyResult.get(k).getProgress())
                                 .emotion(checkCreateKeyResult.get(k).getEmoticon())
