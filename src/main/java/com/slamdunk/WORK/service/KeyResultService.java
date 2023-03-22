@@ -61,6 +61,7 @@ public class KeyResultService {
                 KeyResultResponse keyResultResponse = KeyResultResponse.builder()
                         .myKeyResult(userKeyResultService.checkMyKeyResult(keyResult.get().getId(), userDetails))
                         .keyResultId(keyResult.get().getId())
+                        .krNumber(keyResult.get().getKrNumber())
                         .keyResult(keyResult.get().getKeyResult())
                         .progress(keyResult.get().getProgress())
                         .emotion(keyResult.get().getEmoticon())
@@ -80,6 +81,7 @@ public class KeyResultService {
             KeyResultDetailResponse keyResultDetailResponse = KeyResultDetailResponse.builder()
                     .myKeyResult(userKeyResultService.checkMyKeyResult(keyResultId, userDetails))
                     .keyResultId(keyResult.get().getId())
+                    .krNumber(keyResult.get().getKrNumber())
                     .keyResult(keyResult.get().getKeyResult())
                     .build();
 
@@ -166,7 +168,6 @@ public class KeyResultService {
                             .build();
                     editKeyResult.get().KeyResultEdit(keyResultEditor);
                 }
-
                 return new ResponseEntity<>("핵심결과가 수정 되었습니다.", HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("존재하지 않는 핵심결과입니다.", HttpStatus.BAD_REQUEST);
