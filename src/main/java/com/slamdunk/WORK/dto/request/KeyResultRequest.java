@@ -8,5 +8,6 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 public class KeyResultRequest {
-    private List<String> keyResultDate;
+    private int krNumber;
+    private String keyResult;
 }
