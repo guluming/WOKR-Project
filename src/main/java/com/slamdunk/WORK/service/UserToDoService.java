@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class UserToDoService {
             Optional<ToDo> toDoCheck = toDoRepository.findById(toDo.getId());
 
             if (toDoCheck.isPresent()) {
-                UserToDo userToDo = new UserToDo(userDetails.getUser(), null, null, toDoCheck.get());
+                UserToDo userToDo = new UserToDo(userDetails.getUser(), null, null, toDoCheck.get(), userDetails.getUser().getTeam());
                 userToDoRepository.save(userToDo);
             }
         } else if (objective != null && keyResult != null) {
@@ -37,7 +38,7 @@ public class UserToDoService {
             Optional<ToDo> toDoCheck = toDoRepository.findById(toDo.getId());
 
             if (objectiveCheck.isPresent() && keyResultCheck.isPresent() && toDoCheck.isPresent()) {
-                UserToDo userToDo = new UserToDo(userDetails.getUser(), objectiveCheck.get(), keyResultCheck.get(), toDoCheck.get());
+                UserToDo userToDo = new UserToDo(userDetails.getUser(), objectiveCheck.get(), keyResultCheck.get(), toDoCheck.get(), userDetails.getUser().getTeam());
                 userToDoRepository.save(userToDo);
             }
         }
@@ -61,5 +62,11 @@ public class UserToDoService {
     public boolean checkMyToDo(Long toDoId, UserDetailsImpl userDetails) {
         Optional<UserToDo> checkDate = userToDoRepository.findByToDoIdAndUserId(toDoId, userDetails.getUser().getId());
         return checkDate.isPresent();
+    }
+
+    //회원-투두 생성 갯수 확인
+    public int createToDoCount(Long userId) {
+        List<UserToDo> userToDoList = userToDoRepository.findAllByUserIdAndCompletionTrueAndProgress(userId, LocalDate.now());
+        return userToDoList.size();
     }
 }

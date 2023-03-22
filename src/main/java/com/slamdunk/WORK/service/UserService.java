@@ -2,6 +2,7 @@ package com.slamdunk.WORK.service;
 
 import com.slamdunk.WORK.dto.request.UserRequest;
 import com.slamdunk.WORK.dto.response.JwtTokenResponse;
+import com.slamdunk.WORK.dto.response.TeamMemberResponse;
 import com.slamdunk.WORK.dto.response.UserResponse;
 import com.slamdunk.WORK.entity.User;
 import com.slamdunk.WORK.repository.UserRepository;
@@ -17,12 +18,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final UserToDoService userToDoService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
@@ -86,6 +91,33 @@ public class UserService {
 
             return new ResponseEntity<>(userResponse, HttpStatus.OK);
         }
+    }
+
+    //팀원 정보 조회
+    public ResponseEntity<?> getTeamMember(UserDetailsImpl userDetails) {
+        Optional<User> user = userRepository.findById(userDetails.getUser().getId());
+        if (user.isPresent()) {
+            List<User> teamMemberList = userRepository.findAllByTeam(userDetails.getUser().getTeam());
+            List<TeamMemberResponse> teamMemberResponseList = new ArrayList<>();
+            for (int i = 0; i < teamMemberList.size(); i++) {
+                Optional<User> teamMember = userRepository.findById(teamMemberList.get(i).getId());
+                if (teamMember.isPresent()) {
+                    TeamMemberResponse teamMemberResponse = TeamMemberResponse.builder()
+                            .myInfo(Objects.equals(userDetails.getUser().getId(), teamMember.get().getId()))
+                            .userId(teamMember.get().getId())
+                            .email(teamMember.get().getEmail())
+                            .name(teamMember.get().getName())
+                            .team(teamMember.get().getTeam())
+                            .teamposition(teamMember.get().getTeamPosition())
+                            .createToDoCount(userToDoService.createToDoCount(teamMember.get().getId()))
+                            .build();
+
+                    teamMemberResponseList.add(teamMemberResponse);
+                }
+            }
+            return new ResponseEntity<>(teamMemberResponseList, HttpStatus.OK);
+        }
+        return new ResponseEntity<>("존재하지 않는 회원 입니다.", HttpStatus.OK);
     }
 
     //JWT 토큰 생성기

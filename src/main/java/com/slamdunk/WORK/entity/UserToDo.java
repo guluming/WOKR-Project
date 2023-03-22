@@ -24,13 +24,16 @@ public class UserToDo {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "toDo_id")
     private ToDo toDo;
+    @Column(nullable = false)
+    private String team;
     @Column
     private boolean deleteState;
 
-    public UserToDo(User user, Objective objective, KeyResult keyResult, ToDo toDo) {
+    public UserToDo(User user, Objective objective, KeyResult keyResult, ToDo toDo, String team) {
         this.user = user;
         this.objective = objective;
         this.keyResult = keyResult;
         this.toDo = toDo;
+        this.team = team;
     }
 }
