@@ -1,6 +1,7 @@
 package com.slamdunk.WORK.entity;
 
 import com.slamdunk.WORK.Editor.KeyResultEditor;
+import com.slamdunk.WORK.dto.request.KeyResultRequest;
 import com.slamdunk.WORK.utill.TimeStamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,8 @@ public class KeyResult extends TimeStamped {
     @JoinColumn(name = "objective_id")
     private Objective objective;
     @Column(nullable = false)
+    private int krNumber;
+    @Column(nullable = false)
     private String keyResult;
     @Column
     private int progress;
@@ -27,9 +30,10 @@ public class KeyResult extends TimeStamped {
     @Column
     private boolean deleteState;
 
-    public KeyResult(Objective objective, String keyResult) {
+    public KeyResult(Objective objective, KeyResultRequest keyResultRequest) {
         this.objective = objective;
-        this.keyResult = keyResult;
+        this.krNumber = keyResultRequest.getKrNumber();
+        this.keyResult = keyResultRequest.getKeyResult();
         this.progress = 0;
         this.emoticon = 0;
     }

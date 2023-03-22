@@ -39,20 +39,14 @@ public class KeyResultService {
             if (objectiveCheck.isEmpty()) {
                 return new ResponseEntity<>("목표가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
             } else {
-                for (int i = 0; i< keyResultRequest.getKeyResultDate().size(); i++) {
-                    if (keyResultRequest.getKeyResultDate().get(i) != null) {
-                        KeyResult newKeyResult = new KeyResult(
-                                objectiveCheck.get(),
-                                keyResultRequest.getKeyResultDate().get(i));
-                        keyResultRepository.save(newKeyResult);
+                KeyResult newKeyResult = new KeyResult(objectiveCheck.get(), keyResultRequest);
+                keyResultRepository.save(newKeyResult);
 
-                        userKeyResultService.registerUserKeyResult(newKeyResult, objectiveCheck.get(), userDetails);
-                    }
-                }
+                userKeyResultService.registerUserKeyResult(newKeyResult, objectiveCheck.get(), userDetails);
                 return new ResponseEntity<>(HttpStatus.CREATED);
             }
         } else {
-            return new ResponseEntity<>("팀장만 생성 가능합니다." ,HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("팀장만 생성 가능합니다.", HttpStatus.FORBIDDEN);
         }
     }
 
@@ -61,8 +55,8 @@ public class KeyResultService {
         List<Long> keyResultId = userKeyResultService.allKeyResult(userDetails);
 
         List<KeyResultResponse> keyResultResponseList = new ArrayList<>();
-        for (int i=0; i<keyResultId.size(); i++) {
-        Optional<KeyResult> keyResult = keyResultRepository.findByIdAndDeleteStateFalse(keyResultId.get(i));
+        for (int i = 0; i < keyResultId.size(); i++) {
+            Optional<KeyResult> keyResult = keyResultRepository.findByIdAndDeleteStateFalse(keyResultId.get(i));
             if (keyResult.isPresent()) {
                 KeyResultResponse keyResultResponse = KeyResultResponse.builder()
                         .myKeyResult(userKeyResultService.checkMyKeyResult(keyResult.get().getId(), userDetails))
@@ -194,7 +188,7 @@ public class KeyResultService {
                             .deleteState(true)
                             .build();
                     deleteKeyResult.get().KeyResultEdit(keyResultEditor);
-                    
+
                     return new ResponseEntity<>("핵심결과가 삭제 되었습니다.", HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>("이미 삭제된 핵심결과입니다.", HttpStatus.BAD_REQUEST);
