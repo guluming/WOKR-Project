@@ -38,4 +38,10 @@ public class UserController {
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.getUser(userId, userDetails);
     }
+
+    //팀원 정보 조회
+    @GetMapping("api/user/team/member")
+    public ResponseEntity<?> getTeamMember(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.getTeamMember(userDetails);
+    }
 }
