@@ -299,13 +299,15 @@ public class ToDoService {
                 }
             }
 
-            ToDoProgressResponse toDoProgressResponse = ToDoProgressResponse.builder()
-                    .targetDate(moveDay.format(DateTimeFormatter.ofPattern("MM월 dd일")))
-                    .progressTodo(progressTodoList)
-                    .completionTodo(completionTodoList)
-                    .build();
+            if (!progressTodoList.isEmpty() || !completionTodoList.isEmpty()) {
+                ToDoProgressResponse toDoProgressResponse = ToDoProgressResponse.builder()
+                        .targetDate(moveDay.format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .progressTodo(progressTodoList)
+                        .completionTodo(completionTodoList)
+                        .build();
 
-            toDoProgressResponseList.add(toDoProgressResponse);
+                toDoProgressResponseList.add(toDoProgressResponse);
+            }
 
             moveDay = moveDay.plusDays(1);
         }
