@@ -4,6 +4,7 @@ import com.slamdunk.WORK.Editor.ToDoEditor;
 import com.slamdunk.WORK.dto.request.ToDoEditRequest;
 import com.slamdunk.WORK.dto.request.ToDoRequest;
 import com.slamdunk.WORK.dto.response.ToDoDetailResponse;
+import com.slamdunk.WORK.dto.response.ToDoProgressResponse;
 import com.slamdunk.WORK.dto.response.ToDoResponse;
 import com.slamdunk.WORK.entity.KeyResult;
 import com.slamdunk.WORK.entity.Objective;
@@ -223,6 +224,82 @@ public class ToDoService {
             }
         }
         return new ResponseEntity<>(toDoResponseExpList, HttpStatus.OK);
+    }
+
+    //할일 날짜별 전체 조회
+    public ResponseEntity<?> getProgressToDo(UserDetailsImpl userDetails) {
+        List<UserToDo> progressUserToDoList = userToDoRepository.findAllByUserIdAndCompletionFalseAndProgress(userDetails.getUser().getId(), LocalDate.now());
+        List<UserToDo> completionUserToDoList = userToDoRepository.findAllByUserIdAndCompletionTrueAndCompletion(userDetails.getUser().getId(), LocalDate.now());
+
+        UserToDo userToDo = userToDoService.findLastEndDate(userDetails);
+        if (userToDo != null) {
+            LocalDate startDay = LocalDate.now();
+            List<ToDoProgressResponse> toDoProgressResponseList = new ArrayList<>();
+            while (startDay.isEqual(userToDo.getToDo().getEndDate()) || startDay.isBefore(userToDo.getToDo().getEndDate())) {
+                List<ToDoProgressResponse.progressTodo> progressTodoList = new ArrayList<>();
+                List<ToDoProgressResponse.completionTodo> completionTodoList = new ArrayList<>();
+
+                for (int i = 0; i < progressUserToDoList.size(); i++) {
+                    if (startDay.isEqual(progressUserToDoList.get(i).getToDo().getEndDate()) || startDay.isBefore(progressUserToDoList.get(i).getToDo().getEndDate())) {
+                        ToDoProgressResponse.progressTodo progressTodo = ToDoProgressResponse.progressTodo.builder()
+                                .myToDo(userToDoService.checkMyToDo(progressUserToDoList.get(i).getUser().getId(), userDetails))
+                                .createUser(userDetails.getUser().getName())
+                                .keyResultId(progressUserToDoList.get(i).getKeyResult() != null ? progressUserToDoList.get(i).getKeyResult().getId() : null)
+                                .toDoId(progressUserToDoList.get(i).getToDo().getId())
+                                .toDo(progressUserToDoList.get(i).getToDo().getToDo())
+                                .memo(progressUserToDoList.get(i).getToDo().getMemo())
+                                .startDate(progressUserToDoList.get(i).getToDo().getStartDate())
+                                .startDateTime(progressUserToDoList.get(i).getToDo().getStartDateTime())
+                                .endDate(progressUserToDoList.get(i).getToDo().getEndDate())
+                                .endDateTime(progressUserToDoList.get(i).getToDo().getEndDateTime())
+                                .fstartDate(progressUserToDoList.get(i).getToDo().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                                .fendDate(progressUserToDoList.get(i).getToDo().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                                .priority(progressUserToDoList.get(i).getToDo().getPriority())
+                                .completion(progressUserToDoList.get(i).getToDo().isCompletion())
+                                .color(progressUserToDoList.get(i).getObjective() != null ? progressUserToDoList.get(i).getObjective().getColor() : null)
+                                .build();
+
+                        progressTodoList.add(progressTodo);
+                    }
+                }
+
+                for (int i = 0; i < completionUserToDoList.size(); i++) {
+                    if (startDay.isEqual(completionUserToDoList.get(i).getToDo().getEndDate())) {
+                        ToDoProgressResponse.completionTodo completionTodo = ToDoProgressResponse.completionTodo.builder()
+                                .myToDo(userToDoService.checkMyToDo(completionUserToDoList.get(i).getUser().getId(), userDetails))
+                                .createUser(userDetails.getUser().getName())
+                                .keyResultId(completionUserToDoList.get(i).getKeyResult() != null ? completionUserToDoList.get(i).getKeyResult().getId() : null)
+                                .toDoId(completionUserToDoList.get(i).getToDo().getId())
+                                .toDo(completionUserToDoList.get(i).getToDo().getToDo())
+                                .memo(completionUserToDoList.get(i).getToDo().getMemo())
+                                .startDate(completionUserToDoList.get(i).getToDo().getStartDate())
+                                .startDateTime(completionUserToDoList.get(i).getToDo().getStartDateTime())
+                                .endDate(completionUserToDoList.get(i).getToDo().getEndDate())
+                                .endDateTime(completionUserToDoList.get(i).getToDo().getEndDateTime())
+                                .fstartDate(completionUserToDoList.get(i).getToDo().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                                .fendDate(completionUserToDoList.get(i).getToDo().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                                .priority(completionUserToDoList.get(i).getToDo().getPriority())
+                                .completion(completionUserToDoList.get(i).getToDo().isCompletion())
+                                .color(completionUserToDoList.get(i).getObjective() != null ? completionUserToDoList.get(i).getObjective().getColor() : null)
+                                .build();
+
+                        completionTodoList.add(completionTodo);
+                    }
+                }
+
+                ToDoProgressResponse toDoProgressResponse = ToDoProgressResponse.builder()
+                        .targetDate(startDay.format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .progressTodo(progressTodoList)
+                        .completionTodo(completionTodoList)
+                        .build();
+
+                toDoProgressResponseList.add(toDoProgressResponse);
+
+                startDay = startDay.plusDays(1);
+            }
+            return new ResponseEntity<>(toDoProgressResponseList, HttpStatus.OK);
+        }
+        return new ResponseEntity<>("진행중이거나 완료한 할일이 없습니다.", HttpStatus.BAD_REQUEST);
     }
 }
 

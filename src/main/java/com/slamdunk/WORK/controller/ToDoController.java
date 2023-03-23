@@ -65,4 +65,10 @@ public class ToDoController {
     public ResponseEntity<?> getExpirationToDo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return toDoService.getExpirationToDo(userDetails);
     }
+
+    //할일 날짜별 전체 조회
+    @GetMapping("api/todo/progress")
+    public ResponseEntity<?> getProgressToDo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return toDoService.getProgressToDo(userDetails);
+    }
 }
