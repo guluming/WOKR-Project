@@ -60,16 +60,9 @@ public class ToDoController {
         return toDoService.toDoDelete(todoId, userDetails);
     }
 
-
-    //할일 오늘날짜 조회
-//    @GetMapping("/api/today/todo")
-//    public ResponseEntity<?> getTodayToDos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        return toDoService.getTodayToDos(userDetails);
-//    }
-
-    //할일 전체페이지 팀원연동 조회
-//    @GetMapping("/api/todo/team")
-//    public ResponseEntity<?> getAllToDosAndTeam(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        return toDoService.getAllToDosAndTeam(userDetails);
-//    }
+    //할일 기한만료 조회
+    @GetMapping("api/todo/expiration")
+    public ResponseEntity<?> getExpirationToDo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return toDoService.getExpirationToDo(userDetails);
+    }
 }
