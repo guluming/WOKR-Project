@@ -70,6 +70,16 @@ public class UserToDoService {
         return userToDoList.size();
     }
 
+    //회원-투두 가장 첫번째 종료일 조회
+    public UserToDo findFirstEndDate(UserDetailsImpl userDetails) {
+        List<UserToDo> userToDo = userToDoRepository.findByUserIdAndFirstEndDate(userDetails.getUser().getId(), LocalDate.now());
+        if (!userToDo.isEmpty()) {
+            return userToDo.get(0);
+        } else {
+            return null;
+        }
+    }
+
     //회원-투두 가장 마지막 종료일 조회
     public UserToDo findLastEndDate(UserDetailsImpl userDetails) {
         List<UserToDo> userToDo = userToDoRepository.findByUserIdAndLastEndDate(userDetails.getUser().getId(), LocalDate.now());

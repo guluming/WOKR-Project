@@ -17,9 +17,11 @@ public interface UserToDoRepository extends JpaRepository<UserToDo, Long> {
         Optional<UserToDo> findByToDoId(Long ToDoId);
         @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.user.id = :userId AND t.completion = false AND t.endDate >= :today order by t.endDate")
         List<UserToDo> findAllByUserIdAndCompletionFalseAndProgress(@Param("userId") Long userId, @Param("today")LocalDate today);
-        @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.user.id = :userId AND t.completion = true AND t.endDate >= :today order by t.endDate")
-        List<UserToDo> findAllByUserIdAndCompletionTrueAndCompletion(@Param("userId") Long userId, @Param("today")LocalDate today);
+        @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.user.id = :userId AND t.completion = true order by t.endDate")
+        List<UserToDo> findAllByUserIdAndCompletionTrueAndCompletion(@Param("userId") Long userId);
         @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.user.id = :userId AND t.endDate >= :today order by t.endDate desc")
         List<UserToDo> findByUserIdAndLastEndDate(@Param("userId") Long userId, @Param("today")LocalDate today);
+        @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.user.id = :userId AND t.completion = true AND t.endDate < :today order by t.endDate")
+        List<UserToDo> findByUserIdAndFirstEndDate(@Param("userId") Long userId, @Param("today")LocalDate today);
 }
 
