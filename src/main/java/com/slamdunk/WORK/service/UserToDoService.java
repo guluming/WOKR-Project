@@ -69,4 +69,14 @@ public class UserToDoService {
         List<UserToDo> userToDoList = userToDoRepository.findAllByUserIdAndCompletionFalseAndProgress(userId, LocalDate.now());
         return userToDoList.size();
     }
+
+    //회원-투두 가장 마지막 종료일 조회
+    public UserToDo findLastEndDate(UserDetailsImpl userDetails) {
+        List<UserToDo> userToDo = userToDoRepository.findByUserIdAndLastEndDate(userDetails.getUser().getId(), LocalDate.now());
+        if (!userToDo.isEmpty()) {
+            return userToDo.get(0);
+        } else {
+            return null;
+        }
+    }
 }
