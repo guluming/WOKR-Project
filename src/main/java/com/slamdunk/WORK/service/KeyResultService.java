@@ -1,6 +1,7 @@
 package com.slamdunk.WORK.service;
 
 import com.slamdunk.WORK.Editor.KeyResultEditor;
+import com.slamdunk.WORK.Editor.ToDoEditor;
 import com.slamdunk.WORK.dto.request.EmoticonRequest;
 import com.slamdunk.WORK.dto.request.KeyResultEditRequest;
 import com.slamdunk.WORK.dto.request.KeyResultRequest;
@@ -9,6 +10,7 @@ import com.slamdunk.WORK.dto.response.KeyResultDetailResponse;
 import com.slamdunk.WORK.dto.response.KeyResultResponse;
 import com.slamdunk.WORK.entity.KeyResult;
 import com.slamdunk.WORK.entity.Objective;
+import com.slamdunk.WORK.entity.ToDo;
 import com.slamdunk.WORK.repository.KeyResultRepository;
 import com.slamdunk.WORK.repository.ObjectiveRepository;
 import com.slamdunk.WORK.security.UserDetailsImpl;
@@ -30,6 +32,7 @@ public class KeyResultService {
     private final KeyResultRepository keyResultRepository;
     private final ObjectiveRepository objectiveRepository;
     private final UserKeyResultService userKeyResultService;
+    private final UserToDoService userToDoService;
 
     //핵심결과 생성
     @Transactional
@@ -181,19 +184,38 @@ public class KeyResultService {
     @Transactional
     public ResponseEntity<?> keyResultDelete(Long keyResultId, UserDetailsImpl userDetails) {
         if (userKeyResultService.checkMyKeyResult(keyResultId, userDetails)) {
+            List<ToDo> ToDoOfKeyResultList = userToDoService.checkToDoOfKeyResult(keyResultId, userDetails.getUser().getId());
             Optional<KeyResult> deleteKeyResult = keyResultRepository.findById(keyResultId);
-            if (deleteKeyResult.isPresent()) {
+            if (deleteKeyResult.isPresent() && !ToDoOfKeyResultList.isEmpty()) {
+                for (int i = 0; i < ToDoOfKeyResultList.size(); i++) {
+                    if (!ToDoOfKeyResultList.get(i).isDeleteState()) {
+                        ToDoEditor.ToDoEditorBuilder toDoEditorBuilder = ToDoOfKeyResultList.get(i).ToDoToEditor();
+                        ToDoEditor toDoEditor = toDoEditorBuilder
+                                .deleteState(true)
+                                .build();
+                        ToDoOfKeyResultList.get(i).ToDoEdit(toDoEditor);
+                    }
+                }
+
                 if (!deleteKeyResult.get().isDeleteState()) {
                     KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = deleteKeyResult.get().KeyResultToEditor();
                     KeyResultEditor keyResultEditor = keyResultEditorBuilder
                             .deleteState(true)
                             .build();
                     deleteKeyResult.get().KeyResultEdit(keyResultEditor);
-
-                    return new ResponseEntity<>("핵심결과가 삭제 되었습니다.", HttpStatus.OK);
-                } else {
-                    return new ResponseEntity<>("이미 삭제된 핵심결과입니다.", HttpStatus.BAD_REQUEST);
                 }
+
+                return new ResponseEntity<>("핵심결과, 할일이 모두 삭제 되었습니다.", HttpStatus.OK);
+            } else if (deleteKeyResult.isPresent()) {
+                if (!deleteKeyResult.get().isDeleteState()) {
+                    KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = deleteKeyResult.get().KeyResultToEditor();
+                    KeyResultEditor keyResultEditor = keyResultEditorBuilder
+                            .deleteState(true)
+                            .build();
+                    deleteKeyResult.get().KeyResultEdit(keyResultEditor);
+                }
+
+                return new ResponseEntity<>("핵심결과가 삭제 되었습니다.", HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("존재하지 않는 핵심결과입니다.", HttpStatus.BAD_REQUEST);
             }
