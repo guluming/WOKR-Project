@@ -64,6 +64,12 @@ public class UserToDoService {
         return checkDate.isPresent();
     }
 
+    //회원-투두 로그인 유저 투두 확인
+    public boolean checkUserMyToDo(Long toDoId, User user) {
+        Optional<UserToDo> checkDate = userToDoRepository.findByToDoIdAndUserId(toDoId, user.getId());
+        return checkDate.isPresent();
+    }
+
     //회원-투두 생성 갯수 확인
     public int createToDoCount(Long userId) {
         List<UserToDo> userToDoList = userToDoRepository.findAllByUserIdAndCompletionFalseAndProgress(userId, LocalDate.now());
@@ -71,8 +77,8 @@ public class UserToDoService {
     }
 
     //회원-투두 가장 첫번째 종료일 조회
-    public UserToDo findFirstEndDate(UserDetailsImpl userDetails) {
-        List<UserToDo> userToDo = userToDoRepository.findByUserIdAndFirstEndDate(userDetails.getUser().getId(), LocalDate.now());
+    public UserToDo findFirstEndDate(User user) {
+        List<UserToDo> userToDo = userToDoRepository.findByUserIdAndFirstEndDate(user.getId(), LocalDate.now());
         if (!userToDo.isEmpty()) {
             return userToDo.get(0);
         } else {
@@ -81,8 +87,8 @@ public class UserToDoService {
     }
 
     //회원-투두 가장 마지막 종료일 조회
-    public UserToDo findLastEndDate(UserDetailsImpl userDetails) {
-        List<UserToDo> userToDo = userToDoRepository.findByUserIdAndLastEndDate(userDetails.getUser().getId(), LocalDate.now());
+    public UserToDo findLastEndDate(User user) {
+        List<UserToDo> userToDo = userToDoRepository.findByUserIdAndLastEndDate(user.getId(), LocalDate.now());
         if (!userToDo.isEmpty()) {
             return userToDo.get(0);
         } else {
