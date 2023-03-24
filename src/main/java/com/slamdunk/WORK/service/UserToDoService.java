@@ -64,6 +64,20 @@ public class UserToDoService {
         return checkDate.isPresent();
     }
 
+    //회원-할일 목표Id로 중간테이블 전체 조회
+    public List<ToDo> checkToDoOfObjective(Long objectiveId, Long userId) {
+        List<UserToDo> checkToDoOfObjectiveList = userToDoRepository.findAllByObjectiveIdAndUserId(objectiveId, userId);
+
+        List<ToDo> ToDoOfObjectiveList = new ArrayList<>();
+        if (!checkToDoOfObjectiveList.isEmpty()) {
+            for (int i = 0; i < checkToDoOfObjectiveList.size(); i++) {
+                ToDoOfObjectiveList.add(checkToDoOfObjectiveList.get(i).getToDo());
+            }
+        }
+
+        return ToDoOfObjectiveList;
+    }
+
     //회원-투두 로그인 유저 투두 확인
     public boolean checkUserMyToDo(Long toDoId, User user) {
         Optional<UserToDo> checkDate = userToDoRepository.findByToDoIdAndUserId(toDoId, user.getId());

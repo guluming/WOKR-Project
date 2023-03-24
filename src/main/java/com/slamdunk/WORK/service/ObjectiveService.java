@@ -1,18 +1,21 @@
 package com.slamdunk.WORK.service;
+import com.slamdunk.WORK.Editor.KeyResultEditor;
 import com.slamdunk.WORK.Editor.ObjectiveEditor;
+import com.slamdunk.WORK.Editor.ToDoEditor;
 import com.slamdunk.WORK.dto.request.ObjectiveEditRequest;
 import com.slamdunk.WORK.dto.request.ObjectiveRequest;
 import com.slamdunk.WORK.dto.request.ProgressRequest;
 import com.slamdunk.WORK.dto.response.ObjectiveDetailResponse;
 import com.slamdunk.WORK.dto.response.ObjectiveResponse;
+import com.slamdunk.WORK.entity.KeyResult;
 import com.slamdunk.WORK.entity.Objective;
+import com.slamdunk.WORK.entity.ToDo;
 import com.slamdunk.WORK.repository.ObjectiveRepository;
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +29,8 @@ import java.util.Optional;
 public class ObjectiveService {
     private final ObjectiveRepository objectiveRepository;
     private final UserObjectiveService userObjectiveService;
+    private final UserKeyResultService userKeyResultService;
+    private final UserToDoService userToDoService;
 
     //목표 생성
     @Transactional
@@ -179,19 +184,69 @@ public class ObjectiveService {
     @Transactional
     public ResponseEntity<String> objectiveDelete(Long objectiveId, UserDetailsImpl userDetails) {
         if (userObjectiveService.checkMyObjective(objectiveId, userDetails)) {
+            List<KeyResult> KeyResultOfObjectiveList = userKeyResultService.checkKeyResultOfObjective(objectiveId, userDetails.getUser().getId());
+            List<ToDo> ToDoOfObjectiveList = userToDoService.checkToDoOfObjective(objectiveId, userDetails.getUser().getId());
             Optional<Objective> deleteObjective = objectiveRepository.findById(objectiveId);
-            if (deleteObjective.isPresent()) {
+            if (deleteObjective.isPresent() && !KeyResultOfObjectiveList.isEmpty() && !ToDoOfObjectiveList.isEmpty()) {
+                for (int i = 0; i < KeyResultOfObjectiveList.size(); i++) {
+                    if (!KeyResultOfObjectiveList.get(i).isDeleteState()) {
+                        KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = KeyResultOfObjectiveList.get(i).KeyResultToEditor();
+                        KeyResultEditor keyResultEditor = keyResultEditorBuilder
+                                .deleteState(true)
+                                .build();
+                        KeyResultOfObjectiveList.get(i).KeyResultEdit(keyResultEditor);
+                    }
+                }
+
+                for (int i = 0; i < ToDoOfObjectiveList.size(); i++) {
+                    if (!ToDoOfObjectiveList.get(i).isDeleteState()) {
+                        ToDoEditor.ToDoEditorBuilder toDoEditorBuilder = ToDoOfObjectiveList.get(i).ToDoToEditor();
+                        ToDoEditor toDoEditor = toDoEditorBuilder
+                                .deleteState(true)
+                                .build();
+                        ToDoOfObjectiveList.get(i).ToDoEdit(toDoEditor);
+                    }
+                }
+
                 if (!deleteObjective.get().isDeleteState()) {
                     ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = deleteObjective.get().ObjectiveToEditor();
                     ObjectiveEditor objectiveEditor = objectiveEditorBuilder
                             .deleteState(true)
                             .build();
                     deleteObjective.get().ObjectiveEdit(objectiveEditor);
-
-                    return new ResponseEntity<>("목표가 삭제 되었습니다.", HttpStatus.OK);
-                } else {
-                    return new ResponseEntity<>("이미 삭제된 목표입니다.", HttpStatus.BAD_REQUEST);
                 }
+
+                return new ResponseEntity<>("목표, 핵심결과, 할일이 모두 삭제 되었습니다.", HttpStatus.OK);
+            } else if (deleteObjective.isPresent() && !KeyResultOfObjectiveList.isEmpty()) {
+                for (int i = 0; i < KeyResultOfObjectiveList.size(); i++) {
+                    if (!KeyResultOfObjectiveList.get(i).isDeleteState()) {
+                        KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = KeyResultOfObjectiveList.get(i).KeyResultToEditor();
+                        KeyResultEditor keyResultEditor = keyResultEditorBuilder
+                                .deleteState(true)
+                                .build();
+                        KeyResultOfObjectiveList.get(i).KeyResultEdit(keyResultEditor);
+                    }
+                }
+
+                if (!deleteObjective.get().isDeleteState()) {
+                    ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = deleteObjective.get().ObjectiveToEditor();
+                    ObjectiveEditor objectiveEditor = objectiveEditorBuilder
+                            .deleteState(true)
+                            .build();
+                    deleteObjective.get().ObjectiveEdit(objectiveEditor);
+                }
+
+                return new ResponseEntity<>("목표, 핵심결과가 모두 삭제 되었습니다.", HttpStatus.OK);
+            } else if (deleteObjective.isPresent()) {
+                if (!deleteObjective.get().isDeleteState()) {
+                    ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = deleteObjective.get().ObjectiveToEditor();
+                    ObjectiveEditor objectiveEditor = objectiveEditorBuilder
+                            .deleteState(true)
+                            .build();
+                    deleteObjective.get().ObjectiveEdit(objectiveEditor);
+                }
+
+                return new ResponseEntity<>("목표가 삭제 되었습니다.", HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("존재하지 않는 목표입니다.", HttpStatus.BAD_REQUEST);
             }
