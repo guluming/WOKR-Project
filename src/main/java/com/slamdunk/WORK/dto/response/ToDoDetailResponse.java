@@ -15,6 +15,7 @@ public class ToDoDetailResponse {
     private boolean myToDo;
     private Long objectiveId;
     private Long keyResultId;
+    private int krNumber;
     private Long toDoId;
     private String toDo;
     private String memo;
@@ -27,12 +28,13 @@ public class ToDoDetailResponse {
     private int priority;
 
     @Builder
-    public ToDoDetailResponse(boolean myToDo, Long objectiveId, Long keyResultId, Long toDoId, String toDo, String memo,
+    public ToDoDetailResponse(boolean myToDo, Long objectiveId, Long keyResultId, int krNumber, Long toDoId, String toDo, String memo,
                               LocalDate startDate, String startDateTime, LocalDate endDate, String endDateTime,
                               String fstartDate, String fendDate, int priority) {
         this.myToDo = myToDo;
         this.objectiveId = objectiveId;
         this.keyResultId = keyResultId;
+        this.krNumber = krNumber;
         this.toDoId = toDoId;
         this.toDo = toDo;
         this.memo = memo;

@@ -19,6 +19,7 @@ public class ToDoProgressResponse {
         private boolean myToDo;
         private String createUser;
         private Long keyResultId;
+        private int krNumber;
         private Long toDoId;
         private String toDo;
         private String memo;
@@ -33,12 +34,13 @@ public class ToDoProgressResponse {
         private String color;
 
         @Builder
-        public progressTodo(boolean myToDo, String createUser, Long keyResultId, Long toDoId, String toDo, String memo,
+        public progressTodo(boolean myToDo, String createUser, Long keyResultId, int krNumber, Long toDoId, String toDo, String memo,
                             LocalDate startDate, String startDateTime, LocalDate endDate, String endDateTime,
                             String fstartDate, String fendDate, int priority, boolean completion, String color ) {
             this.myToDo = myToDo;
             this.createUser = createUser;
             this.keyResultId = keyResultId;
+            this.krNumber = krNumber;
             this.toDoId = toDoId;
             this.toDo = toDo;
             this.memo = memo;
@@ -60,6 +62,7 @@ public class ToDoProgressResponse {
         private boolean myToDo;
         private String createUser;
         private Long keyResultId;
+        private int krNumber;
         private Long toDoId;
         private String toDo;
         private String memo;
@@ -74,12 +77,13 @@ public class ToDoProgressResponse {
         private String color;
 
         @Builder
-        public completionTodo(boolean myToDo, String createUser, Long keyResultId, Long toDoId, String toDo, String memo,
+        public completionTodo(boolean myToDo, String createUser, Long keyResultId, int krNumber, Long toDoId, String toDo, String memo,
                             LocalDate startDate, String startDateTime, LocalDate endDate, String endDateTime,
                             String fstartDate, String fendDate, int priority, boolean completion, String color ) {
             this.myToDo = myToDo;
             this.createUser = createUser;
             this.keyResultId = keyResultId;
+            this.krNumber = krNumber;
             this.toDoId = toDoId;
             this.toDo = toDo;
             this.memo = memo;
