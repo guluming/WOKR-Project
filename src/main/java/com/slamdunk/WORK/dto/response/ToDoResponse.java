@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ToDoResponse {
     private boolean myToDo;
+    private String createUser;
     private Long keyResultId;
     private int krNumber;
     private Long toDoId;
@@ -30,10 +31,11 @@ public class ToDoResponse {
     private String color;
 
     @Builder
-    public ToDoResponse(boolean myToDo, Long keyResultId, int krNumber, Long toDoId, String toDo, String memo,
+    public ToDoResponse(boolean myToDo, String createUser ,Long keyResultId, int krNumber, Long toDoId, String toDo, String memo,
                               LocalDate startDate, String startDateTime, LocalDate endDate, String endDateTime,
                               String fstartDate, String fendDate, int priority, boolean completion, String color ) {
         this.myToDo = myToDo;
+        this.createUser = createUser;
         this.keyResultId = keyResultId;
         this.krNumber = krNumber;
         this.toDoId = toDoId;
