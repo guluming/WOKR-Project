@@ -15,7 +15,9 @@ public interface UserToDoRepository extends JpaRepository<UserToDo, Long> {
         Optional<UserToDo> findByToDoIdAndUserId(Long ToDoId, Long userId);
         List<UserToDo> findAllByKeyResult(KeyResult keyResult);
         Optional<UserToDo> findByToDoId(Long ToDoId);
+        @Query("")
         List<UserToDo> findAllByObjectiveIdAndUserId(Long objectiveId, Long userId);
+        @Query("")
         List<UserToDo> findAllByKeyResultIdAndUserId(Long keyResultId, Long userId);
         @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.user.id = :userId AND t.completion = false AND t.endDate >= :today order by t.endDate")
         List<UserToDo> findAllByUserIdAndCompletionFalseAndProgress(@Param("userId") Long userId, @Param("today")LocalDate today);
