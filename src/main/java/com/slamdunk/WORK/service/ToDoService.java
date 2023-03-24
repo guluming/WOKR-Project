@@ -6,14 +6,8 @@ import com.slamdunk.WORK.dto.request.ToDoRequest;
 import com.slamdunk.WORK.dto.response.ToDoDetailResponse;
 import com.slamdunk.WORK.dto.response.ToDoProgressResponse;
 import com.slamdunk.WORK.dto.response.ToDoResponse;
-import com.slamdunk.WORK.entity.KeyResult;
-import com.slamdunk.WORK.entity.Objective;
-import com.slamdunk.WORK.entity.ToDo;
-import com.slamdunk.WORK.entity.UserToDo;
-import com.slamdunk.WORK.repository.KeyResultRepository;
-import com.slamdunk.WORK.repository.ObjectiveRepository;
-import com.slamdunk.WORK.repository.ToDoRepository;
-import com.slamdunk.WORK.repository.UserToDoRepository;
+import com.slamdunk.WORK.entity.*;
+import com.slamdunk.WORK.repository.*;
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,6 +30,7 @@ public class ToDoService {
     private final UserToDoRepository userToDoRepository;
     private final ToDoRepository toDoRepository;
     private final UserToDoService userToDoService;
+    private final UserRepository userRepository;
 
     //할일 생성
     @Transactional
@@ -231,24 +226,36 @@ public class ToDoService {
 
     //할일 날짜별 전체 조회
     public ResponseEntity<?> getProgressToDo(UserDetailsImpl userDetails) {
-        List<UserToDo> progressUserToDoList = userToDoRepository.findAllByUserIdAndCompletionFalseAndProgress(userDetails.getUser().getId(), LocalDate.now());
-        List<UserToDo> completionUserToDoList = userToDoRepository.findAllByUserIdAndCompletionTrueAndCompletion(userDetails.getUser().getId());
+        List<User> teamMemberList = userRepository.findAllByTeam(userDetails.getUser().getTeam());
+
+        List<ToDoProgressResponse> toDoProgressResponseList = new ArrayList<>();
+
+        List<UserToDo> progressUserToDoList = userToDoRepository.findAllByTeamAndCompletionFalseAndProgress(userDetails.getUser().getTeam(), LocalDate.now());
+        List<UserToDo> completionUserToDoList = userToDoRepository.findAllByTeamAndCompletionTrueAndCompletion(userDetails.getUser().getTeam());
 
         LocalDate startDay = LocalDate.now();
         LocalDate lastDay = LocalDate.now();
         LocalDate moveDay = LocalDate.now();
-        UserToDo userToDoFirstEndDate = userToDoService.findFirstEndDate(userDetails);
-        if (userToDoFirstEndDate != null) {
-            startDay = userToDoFirstEndDate.getToDo().getEndDate();
-            moveDay = userToDoFirstEndDate.getToDo().getEndDate();
+
+        for (int k = 0; k < teamMemberList.size(); k++) {
+            UserToDo userToDoFirstEndDate = userToDoService.findFirstEndDate(teamMemberList.get(k));
+            if (userToDoFirstEndDate != null) {
+                LocalDate temp = userToDoFirstEndDate.getToDo().getEndDate();
+                if (temp.isBefore(startDay)) {
+                    startDay = userToDoFirstEndDate.getToDo().getEndDate();
+                    moveDay = userToDoFirstEndDate.getToDo().getEndDate();
+                }
+            }
+
+            UserToDo userToDoLastEndDate = userToDoService.findLastEndDate(teamMemberList.get(k));
+            if (userToDoLastEndDate != null) {
+                LocalDate temp = userToDoLastEndDate.getToDo().getEndDate();
+                if (temp.isAfter(lastDay)) {
+                    lastDay = userToDoLastEndDate.getToDo().getEndDate();
+                }
+            }
         }
 
-        UserToDo userToDoLastEndDate = userToDoService.findLastEndDate(userDetails);
-        if (userToDoLastEndDate != null) {
-            lastDay = userToDoLastEndDate.getToDo().getEndDate();
-        }
-
-        List<ToDoProgressResponse> toDoProgressResponseList = new ArrayList<>();
         while ((moveDay.isEqual(startDay) || moveDay.isAfter(startDay)) && (moveDay.isEqual(lastDay) || moveDay.isBefore(lastDay))) {
             List<ToDoProgressResponse.progressTodo> progressTodoList = new ArrayList<>();
             List<ToDoProgressResponse.completionTodo> completionTodoList = new ArrayList<>();
@@ -257,8 +264,8 @@ public class ToDoService {
                 if ((progressUserToDoList.get(i).getToDo().getStartDate().isEqual(moveDay) || progressUserToDoList.get(i).getToDo().getStartDate().isBefore(moveDay))
                         && (progressUserToDoList.get(i).getToDo().getEndDate().isEqual(moveDay) || progressUserToDoList.get(i).getToDo().getEndDate().isAfter(moveDay))) {
                     ToDoProgressResponse.progressTodo progressTodo = ToDoProgressResponse.progressTodo.builder()
-                            .myToDo(userToDoService.checkMyToDo(progressUserToDoList.get(i).getUser().getId(), userDetails))
-                            .createUser(userDetails.getUser().getName())
+                            .myToDo(userToDoService.checkUserMyToDo(progressUserToDoList.get(i).getUser().getId(), userDetails.getUser()))
+                            .createUser(progressUserToDoList.get(i).getUser().getName())
                             .keyResultId(progressUserToDoList.get(i).getKeyResult() != null ? progressUserToDoList.get(i).getKeyResult().getId() : null)
                             .krNumber(progressUserToDoList.get(i).getKeyResult() != null ? progressUserToDoList.get(i).getKeyResult().getKrNumber() : 0)
                             .toDoId(progressUserToDoList.get(i).getToDo().getId())
@@ -282,8 +289,8 @@ public class ToDoService {
             for (int i = 0; i < completionUserToDoList.size(); i++) {
                 if (completionUserToDoList.get(i).getToDo().getEndDate().isEqual(moveDay)) {
                     ToDoProgressResponse.completionTodo completionTodo = ToDoProgressResponse.completionTodo.builder()
-                            .myToDo(userToDoService.checkMyToDo(completionUserToDoList.get(i).getUser().getId(), userDetails))
-                            .createUser(userDetails.getUser().getName())
+                            .myToDo(userToDoService.checkUserMyToDo(completionUserToDoList.get(i).getUser().getId(), userDetails.getUser()))
+                            .createUser(completionUserToDoList.get(i).getUser().getName())
                             .keyResultId(completionUserToDoList.get(i).getKeyResult() != null ? completionUserToDoList.get(i).getKeyResult().getId() : null)
                             .krNumber(completionUserToDoList.get(i).getKeyResult() != null ? completionUserToDoList.get(i).getKeyResult().getKrNumber() : 0)
                             .toDoId(completionUserToDoList.get(i).getToDo().getId())
