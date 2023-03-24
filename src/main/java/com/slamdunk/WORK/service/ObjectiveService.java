@@ -1,4 +1,5 @@
 package com.slamdunk.WORK.service;
+
 import com.slamdunk.WORK.Editor.KeyResultEditor;
 import com.slamdunk.WORK.Editor.ObjectiveEditor;
 import com.slamdunk.WORK.Editor.ToDoEditor;
@@ -36,29 +37,24 @@ public class ObjectiveService {
     @Transactional
     public ResponseEntity<?> registerObjective(ObjectiveRequest objectiveRequest, UserDetailsImpl userDetails) {
         if (userDetails.getUser().getTeamPosition().equals("팀장")) {
-            Optional<Objective> objectiveCheck = objectiveRepository.findByObjective(objectiveRequest.getObjective());
-            if (objectiveCheck.isPresent()) {
-                return new ResponseEntity<>("오브젝트 이름이 중복됩니다.", HttpStatus.BAD_REQUEST);
-            } else {
-                Objective newObjective = new Objective(objectiveRequest);
-                objectiveRepository.save(newObjective);
+            Objective newObjective = new Objective(objectiveRequest);
+            objectiveRepository.save(newObjective);
 
-                userObjectiveService.registerUserObjective(newObjective, userDetails);
+            userObjectiveService.registerUserObjective(newObjective, userDetails);
 
-                ObjectiveResponse objectiveResponse = ObjectiveResponse.builder()
-                        .myObjective(userObjectiveService.checkMyObjective(newObjective.getId(), userDetails))
-                        .objectiveId(newObjective.getId())
-                        .objective(newObjective.getObjective())
-                        .startdate(newObjective.getStartDate())
-                        .enddate(newObjective.getEndDate())
-                        .color(newObjective.getColor())
-                        .progress(newObjective.getProgress())
-                        .build();
+            ObjectiveResponse objectiveResponse = ObjectiveResponse.builder()
+                    .myObjective(userObjectiveService.checkMyObjective(newObjective.getId(), userDetails))
+                    .objectiveId(newObjective.getId())
+                    .objective(newObjective.getObjective())
+                    .startdate(newObjective.getStartDate())
+                    .enddate(newObjective.getEndDate())
+                    .color(newObjective.getColor())
+                    .progress(newObjective.getProgress())
+                    .build();
 
-                return new ResponseEntity<>(objectiveResponse, HttpStatus.CREATED);
-            }
+            return new ResponseEntity<>(objectiveResponse, HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>("팀장만 생성 가능합니다." ,HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("팀장만 생성 가능합니다.", HttpStatus.FORBIDDEN);
         }
     }
 
@@ -67,7 +63,7 @@ public class ObjectiveService {
         List<Long> objectiveIdList = userObjectiveService.allObjective(userDetails);
 
         List<ObjectiveResponse> objectiveResponseList = new ArrayList<>();
-        for (int i=0; i<objectiveIdList.size(); i++) {
+        for (int i = 0; i < objectiveIdList.size(); i++) {
             Optional<Objective> objective = objectiveRepository.findByIdAndDeleteStateFalse(objectiveIdList.get(i));
             if (objective.isPresent()) {
                 ObjectiveResponse objectiveResponse = ObjectiveResponse.builder()
