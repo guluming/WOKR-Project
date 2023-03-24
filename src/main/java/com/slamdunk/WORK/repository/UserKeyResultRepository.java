@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface UserKeyResultRepository extends JpaRepository<UserKeyResult, Long> {
     List<UserKeyResult> findAllByTeam(String team);
     Optional<UserKeyResult> findByKeyResultIdAndUserId(Long KeyResultId, Long userId);
+    List<UserKeyResult> findAllByObjectiveIdAndUserId(Long objectiveId, Long userId);
 }

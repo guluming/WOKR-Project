@@ -52,4 +52,18 @@ public class UserKeyResultService {
                 = userKeyResultRepository.findByKeyResultIdAndUserId(keyResultId,userDetails.getUser().getId());
         return checkDate.isPresent();
     }
+
+    //회원-핵심결과 목표Id로 중간테이블 전체 조회
+    public List<KeyResult> checkKeyResultOfObjective(Long objectiveId, Long userId) {
+        List<UserKeyResult> checkKeyResultOfObjectiveList = userKeyResultRepository.findAllByObjectiveIdAndUserId(objectiveId, userId);
+
+        List<KeyResult> KeyResultOfObjectiveList = new ArrayList<>();
+        if (!checkKeyResultOfObjectiveList.isEmpty()) {
+            for (int i = 0; i < checkKeyResultOfObjectiveList.size(); i++) {
+                KeyResultOfObjectiveList.add(checkKeyResultOfObjectiveList.get(i).getKeyResult());
+            }
+        }
+
+        return KeyResultOfObjectiveList;
+    }
 }
