@@ -34,6 +34,11 @@ public class UserKeyResultService {
         }
     }
 
+    //회원-핵심결과 중간테이블 목표Id로 전체 조회
+    public List<UserKeyResult> allKeyResultOfObjective(Long objectiveId, UserDetailsImpl userDetails) {
+        return userKeyResultRepository.findAllByObjectiveIdAndTeam(objectiveId, userDetails.getUser().getTeam());
+    }
+
     //회원-핵심결과 중간테이블 전체 조회
     public List<Long> allKeyResult(UserDetailsImpl userDetails) {
         List<UserKeyResult> userKeyResultList = userKeyResultRepository.findAllByTeam(userDetails.getUser().getTeam());
