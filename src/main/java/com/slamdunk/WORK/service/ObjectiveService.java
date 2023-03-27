@@ -111,40 +111,39 @@ public class ObjectiveService {
     //목표 진척도 수정
     @Transactional
     public ResponseEntity<String> objectiveProgressEdit(Long objectiveId, UserDetailsImpl userDetails, ProgressRequest progressRequest) {
-        Optional<Objective> objective = objectiveRepository.findByIdAndDeleteStateFalse(objectiveId);
-
-        if (objective.isPresent()) {
-            if (userObjectiveService.checkMyObjective(objectiveId, userDetails)) {
-                ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = objective.get().ObjectiveToEditor();
+        if (userDetails.getUser().getTeamPosition().equals("팀장")) {
+            Optional<Objective> objectiveProgressEdit = objectiveRepository.findByObjectiveIdAndTeam(objectiveId, userDetails.getUser().getTeam());
+            if (objectiveProgressEdit.isPresent()) {
+                ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = objectiveProgressEdit.get().ObjectiveToEditor();
 
                 if (progressRequest.getProgress() > 0) {
                     ObjectiveEditor objectiveEditor = objectiveEditorBuilder
                             .progress(progressRequest.getProgress())
                             .build();
-                    objective.get().ObjectiveEdit(objectiveEditor);
+                    objectiveProgressEdit.get().ObjectiveEdit(objectiveEditor);
                 } else if (progressRequest.getProgress() == 0) {
                     ObjectiveEditor objectiveEditor = objectiveEditorBuilder
                             .progress(0)
                             .build();
-                    objective.get().ObjectiveEdit(objectiveEditor);
+                    objectiveProgressEdit.get().ObjectiveEdit(objectiveEditor);
                     return new ResponseEntity<>("진척도가 초기화 되었습니다.", HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>("입력된 진척도가 없습니다.", HttpStatus.BAD_REQUEST);
                 }
                 return new ResponseEntity<>("진척도를 수정 했습니다.", HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("수정할 수 있는 권한이 없습니다.", HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>("존재하지 않는 목표이거나, 해당 목표의 소속팀이 아닙니다.", HttpStatus.BAD_REQUEST);
             }
         } else {
-            return new ResponseEntity<>("존재하지 않는 목표입니다.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("수정할 수 있는 권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
     }
 
     //목표 수정
     @Transactional
     public ResponseEntity<String> objectiveEdit(Long objectiveId, UserDetailsImpl userDetails, ObjectiveEditRequest objectiveEditRequest) {
-        if (userObjectiveService.checkMyObjective(objectiveId, userDetails)) {
-            Optional<Objective> editObjective = objectiveRepository.findByIdAndDeleteStateFalse(objectiveId);
+        if (userDetails.getUser().getTeamPosition().equals("팀장")) {
+            Optional<Objective> editObjective = objectiveRepository.findByObjectiveIdAndTeam(objectiveId, userDetails.getUser().getTeam());
             if (editObjective.isPresent()) {
                 ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = editObjective.get().ObjectiveToEditor();
 
@@ -174,7 +173,7 @@ public class ObjectiveService {
                 }
                 return new ResponseEntity<>("목표가 수정 되었습니다.", HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("존재하지 않는 목표입니다.", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("존재하지 않는 목표이거나, 해당 목표의 소속팀이 아닙니다.", HttpStatus.BAD_REQUEST);
             }
         } else {
             return new ResponseEntity<>("수정 권한이 없습니다.", HttpStatus.FORBIDDEN);
