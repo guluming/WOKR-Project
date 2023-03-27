@@ -332,5 +332,66 @@ public class ToDoService {
 
             return new ResponseEntity<>(toDoProgressResponseList, HttpStatus.OK);
         }
+    //할일 대시보드 조회
+    public ResponseEntity<?> getDashToDo(UserDetailsImpl userDetails) {
+        List<Long> todoId = userToDoService.allToDo(userDetails);
+        List<ToDoResponse> dashToDoResponseList = new ArrayList<>();
+        for (int n = 0; n < todoId.size(); n++) {
+            Optional<ToDo> toDo = toDoRepository.findByIdAndDeleteStateFalse(todoId.get(n));
+            if (toDo != null && toDo.get().getEndDate().isEqual(LocalDate.now())
+                    && toDo.get().isCompletion()) {
+                ToDoResponse dashToDoResponse = ToDoResponse.builder()
+                        .myToDo(userToDoService.checkMyToDo(toDo.get().getId(), userDetails))
+                        .keyResultId(toDo.get().getKeyResult() != null ? toDo.get().getKeyResult().getId() : null)
+                        .krNumber(toDo.get().getKeyResult() != null ? toDo.get().getKeyResult().getKrNumber() : 0)
+                        .toDoId(toDo.get().getId())
+                        .toDo(toDo.get().getToDo())
+                        .memo(toDo.get().getMemo())
+                        .startDate(toDo.get().getStartDate())
+                        .startDateTime(toDo.get().getStartDateTime())
+                        .endDate(toDo.get().getEndDate())
+                        .endDateTime(toDo.get().getEndDateTime())
+                        .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .priority(toDo.get().getPriority())
+                        .completion(toDo.get().isCompletion())
+                        .color(toDo.get().getObjective() != null ? toDo.get().getObjective().getColor() : null)
+                        .build();
+                dashToDoResponseList.add(dashToDoResponse);
+            }
+        }
+        return new ResponseEntity<>(dashToDoResponseList, HttpStatus.OK);
+    }
+//    //할일 대시보드 조회 (투두 설정 날짜 전체 )
+//    public ResponseEntity<?> getDashToDo(UserDetailsImpl userDetails) {
+//        List<Long> todoId = userToDoService.allToDo(userDetails);
+//        List<ToDoResponse> dashToDoResponseList = new ArrayList<>();
+//        for (int n = 0; n < todoId.size(); n++) {
+//            Optional<ToDo> toDo = toDoRepository.findByIdAndDeleteStateFalse(todoId.get(n));
+//            if (toDo != null && toDo.get().getEndDate().isAfter(LocalDate.now()) &&
+//                    toDo.get().getStartDate().isBefore(LocalDate.now().plusDays(1)) &&
+//                    toDo.get().isCompletion()) {
+//                ToDoResponse dashToDoResponse = ToDoResponse.builder()
+//                        .myToDo(userToDoService.checkMyToDo(toDo.get().getId(), userDetails))
+//                        .keyResultId(toDo.get().getKeyResult() != null ? toDo.get().getKeyResult().getId() : null)
+//                        .krNumber(toDo.get().getKeyResult() != null ? toDo.get().getKeyResult().getKrNumber() : 0)
+//                        .toDoId(toDo.get().getId())
+//                        .toDo(toDo.get().getToDo())
+//                        .memo(toDo.get().getMemo())
+//                        .startDate(toDo.get().getStartDate())
+//                        .startDateTime(toDo.get().getStartDateTime())
+//                        .endDate(toDo.get().getEndDate())
+//                        .endDateTime(toDo.get().getEndDateTime())
+//                        .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+//                        .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+//                        .priority(toDo.get().getPriority())
+//                        .completion(toDo.get().isCompletion())
+//                        .color(toDo.get().getObjective() != null ? toDo.get().getObjective().getColor() : null)
+//                        .build();
+//                dashToDoResponseList.add(dashToDoResponse);
+//            }
+//        }
+//        return new ResponseEntity<>(dashToDoResponseList, HttpStatus.OK);
+//    }
     }
 
