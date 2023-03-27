@@ -39,11 +39,8 @@ public class UserObjectiveService {
         List<UserObjective> userObjectiveList = userObjectiveRepository.findAllByTeam(userDetails.getUser().getTeam());
 
         List<Long> objectiveIdList = new ArrayList<>();
-        for (int i=0; i<userObjectiveList.size(); i++) {
-            Optional<Objective> objective = objectiveRepository.findByIdAndDeleteStateFalse(userObjectiveList.get(i).getObjective().getId());
-            if (objective.isPresent()) {
-                objectiveIdList.add(userObjectiveList.get(i).getObjective().getId());
-            }
+        for (int i = 0; i < userObjectiveList.size(); i++) {
+            objectiveIdList.add(userObjectiveList.get(i).getObjective().getId());
         }
 
         return objectiveIdList;
