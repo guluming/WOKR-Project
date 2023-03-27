@@ -103,86 +103,87 @@ public class KeyResultService {
     //핵심결과 진척도 수정
     @Transactional
     public ResponseEntity<String> keyResultProgressEdit(Long keyResultId, UserDetailsImpl userDetails, ProgressRequest progressRequest) {
-        Optional<KeyResult> keyResult = keyResultRepository.findByIdAndDeleteStateFalse(keyResultId);
-
-        if (keyResult.isPresent()) {
-            if (userKeyResultService.checkMyKeyResult(keyResultId, userDetails)) {
-                KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = keyResult.get().KeyResultToEditor();
+        if (userDetails.getUser().getTeamPosition().equals("팀장")) {
+            Optional<KeyResult> keyResultProgressEdit = keyResultRepository.findByKeyResultIdAndTeam(keyResultId, userDetails.getUser().getTeam());
+            if (keyResultProgressEdit.isPresent()) {
+                KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = keyResultProgressEdit.get().KeyResultToEditor();
 
                 if (progressRequest.getProgress() > 0) {
                     KeyResultEditor keyResultEditor = keyResultEditorBuilder
                             .progress(progressRequest.getProgress())
                             .build();
-                    keyResult.get().KeyResultEdit(keyResultEditor);
+                    keyResultProgressEdit.get().KeyResultEdit(keyResultEditor);
+                    return new ResponseEntity<>("진척도를 수정 했습니다.", HttpStatus.OK);
                 } else if (progressRequest.getProgress() == 0) {
                     KeyResultEditor keyResultEditor = keyResultEditorBuilder
                             .progress(0)
                             .build();
-                    keyResult.get().KeyResultEdit(keyResultEditor);
+                    keyResultProgressEdit.get().KeyResultEdit(keyResultEditor);
                     return new ResponseEntity<>("진척도가 초기화 되었습니다.", HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>("입력된 진척도가 없습니다.", HttpStatus.BAD_REQUEST);
                 }
-                return new ResponseEntity<>("진척도를 수정 했습니다.", HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("수정할 수 있는 권한이 없습니다.", HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>("존재하지 않는 핵심결과이거나, 해당 핵심결과의 소속팀이 아닙니다.", HttpStatus.BAD_REQUEST);
             }
         } else {
-            return new ResponseEntity<>("존재하지 않는 핵심결과입니다.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("수정할 수 있는 권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
     }
 
     //핵심결과 자신감 수정
     @Transactional
     public ResponseEntity<String> keyResultEmoticonEdit(Long keyResultId, UserDetailsImpl userDetails, EmoticonRequest emoticonRequest) {
-        Optional<KeyResult> keyResult = keyResultRepository.findByIdAndDeleteStateFalse(keyResultId);
-
-        if (keyResult.isPresent()) {
-            if (userKeyResultService.checkMyKeyResult(keyResultId, userDetails)) {
-                KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = keyResult.get().KeyResultToEditor();
+        if (userDetails.getUser().getTeamPosition().equals("팀장")) {
+            Optional<KeyResult> keyResultEmoticonEdit = keyResultRepository.findByKeyResultIdAndTeam(keyResultId, userDetails.getUser().getTeam());
+            if (keyResultEmoticonEdit.isPresent()) {
+                KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = keyResultEmoticonEdit.get().KeyResultToEditor();
 
                 if (emoticonRequest.getEmoticon() > 0) {
                     KeyResultEditor keyResultEditor = keyResultEditorBuilder
                             .emoticon(emoticonRequest.getEmoticon())
                             .build();
-                    keyResult.get().KeyResultEdit(keyResultEditor);
+                    keyResultEmoticonEdit.get().KeyResultEdit(keyResultEditor);
+                    return new ResponseEntity<>("자신감을 수정 했습니다.", HttpStatus.OK);
                 } else if (emoticonRequest.getEmoticon() == 0) {
                     KeyResultEditor keyResultEditor = keyResultEditorBuilder
                             .emoticon(0)
                             .build();
-                    keyResult.get().KeyResultEdit(keyResultEditor);
+                    keyResultEmoticonEdit.get().KeyResultEdit(keyResultEditor);
                     return new ResponseEntity<>("자신감이 초기화 되었습니다.", HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>("입력된 자신감이 없습니다.", HttpStatus.BAD_REQUEST);
                 }
-                return new ResponseEntity<>("자신감을 수정 했습니다.", HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("수정할 수 있는 권한이 없습니다.", HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>("존재하지 않는 핵심결과이거나, 해당 핵심결과의 소속팀이 아닙니다.", HttpStatus.BAD_REQUEST);
             }
         } else {
-            return new ResponseEntity<>("존재하지 않는 핵심결과입니다.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("수정할 수 있는 권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
     }
 
     //핵심결과 수정
     @Transactional
     public ResponseEntity<?> keyResultEdit(Long keyResultId, UserDetailsImpl userDetails, KeyResultEditRequest keyResultEditRequest) {
-        if (userKeyResultService.checkMyKeyResult(keyResultId, userDetails)) {
-            Optional<KeyResult> editKeyResult = keyResultRepository.findByIdAndDeleteStateFalse(keyResultId);
-            if (editKeyResult.isPresent()) {
-                KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = editKeyResult.get().KeyResultToEditor();
+        if (userDetails.getUser().getTeamPosition().equals("팀장")) {
+            Optional<KeyResult> keyResultEdit = keyResultRepository.findByKeyResultIdAndTeam(keyResultId, userDetails.getUser().getTeam());
+            if (keyResultEdit.isPresent()) {
+                KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = keyResultEdit.get().KeyResultToEditor();
+
                 if (keyResultEditRequest.getKeyResult() != null && !keyResultEditRequest.getKeyResult().equals("")) {
                     KeyResultEditor keyResultEditor = keyResultEditorBuilder
                             .keyResult(keyResultEditRequest.getKeyResult())
                             .build();
-                    editKeyResult.get().KeyResultEdit(keyResultEditor);
+                    keyResultEdit.get().KeyResultEdit(keyResultEditor);
+                    return new ResponseEntity<>("핵심결과가 수정 되었습니다.", HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("입력된 핵심결과 없습니다.", HttpStatus.BAD_REQUEST);
                 }
-                return new ResponseEntity<>("핵심결과가 수정 되었습니다.", HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("존재하지 않는 핵심결과입니다.", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("존재하지 않는 핵심결과이거나, 해당 핵심결과의 소속팀이 아닙니다.", HttpStatus.BAD_REQUEST);
             }
         } else {
-            return new ResponseEntity<>("수정 권한이 없습니다.", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("수정할 수 있는 권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
     }
 
