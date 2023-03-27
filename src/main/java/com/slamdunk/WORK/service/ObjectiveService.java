@@ -37,22 +37,27 @@ public class ObjectiveService {
     @Transactional
     public ResponseEntity<?> registerObjective(ObjectiveRequest objectiveRequest, UserDetailsImpl userDetails) {
         if (userDetails.getUser().getTeamPosition().equals("팀장")) {
-            Objective newObjective = new Objective(objectiveRequest);
-            objectiveRepository.save(newObjective);
+            List<Long> objectiveIdList = userObjectiveService.allObjective(userDetails);
+            if (objectiveIdList.size() < 4) {
+                Objective newObjective = new Objective(objectiveRequest);
+                objectiveRepository.save(newObjective);
 
-            userObjectiveService.registerUserObjective(newObjective, userDetails);
+                userObjectiveService.registerUserObjective(newObjective, userDetails);
 
-            ObjectiveResponse objectiveResponse = ObjectiveResponse.builder()
-                    .myObjective(userObjectiveService.checkMyObjective(newObjective.getId(), userDetails))
-                    .objectiveId(newObjective.getId())
-                    .objective(newObjective.getObjective())
-                    .startdate(newObjective.getStartDate())
-                    .enddate(newObjective.getEndDate())
-                    .color(newObjective.getColor())
-                    .progress(newObjective.getProgress())
-                    .build();
+                ObjectiveResponse objectiveResponse = ObjectiveResponse.builder()
+                        .myObjective(userObjectiveService.checkMyObjective(newObjective.getId(), userDetails))
+                        .objectiveId(newObjective.getId())
+                        .objective(newObjective.getObjective())
+                        .startdate(newObjective.getStartDate())
+                        .enddate(newObjective.getEndDate())
+                        .color(newObjective.getColor())
+                        .progress(newObjective.getProgress())
+                        .build();
 
-            return new ResponseEntity<>(objectiveResponse, HttpStatus.CREATED);
+                return new ResponseEntity<>(objectiveResponse, HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>("생성된 목표가 최대치 입니다.", HttpStatus.BAD_REQUEST);
+            }
         } else {
             return new ResponseEntity<>("팀장만 생성 가능합니다.", HttpStatus.FORBIDDEN);
         }
