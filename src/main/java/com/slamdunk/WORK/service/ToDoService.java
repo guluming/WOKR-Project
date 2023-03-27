@@ -270,7 +270,7 @@ public class ToDoService {
                     if ((progressUserToDoList.get(i).getToDo().getStartDate().isEqual(moveDay) || progressUserToDoList.get(i).getToDo().getStartDate().isBefore(moveDay))
                             && (progressUserToDoList.get(i).getToDo().getEndDate().isEqual(moveDay) || progressUserToDoList.get(i).getToDo().getEndDate().isAfter(moveDay))) {
                         ToDoProgressResponse.progressTodo progressTodo = ToDoProgressResponse.progressTodo.builder()
-                                .myToDo(userToDoService.checkUserMyToDo(progressUserToDoList.get(i).getToDo().getId(), userDetails.getUser()))
+                                .myToDo(userToDoService.checkUserMyToDo(progressUserToDoList.get(i).getUser().getId(), userDetails.getUser()))
                                 .createUser(progressUserToDoList.get(i).getUser().getName())
                                 .keyResultId(progressUserToDoList.get(i).getKeyResult() != null ? progressUserToDoList.get(i).getKeyResult().getId() : null)
                                 .krNumber(progressUserToDoList.get(i).getKeyResult() != null ? progressUserToDoList.get(i).getKeyResult().getKrNumber() : 0)
@@ -295,7 +295,7 @@ public class ToDoService {
                 for (int i = 0; i < completionUserToDoList.size(); i++) {
                     if (completionUserToDoList.get(i).getToDo().getEndDate().isEqual(moveDay)) {
                         ToDoProgressResponse.completionTodo completionTodo = ToDoProgressResponse.completionTodo.builder()
-                                .myToDo(userToDoService.checkUserMyToDo(completionUserToDoList.get(i).getToDo().getId(), userDetails.getUser()))
+                                .myToDo(userToDoService.checkUserMyToDo(completionUserToDoList.get(i).getUser().getId(), userDetails.getUser()))
                                 .createUser(completionUserToDoList.get(i).getUser().getName())
                                 .keyResultId(completionUserToDoList.get(i).getKeyResult() != null ? completionUserToDoList.get(i).getKeyResult().getId() : null)
                                 .krNumber(completionUserToDoList.get(i).getKeyResult() != null ? completionUserToDoList.get(i).getKeyResult().getKrNumber() : 0)
