@@ -11,6 +11,7 @@ import com.slamdunk.WORK.dto.response.KeyResultResponse;
 import com.slamdunk.WORK.entity.KeyResult;
 import com.slamdunk.WORK.entity.Objective;
 import com.slamdunk.WORK.entity.ToDo;
+import com.slamdunk.WORK.entity.UserKeyResult;
 import com.slamdunk.WORK.repository.KeyResultRepository;
 import com.slamdunk.WORK.repository.ObjectiveRepository;
 import com.slamdunk.WORK.security.UserDetailsImpl;
@@ -42,11 +43,16 @@ public class KeyResultService {
             if (objectiveCheck.isEmpty()) {
                 return new ResponseEntity<>("목표가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
             } else {
-                KeyResult newKeyResult = new KeyResult(objectiveCheck.get(), keyResultRequest);
-                keyResultRepository.save(newKeyResult);
+                List<UserKeyResult> checkKeyResultCount = userKeyResultService.allKeyResultOfObjective(objectiveId, userDetails);
+                if (checkKeyResultCount.size() < 3) {
+                    KeyResult newKeyResult = new KeyResult(objectiveCheck.get(), keyResultRequest);
+                    keyResultRepository.save(newKeyResult);
 
-                userKeyResultService.registerUserKeyResult(newKeyResult, objectiveCheck.get(), userDetails);
-                return new ResponseEntity<>(HttpStatus.CREATED);
+                    userKeyResultService.registerUserKeyResult(newKeyResult, objectiveCheck.get(), userDetails);
+                    return new ResponseEntity<>(HttpStatus.CREATED);
+                } else {
+                    return new ResponseEntity<>("핵심결과가 최대치 입니다.", HttpStatus.BAD_REQUEST);
+                }
             }
         } else {
             return new ResponseEntity<>("팀장만 생성 가능합니다.", HttpStatus.FORBIDDEN);
