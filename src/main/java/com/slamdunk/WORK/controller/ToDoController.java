@@ -71,4 +71,10 @@ public class ToDoController {
     public ResponseEntity<?> getProgressToDo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return toDoService.getProgressToDo(userDetails);
     }
+
+    //할일 대시보드 조회
+    @GetMapping("api/todo/completion")
+    public ResponseEntity<?> getDashToDo(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return toDoService.getDashToDo(userDetails);
+    }
 }
