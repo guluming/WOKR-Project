@@ -183,10 +183,10 @@ public class ObjectiveService {
     //목표 삭제
     @Transactional
     public ResponseEntity<String> objectiveDelete(Long objectiveId, UserDetailsImpl userDetails) {
-        if (userObjectiveService.checkMyObjective(objectiveId, userDetails)) {
+        if (userDetails.getUser().getTeamPosition().equals("팀장")) {
             List<KeyResult> KeyResultOfObjectiveList = userKeyResultService.checkKeyResultOfObjective(objectiveId, userDetails.getUser().getId());
             List<ToDo> ToDoOfObjectiveList = userToDoService.checkToDoOfObjective(objectiveId, userDetails.getUser().getId());
-            Optional<Objective> deleteObjective = objectiveRepository.findById(objectiveId);
+            Optional<Objective> deleteObjective = objectiveRepository.findByObjectiveIdAndTeam(objectiveId, userDetails.getUser().getTeam());
             if (deleteObjective.isPresent() && !KeyResultOfObjectiveList.isEmpty() && !ToDoOfObjectiveList.isEmpty()) {
                 for (int i = 0; i < KeyResultOfObjectiveList.size(); i++) {
                     if (!KeyResultOfObjectiveList.get(i).isDeleteState()) {
@@ -248,7 +248,7 @@ public class ObjectiveService {
 
                 return new ResponseEntity<>("목표가 삭제 되었습니다.", HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("존재하지 않는 목표입니다.", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("존재하지 않는 목표이거나, 해당 목표의 소속팀이 아닙니다.", HttpStatus.BAD_REQUEST);
             }
         } else {
             return new ResponseEntity<>("삭제 권한이 없습니다.", HttpStatus.FORBIDDEN);
