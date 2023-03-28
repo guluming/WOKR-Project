@@ -190,9 +190,9 @@ public class KeyResultService {
     //핵심결과 삭제
     @Transactional
     public ResponseEntity<?> keyResultDelete(Long keyResultId, UserDetailsImpl userDetails) {
-        if (userKeyResultService.checkMyKeyResult(keyResultId, userDetails)) {
+        if (userDetails.getUser().getTeamPosition().equals("팀장")) {
             List<ToDo> ToDoOfKeyResultList = userToDoService.checkToDoOfKeyResult(keyResultId, userDetails.getUser().getId());
-            Optional<KeyResult> deleteKeyResult = keyResultRepository.findById(keyResultId);
+            Optional<KeyResult> deleteKeyResult = keyResultRepository.findByKeyResultIdAndTeam(keyResultId, userDetails.getUser().getTeam());
             if (deleteKeyResult.isPresent() && !ToDoOfKeyResultList.isEmpty()) {
                 for (int i = 0; i < ToDoOfKeyResultList.size(); i++) {
                     if (!ToDoOfKeyResultList.get(i).isDeleteState()) {
@@ -224,7 +224,7 @@ public class KeyResultService {
 
                 return new ResponseEntity<>("핵심결과가 삭제 되었습니다.", HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("존재하지 않는 핵심결과입니다.", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("존재하지 않는 핵심결과이거나, 해당 핵심결과의 소속팀이 아닙니다.", HttpStatus.BAD_REQUEST);
             }
         } else {
             return new ResponseEntity<>("삭제 권한이 없습니다.", HttpStatus.FORBIDDEN);
