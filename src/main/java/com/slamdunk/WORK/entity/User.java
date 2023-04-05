@@ -25,6 +25,7 @@ public class User {
     private String team;
     @Column(nullable = false)
     private String teamPosition;
+    private final boolean firstLogin = true;
     @Column
     private boolean secessionState;
 
@@ -36,15 +37,7 @@ public class User {
         this.teamPosition = params.getTeamposition();
     }
 
-    public void userUpdate(UserRequest params) {
-        this.team = params.getTeam();
-        this.teamPosition = params.getTeamposition();
-    }
 
-    public void userSecession(UserRequest params) {
-        this.email = params.getEmail();
-        this.secessionState = true;
-    }
 
     public void encryptPassword(PasswordEncoder passwordEncoder) {
         password = passwordEncoder.encode(password);
