@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RestController
 public class ObjectiveController {
@@ -18,7 +20,7 @@ public class ObjectiveController {
     //목표 생성
     @PostMapping("api/objective")
     public ResponseEntity<?> registerObjective(
-            @RequestBody ObjectiveRequest objectiveRequest,
+            @RequestBody @Valid ObjectiveRequest objectiveRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return objectiveService.registerObjective(objectiveRequest, userDetails);
     }
@@ -42,7 +44,7 @@ public class ObjectiveController {
     public ResponseEntity<?> objectiveProgressEdit(
             @PathVariable("objective_id") Long objectiveId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody ProgressRequest progressRequest) {
+            @RequestBody @Valid ProgressRequest progressRequest) {
         return objectiveService.objectiveProgressEdit(objectiveId, userDetails, progressRequest);
     }
 
@@ -51,7 +53,7 @@ public class ObjectiveController {
     public ResponseEntity<?> objectiveEdit(
             @PathVariable("objective_id") Long objectiveId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody ObjectiveEditRequest objectiveEditRequest) {
+            @RequestBody @Valid ObjectiveEditRequest objectiveEditRequest) {
         return objectiveService.objectiveEdit(objectiveId, userDetails, objectiveEditRequest);
     }
 

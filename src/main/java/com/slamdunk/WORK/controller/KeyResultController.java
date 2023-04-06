@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -22,7 +24,7 @@ public class KeyResultController {
     @PostMapping("api/{objective_id}/keyresult")
     public ResponseEntity<?> registerKeyResult(
             @PathVariable("objective_id") Long objectiveId,
-            @RequestBody KeyResultRequest keyResultRequest,
+            @RequestBody @Valid KeyResultRequest keyResultRequest,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return keyResultService.registerKeyResult(objectiveId, keyResultRequest, userDetails);
     }
@@ -46,7 +48,7 @@ public class KeyResultController {
     public ResponseEntity<?> keyResultProgressEdit(
             @PathVariable("keyresult_id") Long keyResultId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody ProgressRequest progressRequest) {
+            @RequestBody @Valid ProgressRequest progressRequest) {
         return keyResultService.keyResultProgressEdit(keyResultId, userDetails, progressRequest);
     }
 
@@ -55,7 +57,7 @@ public class KeyResultController {
     public ResponseEntity<?> keyResultEmoticonEdit(
             @PathVariable("keyresult_id") Long keyResultId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody EmoticonRequest emoticonRequest) {
+            @RequestBody @Valid EmoticonRequest emoticonRequest) {
         return keyResultService.keyResultEmoticonEdit(keyResultId, userDetails, emoticonRequest);
     }
 
@@ -64,7 +66,7 @@ public class KeyResultController {
     public ResponseEntity<?> keyResultEdit(
             @PathVariable("keyresult_id") Long keyResultId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody KeyResultEditRequest keyResultEditRequest) {
+            @RequestBody @Valid KeyResultEditRequest keyResultEditRequest) {
         return keyResultService.keyResultEdit(keyResultId, userDetails, keyResultEditRequest);
     }
 

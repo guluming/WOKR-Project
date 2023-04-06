@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RestController
 public class UserController {
@@ -15,7 +17,7 @@ public class UserController {
 
     //회원가입
     @PostMapping("api/user/signup")
-    public ResponseEntity<?> userSignup(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<?> userSignup(@RequestBody @Valid UserRequest userRequest) {
         return userService.userSignup(userRequest);
     }
 
@@ -46,7 +48,7 @@ public class UserController {
     }
 
     //사용자 가이드 확인
-    @PatchMapping("")
+    @PatchMapping("api/user/tutorial")
     public  ResponseEntity<?> CheckFirstLogin(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return  userService.CheckFirstLogin(userDetails);
     }
