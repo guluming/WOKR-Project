@@ -1,5 +1,6 @@
 package com.slamdunk.WORK.service;
 
+import com.slamdunk.WORK.Editor.UserEditor;
 import com.slamdunk.WORK.dto.request.UserRequest;
 import com.slamdunk.WORK.dto.response.JwtTokenResponse;
 import com.slamdunk.WORK.dto.response.TeamMemberResponse;
@@ -118,6 +119,23 @@ public class UserService {
             return new ResponseEntity<>(teamMemberResponseList, HttpStatus.OK);
         }
         return new ResponseEntity<>("존재하지 않는 회원 입니다.", HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<?> CheckFirstLogin(UserDetailsImpl userDetails) {
+        Optional<User> user = userRepository.findById(userDetails.getUser().getId());
+        if (user.isPresent() && user.get().isFirstLogin()) {
+            UserEditor.UserEditorBuilder userEditorBuilder = user.get().UserToEditor();
+            UserEditor userEditor = userEditorBuilder
+                    .firstLogin(false)
+                    .build();
+            user.get().UserEdit(userEditor);
+            return new ResponseEntity<>("더이상 로그인시 사용자 가이드가 표시되지 않습니다.", HttpStatus.OK);
+        } else if (user.isPresent() && !user.get().isFirstLogin()) {
+            return new ResponseEntity<>("첫번째 로그인이 아닙니다.", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("존재하지 않는 회원 입니다.", HttpStatus.OK);
+        }
     }
 
     //JWT 토큰 생성기

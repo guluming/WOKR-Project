@@ -44,4 +44,10 @@ public class UserController {
     public ResponseEntity<?> getTeamMember(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.getTeamMember(userDetails);
     }
+
+    //사용자 가이드 확인
+    @PatchMapping("")
+    public  ResponseEntity<?> CheckFirstLogin(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return  userService.CheckFirstLogin(userDetails);
+    }
 }
