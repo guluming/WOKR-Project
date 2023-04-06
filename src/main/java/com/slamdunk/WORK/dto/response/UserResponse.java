@@ -14,4 +14,5 @@ public class UserResponse {
     private String name;
     private String team;
     private String teamposition;
+    private boolean firstLogin;
 }

@@ -65,32 +65,34 @@ public class UserService {
     //회원정보 조회
     public ResponseEntity<?> getUser(Long userId, UserDetailsImpl userDetails) {
         Optional<User> exist = userRepository.findById(userId);
-        if (exist.isEmpty()) {
-            return new ResponseEntity<>("존재하지 않는 회원입니다.", HttpStatus.BAD_REQUEST);
-        }
+        if (exist.isPresent()) {
+            if (exist.get().getEmail().equals(userDetails.getUser().getEmail())) {
+                UserResponse userResponse = new UserResponse(
+                        true,
+                        exist.get().getId(),
+                        exist.get().getEmail(),
+                        exist.get().getName(),
+                        exist.get().getTeam(),
+                        exist.get().getTeamPosition(),
+                        exist.get().isFirstLogin()
+                );
 
-        if (exist.get().getEmail().equals(userDetails.getUser().getEmail())) {
-            UserResponse userResponse = new UserResponse(
-                    true,
-                    exist.get().getId(),
-                    exist.get().getEmail(),
-                    exist.get().getName(),
-                    exist.get().getTeam(),
-                    exist.get().getTeamPosition()
-            );
+                return new ResponseEntity<>(userResponse, HttpStatus.OK);
+            } else {
+                UserResponse userResponse = new UserResponse(
+                        false,
+                        exist.get().getId(),
+                        exist.get().getEmail(),
+                        exist.get().getName(),
+                        exist.get().getTeam(),
+                        exist.get().getTeamPosition(),
+                        exist.get().isFirstLogin()
+                );
 
-            return new ResponseEntity<>(userResponse, HttpStatus.OK);
+                return new ResponseEntity<>(userResponse, HttpStatus.OK);
+            }
         } else {
-            UserResponse userResponse = new UserResponse(
-                    false,
-                    exist.get().getId(),
-                    exist.get().getEmail(),
-                    exist.get().getName(),
-                    exist.get().getTeam(),
-                    exist.get().getTeamPosition()
-            );
-
-            return new ResponseEntity<>(userResponse, HttpStatus.OK);
+            return new ResponseEntity<>("존재하지 않는 회원입니다.", HttpStatus.BAD_REQUEST);
         }
     }
 
