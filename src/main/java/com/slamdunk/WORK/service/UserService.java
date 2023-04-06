@@ -132,7 +132,7 @@ public class UserService {
             user.get().UserEdit(userEditor);
             return new ResponseEntity<>("더이상 로그인시 사용자 가이드가 표시되지 않습니다.", HttpStatus.OK);
         } else if (user.isPresent() && !user.get().isFirstLogin()) {
-            return new ResponseEntity<>("첫번째 로그인이 아닙니다.", HttpStatus.OK);
+            return new ResponseEntity<>("사용자 가이드가 이미 표시되지 않습니다.", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("존재하지 않는 회원 입니다.", HttpStatus.OK);
         }
