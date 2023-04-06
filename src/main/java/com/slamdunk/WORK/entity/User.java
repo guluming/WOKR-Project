@@ -1,5 +1,6 @@
 package com.slamdunk.WORK.entity;
 
+import com.slamdunk.WORK.Editor.UserEditor;
 import com.slamdunk.WORK.dto.request.UserRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,8 @@ public class User {
     private String team;
     @Column(nullable = false)
     private String teamPosition;
-    private final boolean firstLogin = true;
+    @Column
+    private boolean firstLogin = true;
     @Column
     private boolean secessionState;
 
@@ -37,7 +39,23 @@ public class User {
         this.teamPosition = params.getTeamposition();
     }
 
+    public void UserEdit(UserEditor userEditor) {
+        name = userEditor.getName();
+        team = userEditor.getTeam();
+        teamPosition = userEditor.getTeamPosition();
+        firstLogin = userEditor.isFirstLogin();
+        secessionState = userEditor.isSecessionState();
+    }
 
+    public UserEditor.UserEditorBuilder UserToEditor() {
+        return UserEditor
+                .builder()
+                .name(name)
+                .team(team)
+                .teamPosition(teamPosition)
+                .firstLogin(firstLogin)
+                .secessionState(secessionState);
+    }
 
     public void encryptPassword(PasswordEncoder passwordEncoder) {
         password = passwordEncoder.encode(password);
