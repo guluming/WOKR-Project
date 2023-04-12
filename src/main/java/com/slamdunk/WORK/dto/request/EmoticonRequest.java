@@ -8,6 +8,5 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @Getter
 public class EmoticonRequest {
-    @NotBlank
     private int emoticon;
 }

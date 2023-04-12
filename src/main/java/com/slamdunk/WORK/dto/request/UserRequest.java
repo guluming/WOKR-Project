@@ -29,11 +29,11 @@ public class UserRequest {
     @NotBlank
     private String name;
 
-    @Pattern(regexp = "^[가-힣a-zA-Z]{2,20}$")
+    @Pattern(regexp = "^[가-힣a-zA-Z0-9]{2,20}$")
     @NotBlank
     private String team;
 
-    @Pattern(regexp = "^[가-힣a-zA-Z]{2,20}$")
+    @Pattern(regexp = "^[가-힣a-zA-Z0-9]{2,20}$")
     @NotBlank
     private String teamposition;
 }

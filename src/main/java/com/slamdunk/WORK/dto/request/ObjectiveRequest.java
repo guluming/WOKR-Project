@@ -11,9 +11,7 @@ import java.time.LocalDate;
 public class ObjectiveRequest {
     @NotBlank
     private String objective;
-    @NotBlank
     private LocalDate startdate;
-    @NotBlank
     private LocalDate enddate;
     @NotBlank
     private String color;

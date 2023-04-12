@@ -9,7 +9,6 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 public class KeyResultRequest {
-    @NotBlank
     private int krNumber;
     @NotBlank
     private String keyResult;
