@@ -1,10 +1,12 @@
 package com.slamdunk.WORK.controller;
 
+import com.slamdunk.WORK.dto.request.TeamMemberToDoRequest;
 import com.slamdunk.WORK.dto.request.ToDoEditRequest;
 import com.slamdunk.WORK.dto.request.ToDoRequest;
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import com.slamdunk.WORK.service.ToDoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -60,10 +62,21 @@ public class ToDoController {
         return toDoService.toDoDelete(todoId, userDetails);
     }
 
+//    //할일 기한만료 조회
+//    @GetMapping("api/todo/expiration")
+//    public ResponseEntity<?> getExpirationToDo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+//        return toDoService.getExpirationToDo(userDetails);
+//    }
+
     //할일 기한만료 조회
-    @GetMapping("api/todo/expiration")
-    public ResponseEntity<?> getExpirationToDo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return toDoService.getExpirationToDo(userDetails);
+    @PostMapping("api/todo/expiration")
+    public ResponseEntity<?> getExpirationToDo(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                               @RequestBody TeamMemberToDoRequest teamMemberToDoRequest) {
+        if (teamMemberToDoRequest.getTeamMembers() == null || teamMemberToDoRequest.getTeamMembers().isEmpty()) {
+            return new ResponseEntity<>("최소 1명의 사용자는 선택해야 합니다.", HttpStatus.BAD_REQUEST);
+        } else {
+            return toDoService.getExpirationToDo(userDetails, teamMemberToDoRequest);
+        }
     }
 
     //할일 날짜별 전체 조회

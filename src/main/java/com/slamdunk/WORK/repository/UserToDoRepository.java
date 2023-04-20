@@ -23,8 +23,8 @@ public interface UserToDoRepository extends JpaRepository<UserToDo, Long> {
         List<UserToDo> findAllByUserIdAndCompletionFalseAndProgress(@Param("userId") Long userId, @Param("today")LocalDate today);
         @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.team = :team AND t.deleteState = false AND t.completion = false AND t.endDate >= :today order by t.endDate")
         List<UserToDo> findAllByTeamAndCompletionFalseAndProgress(@Param("team") String team, @Param("today")LocalDate today);
-        @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.user.id = :userId AND t.completion = true order by t.endDate")
-        List<UserToDo> findAllByUserIdAndCompletionTrueAndCompletion(@Param("userId") Long userId);
+        @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.user.id = :userId AND t.deleteState = false AND t.completion = false AND t.endDate <= :today order by t.endDate")
+        List<UserToDo> findAllByUserIdAndCompletionFalseAndExpiration(@Param("userId") Long userId, @Param("today")LocalDate today);
         @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.team = :team AND t.deleteState = false AND t.completion = true order by t.endDate")
         List<UserToDo> findAllByTeamAndCompletionTrueAndCompletion(@Param("team") String team);
         @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.user.id = :userId AND t.deleteState = false AND t.endDate >= :today order by t.endDate desc")

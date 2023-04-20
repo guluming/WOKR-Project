@@ -1,9 +1,11 @@
 package com.slamdunk.WORK.service;
 
 import com.slamdunk.WORK.Editor.ToDoEditor;
+import com.slamdunk.WORK.dto.request.TeamMemberToDoRequest;
 import com.slamdunk.WORK.dto.request.ToDoEditRequest;
 import com.slamdunk.WORK.dto.request.ToDoRequest;
 import com.slamdunk.WORK.dto.response.ToDoDetailResponse;
+import com.slamdunk.WORK.dto.response.ToDoExpirationResponse;
 import com.slamdunk.WORK.dto.response.ToDoProgressResponse;
 import com.slamdunk.WORK.dto.response.ToDoResponse;
 import com.slamdunk.WORK.entity.*;
@@ -192,41 +194,49 @@ public class ToDoService {
     }
 
     //할일 기간만료 조회
-    public ResponseEntity<?> getExpirationToDo(UserDetailsImpl userDetails) {
-        LocalDate today = LocalDate.now();
-        List<User> teamMembers = userRepository.findAllByTeam(userDetails.getUser().getTeam());
-        List<Long> teamMemberIds = teamMembers.stream()
-                .map(User::getId)
-                .collect(Collectors.toList());
-        List<UserToDo> teamToDoList = userToDoRepository.findAllByUserIdIn(teamMemberIds);
-        List<ToDoResponse> toDoResponseExpList = new ArrayList<>();
+    public ResponseEntity<?> getExpirationToDo(UserDetailsImpl userDetails, TeamMemberToDoRequest teamMemberToDoRequest) {
+        List<User> selectedTeamMember = userRepository.findAllById(teamMemberToDoRequest.getTeamMembers());
+        List<ToDoExpirationResponse> toDoExpirationResponseList = new ArrayList<>();
+        for (int k = 0; k < selectedTeamMember.size(); k++) {
+            List<UserToDo> teamToDoList = userToDoRepository.findAllByUserIdAndCompletionFalseAndExpiration(selectedTeamMember.get(k).getId(), LocalDate.now());
+            List<ToDoExpirationResponse.expirationTodo> expirationTodoList = new ArrayList<>();
+            for (int i = 0; i < teamToDoList.size(); i++) {
+                if (teamToDoList.get(i).getToDo() != null && teamToDoList.get(i).getToDo().getEndDate().isBefore(LocalDate.now())) {
+                    ToDoExpirationResponse.expirationTodo expirationTodo = ToDoExpirationResponse.expirationTodo.builder()
+                            .keyResultId(teamToDoList.get(i).getToDo().getKeyResult() != null ? teamToDoList.get(i).getToDo().getKeyResult().getId() : null)
+                            .krNumber(teamToDoList.get(i).getToDo().getKeyResult() != null ? teamToDoList.get(i).getToDo().getKeyResult().getKrNumber() : 0)
+                            .toDoId(teamToDoList.get(i).getToDo().getId())
+                            .toDo(teamToDoList.get(i).getToDo().getToDo())
+                            .memo(teamToDoList.get(i).getToDo().getMemo())
+                            .startDate(teamToDoList.get(i).getToDo().getStartDate())
+                            .startDateTime(teamToDoList.get(i).getToDo().getStartDateTime())
+                            .endDate(teamToDoList.get(i).getToDo().getEndDate())
+                            .endDateTime(teamToDoList.get(i).getToDo().getEndDateTime())
+                            .fstartDate(teamToDoList.get(i).getToDo().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                            .fendDate(teamToDoList.get(i).getToDo().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                            .priority(teamToDoList.get(i).getToDo().getPriority())
+                            .completion(teamToDoList.get(i).getToDo().isCompletion())
+                            .color(teamToDoList.get(i).getToDo().getObjective() != null ? teamToDoList.get(i).getToDo().getObjective().getColor() : null)
+                            .build();
+                    expirationTodoList.add(expirationTodo);
+                }
+            }
 
-        for (int i = 0; i < teamToDoList.size(); i++) {
-            UserToDo userToDo = teamToDoList.get(i);
-            ToDo toDo = userToDo.getToDo();
-            if (toDo != null && toDo.getEndDate().isBefore(today) && !toDo.isCompletion() && !toDo.isDeleteState()) {
-                ToDoResponse toDoResponse = ToDoResponse.builder()
-                        .myToDo(userToDoService.checkMyToDo(toDo.getId(), userDetails))
-                        .createUser(teamToDoList.get(i).getUser().getName())
-                        .keyResultId(toDo.getKeyResult() != null ? toDo.getKeyResult().getId() : null)
-                        .krNumber(toDo.getKeyResult() != null ? toDo.getKeyResult().getKrNumber() : 0)
-                        .toDoId(toDo.getId())
-                        .toDo(toDo.getToDo())
-                        .memo(toDo.getMemo())
-                        .startDate(toDo.getStartDate())
-                        .startDateTime(toDo.getStartDateTime())
-                        .endDate(toDo.getEndDate())
-                        .endDateTime(toDo.getEndDateTime())
-                        .fstartDate(toDo.getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-                        .fendDate(toDo.getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-                        .priority(toDo.getPriority())
-                        .completion(toDo.isCompletion())
-                        .color(toDo.getObjective() != null ? toDo.getObjective().getColor() : null)
+            if (!expirationTodoList.isEmpty()) {
+                ToDoExpirationResponse toDoExpirationResponse = ToDoExpirationResponse.builder()
+                        .myToDo(selectedTeamMember.get(k).getId().equals(userDetails.getUser().getId()))
+                        //.myToDo(userToDoService.checkMyToDo(selectedTeamMember.get(k).getId(), userDetails))
+                        .userId(selectedTeamMember.get(k).getId())
+                        .createUser(selectedTeamMember.get(k).getName())
+                        .expirationTodo(expirationTodoList)
                         .build();
-                toDoResponseExpList.add(toDoResponse);
+
+                toDoExpirationResponseList.add(toDoExpirationResponse);
             }
         }
-        return new ResponseEntity<>(toDoResponseExpList, HttpStatus.OK);
+
+
+        return new ResponseEntity<>(toDoExpirationResponseList, HttpStatus.OK);
     }
 
 
