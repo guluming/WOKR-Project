@@ -193,7 +193,7 @@ public class ToDoService {
         return new ResponseEntity<>("삭제 권한이 없습니다.", HttpStatus.FORBIDDEN);
     }
 
-    //할일 기간만료 조회
+    //할일 기간만료 목록 조회
     public ResponseEntity<?> getExpirationToDo(UserDetailsImpl userDetails, TeamMemberToDoRequest teamMemberToDoRequest) {
         List<User> selectedTeamMember = userRepository.findAllById(teamMemberToDoRequest.getTeamMembers());
         List<ToDoExpirationResponse> toDoExpirationResponseList = new ArrayList<>();
@@ -240,7 +240,7 @@ public class ToDoService {
     }
 
 
-    //할일 날짜별 전체 조회
+    //할일 진행 목록 조회
     public ResponseEntity<?> getProgressToDo(UserDetailsImpl userDetails) {
         List<User> teamMemberList = userRepository.findAllByTeam(userDetails.getUser().getTeam());
 
@@ -341,6 +341,12 @@ public class ToDoService {
         }
 
         return new ResponseEntity<>(toDoProgressResponseList, HttpStatus.OK);
+    }
+
+    //할일 완료 목록 조회
+    public ResponseEntity<?> getCompletionToDo(UserDetailsImpl userDetails) {
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     //할일 대시보드 조회

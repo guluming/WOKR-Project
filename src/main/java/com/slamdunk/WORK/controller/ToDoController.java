@@ -62,13 +62,7 @@ public class ToDoController {
         return toDoService.toDoDelete(todoId, userDetails);
     }
 
-//    //할일 기한만료 조회
-//    @GetMapping("api/todo/expiration")
-//    public ResponseEntity<?> getExpirationToDo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        return toDoService.getExpirationToDo(userDetails);
-//    }
-
-    //할일 기한만료 조회
+    //할일 기한만료 목록 조회
     @PostMapping("api/todo/expiration")
     public ResponseEntity<?> getExpirationToDo(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                @RequestBody TeamMemberToDoRequest teamMemberToDoRequest) {
@@ -79,13 +73,29 @@ public class ToDoController {
         }
     }
 
-    //할일 날짜별 전체 조회
-    @GetMapping("api/todo/progress")
-    public ResponseEntity<?> getProgressToDo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return toDoService.getProgressToDo(userDetails);
+    //할일 진행 목록 조회
+    @PostMapping("api/todo/progress")
+    public ResponseEntity<?> getProgressToDo(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                             @RequestBody TeamMemberToDoRequest teamMemberToDoRequest) {
+        if (teamMemberToDoRequest.getTeamMembers() == null || teamMemberToDoRequest.getTeamMembers().isEmpty()) {
+            return new ResponseEntity<>("최소 1명의 사용자는 선택해야 합니다.", HttpStatus.BAD_REQUEST);
+        } else {
+            return toDoService.getProgressToDo(userDetails);
+        }
     }
 
-    //할일 대시보드 조회
+    //할일 완료 목록 조회
+    @PostMapping("api/todo/completion")
+    public ResponseEntity<?> getCompletionToDo(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                               @RequestBody TeamMemberToDoRequest teamMemberToDoRequest){
+        if (teamMemberToDoRequest.getTeamMembers() == null || teamMemberToDoRequest.getTeamMembers().isEmpty()) {
+            return new ResponseEntity<>("최소 1명의 사용자는 선택해야 합니다.", HttpStatus.BAD_REQUEST);
+        } else {
+            return toDoService.getCompletionToDo(userDetails);
+        }
+    }
+
+   //할일 대시보드 조회
     @GetMapping("api/todo/completion")
     public ResponseEntity<?> getDashToDo(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return toDoService.getDashToDo(userDetails);
