@@ -12,6 +12,7 @@ import com.slamdunk.WORK.entity.*;
 import com.slamdunk.WORK.repository.*;
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,16 +20,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class ToDoService {
     private final ObjectiveRepository objectiveRepository;
     private final KeyResultRepository keyResultRepository;
+    private final UserKeyResultService userKeyResultService;
     private final UserToDoRepository userToDoRepository;
     private final ToDoRepository toDoRepository;
     private final UserToDoService userToDoService;
@@ -193,39 +192,58 @@ public class ToDoService {
         return new ResponseEntity<>("삭제 권한이 없습니다.", HttpStatus.FORBIDDEN);
     }
 
+    private List<Long> nonSelectedKeyResultIds(UserDetailsImpl userDetails, List<Long> KeyResultIds) {
+        List<Long> AllKeyResultIds = new ArrayList<>();
+        if (KeyResultIds.size() != 0) {
+            AllKeyResultIds = userKeyResultService.allKeyResult(userDetails);
+            AllKeyResultIds.removeAll(KeyResultIds);
+        }
+        return AllKeyResultIds;
+    }
+
     //할일 기간만료 목록 조회
     public ResponseEntity<?> getExpirationToDo(UserDetailsImpl userDetails, TeamMemberToDoRequest teamMemberToDoRequest) {
         List<User> selectedTeamMember = userRepository.findAllById(teamMemberToDoRequest.getTeamMembers());
+        List<Long> nonSelectedKeyResultIdList = nonSelectedKeyResultIds(userDetails, teamMemberToDoRequest.getKeyResultIds());
+        Sort sort = sortBy(teamMemberToDoRequest.getOrderby(), teamMemberToDoRequest.getOrderbyrole());
         List<ToDoExpirationResponse> toDoExpirationResponseList = new ArrayList<>();
         for (int k = 0; k < selectedTeamMember.size(); k++) {
-            List<UserToDo> teamToDoList = userToDoRepository.findAllByUserIdAndCompletionFalseAndExpiration(selectedTeamMember.get(k).getId(), LocalDate.now());
+            List<UserToDo> teamToDoList
+                    = userToDoRepository.findAllByUserIdAndCompletionFalseAndExpiration(
+                            selectedTeamMember.get(k).getId(), teamMemberToDoRequest.getTargetDate(), sort);
+
+            for (int i = 0; i < nonSelectedKeyResultIdList.size(); i++) {
+                for (int j = 0; j < teamToDoList.size(); j++) {
+                    if (Objects.equals(nonSelectedKeyResultIdList.get(i), teamToDoList.get(j).getKeyResult().getId())) {
+                        teamToDoList.remove(teamToDoList.get(j));
+                    }
+                }
+            }
+
             List<ToDoExpirationResponse.expirationTodo> expirationTodoList = new ArrayList<>();
             for (int i = 0; i < teamToDoList.size(); i++) {
-                if (teamToDoList.get(i).getToDo() != null && teamToDoList.get(i).getToDo().getEndDate().isBefore(LocalDate.now())) {
-                    ToDoExpirationResponse.expirationTodo expirationTodo = ToDoExpirationResponse.expirationTodo.builder()
-                            .keyResultId(teamToDoList.get(i).getToDo().getKeyResult() != null ? teamToDoList.get(i).getToDo().getKeyResult().getId() : null)
-                            .krNumber(teamToDoList.get(i).getToDo().getKeyResult() != null ? teamToDoList.get(i).getToDo().getKeyResult().getKrNumber() : 0)
-                            .toDoId(teamToDoList.get(i).getToDo().getId())
-                            .toDo(teamToDoList.get(i).getToDo().getToDo())
-                            .memo(teamToDoList.get(i).getToDo().getMemo())
-                            .startDate(teamToDoList.get(i).getToDo().getStartDate())
-                            .startDateTime(teamToDoList.get(i).getToDo().getStartDateTime())
-                            .endDate(teamToDoList.get(i).getToDo().getEndDate())
-                            .endDateTime(teamToDoList.get(i).getToDo().getEndDateTime())
-                            .fstartDate(teamToDoList.get(i).getToDo().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-                            .fendDate(teamToDoList.get(i).getToDo().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-                            .priority(teamToDoList.get(i).getToDo().getPriority())
-                            .completion(teamToDoList.get(i).getToDo().isCompletion())
-                            .color(teamToDoList.get(i).getToDo().getObjective() != null ? teamToDoList.get(i).getToDo().getObjective().getColor() : null)
-                            .build();
-                    expirationTodoList.add(expirationTodo);
-                }
+                ToDoExpirationResponse.expirationTodo expirationTodo = ToDoExpirationResponse.expirationTodo.builder()
+                        .keyResultId(teamToDoList.get(i).getToDo().getKeyResult() != null ? teamToDoList.get(i).getToDo().getKeyResult().getId() : null)
+                        .krNumber(teamToDoList.get(i).getToDo().getKeyResult() != null ? teamToDoList.get(i).getToDo().getKeyResult().getKrNumber() : 0)
+                        .toDoId(teamToDoList.get(i).getToDo().getId())
+                        .toDo(teamToDoList.get(i).getToDo().getToDo())
+                        .memo(teamToDoList.get(i).getToDo().getMemo())
+                        .startDate(teamToDoList.get(i).getToDo().getStartDate())
+                        .startDateTime(teamToDoList.get(i).getToDo().getStartDateTime())
+                        .endDate(teamToDoList.get(i).getToDo().getEndDate())
+                        .endDateTime(teamToDoList.get(i).getToDo().getEndDateTime())
+                        .fstartDate(teamToDoList.get(i).getToDo().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .fendDate(teamToDoList.get(i).getToDo().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .priority(teamToDoList.get(i).getToDo().getPriority())
+                        .completion(teamToDoList.get(i).getToDo().isCompletion())
+                        .color(teamToDoList.get(i).getToDo().getObjective() != null ? teamToDoList.get(i).getToDo().getObjective().getColor() : null)
+                        .build();
+                expirationTodoList.add(expirationTodo);
             }
 
             if (!expirationTodoList.isEmpty()) {
                 ToDoExpirationResponse toDoExpirationResponse = ToDoExpirationResponse.builder()
                         .myToDo(selectedTeamMember.get(k).getId().equals(userDetails.getUser().getId()))
-                        //.myToDo(userToDoService.checkMyToDo(selectedTeamMember.get(k).getId(), userDetails))
                         .userId(selectedTeamMember.get(k).getId())
                         .createUser(selectedTeamMember.get(k).getName())
                         .expirationTodo(expirationTodoList)
@@ -235,13 +253,12 @@ public class ToDoService {
             }
         }
 
-
         return new ResponseEntity<>(toDoExpirationResponseList, HttpStatus.OK);
     }
 
 
     //할일 진행 목록 조회
-    public ResponseEntity<?> getProgressToDo(UserDetailsImpl userDetails) {
+    public ResponseEntity<?> getProgressToDo(UserDetailsImpl userDetails, TeamMemberToDoRequest teamMemberToDoRequest) {
         List<User> teamMemberList = userRepository.findAllByTeam(userDetails.getUser().getTeam());
 
         List<ToDoProgressResponse> toDoProgressResponseList = new ArrayList<>();
@@ -344,9 +361,17 @@ public class ToDoService {
     }
 
     //할일 완료 목록 조회
-    public ResponseEntity<?> getCompletionToDo(UserDetailsImpl userDetails) {
+    public ResponseEntity<?> getCompletionToDo(UserDetailsImpl userDetails, TeamMemberToDoRequest teamMemberToDoRequest) {
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private Sort sortBy(String orderBy, String orderByRole) {
+        if (orderByRole.equals("asc")) {
+            return Sort.by(Sort.Direction.ASC, orderBy);
+        } else {
+            return Sort.by(Sort.Direction.DESC, orderBy);
+        }
     }
 
     //할일 대시보드 조회

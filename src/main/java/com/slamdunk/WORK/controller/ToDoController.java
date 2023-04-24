@@ -80,7 +80,7 @@ public class ToDoController {
         if (teamMemberToDoRequest.getTeamMembers() == null || teamMemberToDoRequest.getTeamMembers().isEmpty()) {
             return new ResponseEntity<>("최소 1명의 사용자는 선택해야 합니다.", HttpStatus.BAD_REQUEST);
         } else {
-            return toDoService.getProgressToDo(userDetails);
+            return toDoService.getProgressToDo(userDetails, teamMemberToDoRequest);
         }
     }
 
@@ -91,7 +91,7 @@ public class ToDoController {
         if (teamMemberToDoRequest.getTeamMembers() == null || teamMemberToDoRequest.getTeamMembers().isEmpty()) {
             return new ResponseEntity<>("최소 1명의 사용자는 선택해야 합니다.", HttpStatus.BAD_REQUEST);
         } else {
-            return toDoService.getCompletionToDo(userDetails);
+            return toDoService.getCompletionToDo(userDetails, teamMemberToDoRequest);
         }
     }
 

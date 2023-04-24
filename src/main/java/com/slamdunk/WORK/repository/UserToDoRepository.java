@@ -2,6 +2,7 @@ package com.slamdunk.WORK.repository;
 
 import com.slamdunk.WORK.entity.KeyResult;
 import com.slamdunk.WORK.entity.UserToDo;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,8 +24,8 @@ public interface UserToDoRepository extends JpaRepository<UserToDo, Long> {
         List<UserToDo> findAllByUserIdAndCompletionFalseAndProgress(@Param("userId") Long userId, @Param("today")LocalDate today);
         @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.team = :team AND t.deleteState = false AND t.completion = false AND t.endDate >= :today order by t.endDate")
         List<UserToDo> findAllByTeamAndCompletionFalseAndProgress(@Param("team") String team, @Param("today")LocalDate today);
-        @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.user.id = :userId AND t.deleteState = false AND t.completion = false AND t.endDate <= :today order by t.endDate")
-        List<UserToDo> findAllByUserIdAndCompletionFalseAndExpiration(@Param("userId") Long userId, @Param("today")LocalDate today);
+        @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.user.id = :userId AND t.deleteState = false AND t.completion = false AND t.endDate <= :today")
+        List<UserToDo> findAllByUserIdAndCompletionFalseAndExpiration(@Param("userId") Long userId, @Param("today")LocalDate today, Sort sort);
         @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.team = :team AND t.deleteState = false AND t.completion = true order by t.endDate")
         List<UserToDo> findAllByTeamAndCompletionTrueAndCompletion(@Param("team") String team);
         @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.user.id = :userId AND t.deleteState = false AND t.endDate >= :today order by t.endDate desc")
