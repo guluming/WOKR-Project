@@ -9,14 +9,14 @@ import java.util.List;
 
 @NoArgsConstructor
 @Getter
-public class ToDoProgressResponse {
+public class ToDoCompletionResponse {
     private boolean myToDo;
     private Long userId;
     private String createUser;
-    private List<progressTodo> progressTodo;
+    private List<completionTodo> completionTodo;
     @NoArgsConstructor
     @Getter
-    public static class progressTodo{
+    public static class completionTodo{
         private Long keyResultId;
         private int krNumber;
         private Long toDoId;
@@ -33,9 +33,9 @@ public class ToDoProgressResponse {
         private String color;
 
         @Builder
-        public progressTodo(Long keyResultId, int krNumber, Long toDoId, String toDo, String memo,
-                            LocalDate startDate, String startDateTime, LocalDate endDate, String endDateTime,
-                            String fstartDate, String fendDate, int priority, boolean completion, String color ) {
+        public completionTodo(Long keyResultId, int krNumber, Long toDoId, String toDo, String memo,
+                              LocalDate startDate, String startDateTime, LocalDate endDate, String endDateTime,
+                              String fstartDate, String fendDate, int priority, boolean completion, String color ) {
             this.keyResultId = keyResultId;
             this.krNumber = krNumber;
             this.toDoId = toDoId;
@@ -54,10 +54,10 @@ public class ToDoProgressResponse {
     }
 
     @Builder
-    public ToDoProgressResponse(boolean myToDo, Long userId, String createUser, List<progressTodo> progressTodo) {
+    public ToDoCompletionResponse(boolean myToDo, Long userId, String createUser, List<completionTodo> completionTodo) {
         this.myToDo = myToDo;
         this.userId = userId;
         this.createUser = createUser;
-        this.progressTodo = progressTodo;
+        this.completionTodo = completionTodo;
     }
 }
