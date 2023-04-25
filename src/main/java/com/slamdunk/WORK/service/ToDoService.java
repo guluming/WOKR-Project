@@ -192,15 +192,6 @@ public class ToDoService {
         return new ResponseEntity<>("삭제 권한이 없습니다.", HttpStatus.FORBIDDEN);
     }
 
-    private List<Long> nonSelectedKeyResultIds(UserDetailsImpl userDetails, List<Long> KeyResultIds) {
-        List<Long> AllKeyResultIds = new ArrayList<>();
-        if (KeyResultIds.size() != 0) {
-            AllKeyResultIds = userKeyResultService.allKeyResult(userDetails);
-            AllKeyResultIds.removeAll(KeyResultIds);
-        }
-        return AllKeyResultIds;
-    }
-
     //할일 기간만료 목록 조회
     public ResponseEntity<?> getExpirationToDo(UserDetailsImpl userDetails, TeamMemberToDoRequest teamMemberToDoRequest) {
         List<User> selectedTeamMember = userRepository.findAllById(teamMemberToDoRequest.getTeamMembers());
@@ -255,7 +246,6 @@ public class ToDoService {
 
         return new ResponseEntity<>(toDoExpirationResponseList, HttpStatus.OK);
     }
-
 
     //할일 진행 목록 조회
     public ResponseEntity<?> getProgressToDo(UserDetailsImpl userDetails, TeamMemberToDoRequest teamMemberToDoRequest) {
@@ -366,12 +356,23 @@ public class ToDoService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    //할일 목록 정렬
     private Sort sortBy(String orderBy, String orderByRole) {
         if (orderByRole.equals("asc")) {
             return Sort.by(Sort.Direction.ASC, orderBy);
         } else {
             return Sort.by(Sort.Direction.DESC, orderBy);
         }
+    }
+
+    //핵심결과 목록 선택 제외
+    private List<Long> nonSelectedKeyResultIds(UserDetailsImpl userDetails, List<Long> KeyResultIds) {
+        List<Long> AllKeyResultIds = new ArrayList<>();
+        if (KeyResultIds.size() != 0) {
+            AllKeyResultIds = userKeyResultService.allKeyResult(userDetails);
+            AllKeyResultIds.removeAll(KeyResultIds);
+        }
+        return AllKeyResultIds;
     }
 
     //할일 대시보드 조회
