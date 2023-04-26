@@ -70,6 +70,7 @@ public class KeyResultService {
                         .keyResult(keyResult.get().getKeyResult())
                         .progress(keyResult.get().getProgress())
                         .emotion(keyResult.get().getEmoticon())
+                        .color(keyResult.get().getObjective().getColor())
                         .build();
 
                 keyResultResponseList.add(keyResultResponse);
