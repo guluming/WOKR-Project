@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -192,19 +193,22 @@ public class ToDoService {
 
     //할일 주간 전체 목록 조회
     public ResponseEntity<?> getAllWeekToDo(UserDetailsImpl userDetails, WeekToDoRequest weekToDoRequest) {
-        LocalDate startDay = weekToDoRequest.getSunday();
-
-        while (startDay.isEqual(weekToDoRequest.getSunday()) || startDay.isBefore(weekToDoRequest.getSunday())) {
-            for (int i = 0; i < weekToDoRequest.getTeamMembers().size(); i++) {
-//                List<UserToDo> checkToDo = userToDoRepository.
+        List<LocalDate> existToDo = new ArrayList<>();
+        for (int i = 0; i < weekToDoRequest.getTeamMembers().size(); i++) {
+            LocalDate startDay = weekToDoRequest.getSunday();
+            while (startDay.isEqual(weekToDoRequest.getSaturday()) || startDay.isBefore(weekToDoRequest.getSaturday())) {
+                List<UserToDo> checkToDo = userToDoRepository.findAllByUserIdAndCheckDate(weekToDoRequest.getTeamMembers().get(i), startDay);
+                if (!checkToDo.isEmpty()) {
+                    existToDo.add(startDay);
+                    startDay.plusDays(1);
+                } else {
+                    startDay.plusDays(1);
+                }
             }
         }
 
-
-
-
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        existToDo = existToDo.stream().distinct().collect(Collectors.toList());
+        return new ResponseEntity<>(existToDo, HttpStatus.OK);
     }
 
     //할일 기간만료 목록 조회
@@ -216,7 +220,7 @@ public class ToDoService {
         for (int k = 0; k < selectedTeamMember.size(); k++) {
             List<UserToDo> teamToDoList
                     = userToDoRepository.findAllByUserIdAndCompletionFalseAndExpiration(
-                            selectedTeamMember.get(k).getId(), teamMemberToDoRequest.getTargetDate(), LocalDate.now(), sort);
+                    selectedTeamMember.get(k).getId(), teamMemberToDoRequest.getTargetDate(), LocalDate.now(), sort);
 
             for (int i = 0; i < nonSelectedKeyResultIdList.size(); i++) {
                 for (int j = 0; j < teamToDoList.size(); j++) {
