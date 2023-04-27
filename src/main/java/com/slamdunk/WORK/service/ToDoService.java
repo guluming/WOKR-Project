@@ -4,6 +4,7 @@ import com.slamdunk.WORK.Editor.ToDoEditor;
 import com.slamdunk.WORK.dto.request.TeamMemberToDoRequest;
 import com.slamdunk.WORK.dto.request.ToDoEditRequest;
 import com.slamdunk.WORK.dto.request.ToDoRequest;
+import com.slamdunk.WORK.dto.request.WeekToDoRequest;
 import com.slamdunk.WORK.dto.response.*;
 import com.slamdunk.WORK.entity.*;
 import com.slamdunk.WORK.repository.*;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +61,7 @@ public class ToDoService {
 
     //투두 전체 조회
     public ResponseEntity<?> getAllToDos(UserDetailsImpl userDetails) {
-        List<Long> todoId = userToDoService.allToDo(userDetails);
+        List<Long> todoId = userToDoService.allToDo(userDetails.getUser().getId());
         List<ToDoResponse> toDoResponseList = new ArrayList<>();
         for (int i = 0; i < todoId.size(); i++) {
             Optional<ToDo> toDo = toDoRepository.findByIdAndDeleteStateFalse(todoId.get(i));
@@ -189,6 +191,26 @@ public class ToDoService {
         return new ResponseEntity<>("삭제 권한이 없습니다.", HttpStatus.FORBIDDEN);
     }
 
+    //할일 주간 전체 목록 조회
+    public ResponseEntity<?> getAllWeekToDo(UserDetailsImpl userDetails, WeekToDoRequest weekToDoRequest) {
+        List<LocalDate> existToDo = new ArrayList<>();
+        for (int i = 0; i < weekToDoRequest.getTeamMembers().size(); i++) {
+            LocalDate startDay = weekToDoRequest.getSunday();
+            while (startDay.isEqual(weekToDoRequest.getSaturday()) || startDay.isBefore(weekToDoRequest.getSaturday())) {
+                List<UserToDo> checkToDo = userToDoRepository.findAllByUserIdAndCheckDate(weekToDoRequest.getTeamMembers().get(i), startDay);
+                if (!checkToDo.isEmpty()) {
+                    existToDo.add(startDay);
+                    startDay = startDay.plusDays(1);
+                } else {
+                    startDay = startDay.plusDays(1);
+                }
+            }
+        }
+
+        existToDo = existToDo.stream().distinct().collect(Collectors.toList());
+        return new ResponseEntity<>(existToDo, HttpStatus.OK);
+    }
+
     //할일 기간만료 목록 조회
     public ResponseEntity<?> getExpirationToDo(UserDetailsImpl userDetails, TeamMemberToDoRequest teamMemberToDoRequest) {
         List<User> selectedTeamMember = userRepository.findAllById(teamMemberToDoRequest.getTeamMembers());
@@ -198,7 +220,7 @@ public class ToDoService {
         for (int k = 0; k < selectedTeamMember.size(); k++) {
             List<UserToDo> teamToDoList
                     = userToDoRepository.findAllByUserIdAndCompletionFalseAndExpiration(
-                            selectedTeamMember.get(k).getId(), teamMemberToDoRequest.getTargetDate(), LocalDate.now(), sort);
+                    selectedTeamMember.get(k).getId(), teamMemberToDoRequest.getTargetDate(), LocalDate.now(), sort);
 
             for (int i = 0; i < nonSelectedKeyResultIdList.size(); i++) {
                 for (int j = 0; j < teamToDoList.size(); j++) {
@@ -375,7 +397,7 @@ public class ToDoService {
 
     //할일 대시보드 조회
     public ResponseEntity<?> getDashToDo(UserDetailsImpl userDetails) {
-        List<Long> todoId = userToDoService.allToDo(userDetails);
+        List<Long> todoId = userToDoService.allToDo(userDetails.getUser().getId());
         List<ToDoResponse> dashToDoResponseList = new ArrayList<>();
         for (int n = 0; n < todoId.size(); n++) {
             Optional<ToDo> toDo = toDoRepository.findByIdAndDeleteStateFalse(todoId.get(n));

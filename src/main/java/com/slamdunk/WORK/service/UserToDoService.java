@@ -45,8 +45,8 @@ public class UserToDoService {
     }
 
     //회원-투두 전체 조회
-    public List<Long> allToDo(UserDetailsImpl userDetails) {
-        List<UserToDo> userToDoList = userToDoRepository.findAllByUserId(userDetails.getUser().getId());
+    public List<Long> allToDo(Long userId) {
+        List<UserToDo> userToDoList = userToDoRepository.findAllByUserId(userId);
 
         List<Long> toDoId = new ArrayList<>();
         for (UserToDo userToDo : userToDoList) {
