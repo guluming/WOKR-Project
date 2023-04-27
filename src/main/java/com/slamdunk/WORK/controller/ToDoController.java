@@ -3,6 +3,7 @@ package com.slamdunk.WORK.controller;
 import com.slamdunk.WORK.dto.request.TeamMemberToDoRequest;
 import com.slamdunk.WORK.dto.request.ToDoEditRequest;
 import com.slamdunk.WORK.dto.request.ToDoRequest;
+import com.slamdunk.WORK.dto.request.WeekToDoRequest;
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import com.slamdunk.WORK.service.ToDoService;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +61,13 @@ public class ToDoController {
     public ResponseEntity<String> toDoDelete(@PathVariable("todo_id") Long todoId,
                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return toDoService.toDoDelete(todoId, userDetails);
+    }
+
+    //할일 주간 전체 목록 조회
+    @PostMapping("/api/todo/week")
+    public ResponseEntity<?> getAllWeekToDo(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                            @RequestBody WeekToDoRequest weekToDoRequest) {
+        return toDoService.getAllWeekToDo(userDetails, weekToDoRequest);
     }
 
     //할일 기한만료 목록 조회

@@ -4,6 +4,7 @@ import com.slamdunk.WORK.Editor.ToDoEditor;
 import com.slamdunk.WORK.dto.request.TeamMemberToDoRequest;
 import com.slamdunk.WORK.dto.request.ToDoEditRequest;
 import com.slamdunk.WORK.dto.request.ToDoRequest;
+import com.slamdunk.WORK.dto.request.WeekToDoRequest;
 import com.slamdunk.WORK.dto.response.*;
 import com.slamdunk.WORK.entity.*;
 import com.slamdunk.WORK.repository.*;
@@ -59,7 +60,7 @@ public class ToDoService {
 
     //투두 전체 조회
     public ResponseEntity<?> getAllToDos(UserDetailsImpl userDetails) {
-        List<Long> todoId = userToDoService.allToDo(userDetails);
+        List<Long> todoId = userToDoService.allToDo(userDetails.getUser().getId());
         List<ToDoResponse> toDoResponseList = new ArrayList<>();
         for (int i = 0; i < todoId.size(); i++) {
             Optional<ToDo> toDo = toDoRepository.findByIdAndDeleteStateFalse(todoId.get(i));
@@ -187,6 +188,23 @@ public class ToDoService {
             return new ResponseEntity<>("존재하지 않는 할일 입니다.", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>("삭제 권한이 없습니다.", HttpStatus.FORBIDDEN);
+    }
+
+    //할일 주간 전체 목록 조회
+    public ResponseEntity<?> getAllWeekToDo(UserDetailsImpl userDetails, WeekToDoRequest weekToDoRequest) {
+        LocalDate startDay = weekToDoRequest.getSunday();
+
+        while (startDay.isEqual(weekToDoRequest.getSunday()) || startDay.isBefore(weekToDoRequest.getSunday())) {
+            for (int i = 0; i < weekToDoRequest.getTeamMembers().size(); i++) {
+//                List<UserToDo> checkToDo = userToDoRepository.
+            }
+        }
+
+
+
+
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     //할일 기간만료 목록 조회
@@ -375,7 +393,7 @@ public class ToDoService {
 
     //할일 대시보드 조회
     public ResponseEntity<?> getDashToDo(UserDetailsImpl userDetails) {
-        List<Long> todoId = userToDoService.allToDo(userDetails);
+        List<Long> todoId = userToDoService.allToDo(userDetails.getUser().getId());
         List<ToDoResponse> dashToDoResponseList = new ArrayList<>();
         for (int n = 0; n < todoId.size(); n++) {
             Optional<ToDo> toDo = toDoRepository.findByIdAndDeleteStateFalse(todoId.get(n));
