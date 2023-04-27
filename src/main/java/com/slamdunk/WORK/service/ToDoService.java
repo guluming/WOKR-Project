@@ -200,9 +200,9 @@ public class ToDoService {
                 List<UserToDo> checkToDo = userToDoRepository.findAllByUserIdAndCheckDate(weekToDoRequest.getTeamMembers().get(i), startDay);
                 if (!checkToDo.isEmpty()) {
                     existToDo.add(startDay);
-                    startDay.plusDays(1);
+                    startDay = startDay.plusDays(1);
                 } else {
-                    startDay.plusDays(1);
+                    startDay = startDay.plusDays(1);
                 }
             }
         }

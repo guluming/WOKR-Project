@@ -12,7 +12,9 @@ import java.util.List;
 @Getter
 @ToString
 public class WeekToDoRequest {
+    @JsonProperty("Sunday")
     private LocalDate Sunday;
+    @JsonProperty("Saturday")
     private LocalDate Saturday;
     @JsonProperty("teamMembers")
     private List<Long> teamMembers;
