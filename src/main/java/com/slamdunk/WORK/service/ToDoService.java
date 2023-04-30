@@ -224,7 +224,12 @@ public class ToDoService {
 
             for (int i = 0; i < nonSelectedKeyResultIdList.size(); i++) {
                 for (int j = 0; j < teamToDoList.size(); j++) {
-                    if (Objects.equals(nonSelectedKeyResultIdList.get(i), teamToDoList.get(j).getKeyResult().getId())) {
+                    Long temp = 0L;
+                    if (teamToDoList.get(j).getKeyResult() != null) {
+                        temp = teamToDoList.get(j).getKeyResult().getId();
+                    }
+
+                    if (Objects.equals(nonSelectedKeyResultIdList.get(i), temp)) {
                         teamToDoList.remove(teamToDoList.get(j));
                     }
                 }
