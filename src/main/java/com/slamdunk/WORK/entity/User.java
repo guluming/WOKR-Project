@@ -24,8 +24,8 @@ public class User {
     private String name;
     @Column(nullable = false)
     private String team;
-    @Column(nullable = false)
-    private String teamPosition;
+//    @Column(nullable = false)
+//    private String teamPosition;
     @Column
     private boolean firstLogin = true;
     @Column
@@ -36,13 +36,13 @@ public class User {
         this.password = params.getPassword();
         this.name = params.getName();
         this.team = params.getTeam();
-        this.teamPosition = params.getTeamposition();
+//        this.teamPosition = params.getTeamposition();
     }
 
     public void UserEdit(UserEditor userEditor) {
         name = userEditor.getName();
         team = userEditor.getTeam();
-        teamPosition = userEditor.getTeamPosition();
+//        teamPosition = userEditor.getTeamPosition();
         firstLogin = userEditor.isFirstLogin();
         secessionState = userEditor.isSecessionState();
     }
@@ -52,7 +52,7 @@ public class User {
                 .builder()
                 .name(name)
                 .team(team)
-                .teamPosition(teamPosition)
+//                .teamPosition(teamPosition)
                 .firstLogin(firstLogin)
                 .secessionState(secessionState);
     }

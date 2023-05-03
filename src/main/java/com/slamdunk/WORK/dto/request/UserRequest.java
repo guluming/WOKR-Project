@@ -33,7 +33,7 @@ public class UserRequest {
     @NotBlank
     private String team;
 
-    @Pattern(regexp = "^[가-힣a-zA-Z0-9]{2,20}$")
-    @NotBlank
-    private String teamposition;
+//    @Pattern(regexp = "^[가-힣a-zA-Z0-9]{2,20}$")
+//    @NotBlank
+//    private String teamposition;
 }

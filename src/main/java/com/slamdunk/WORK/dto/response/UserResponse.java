@@ -13,6 +13,6 @@ public class UserResponse {
     private String email;
     private String name;
     private String team;
-    private String teamposition;
+//    private String teamposition;
     private boolean firstLogin;
 }

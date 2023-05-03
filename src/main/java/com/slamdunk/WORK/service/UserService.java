@@ -73,7 +73,7 @@ public class UserService {
                         exist.get().getEmail(),
                         exist.get().getName(),
                         exist.get().getTeam(),
-                        exist.get().getTeamPosition(),
+//                        exist.get().getTeamPosition(),
                         exist.get().isFirstLogin()
                 );
 
@@ -85,7 +85,7 @@ public class UserService {
                         exist.get().getEmail(),
                         exist.get().getName(),
                         exist.get().getTeam(),
-                        exist.get().getTeamPosition(),
+//                        exist.get().getTeamPosition(),
                         exist.get().isFirstLogin()
                 );
 
@@ -111,7 +111,7 @@ public class UserService {
                             .email(teamMember.get().getEmail())
                             .name(teamMember.get().getName())
                             .team(teamMember.get().getTeam())
-                            .teamposition(teamMember.get().getTeamPosition())
+//                            .teamposition(teamMember.get().getTeamPosition())
                             .createToDoCount(userToDoService.createToDoCount(teamMember.get().getId()))
                             .build();
 
