@@ -10,6 +10,5 @@ import java.util.List;
 @Getter
 public class KeyResultRequest {
     private int krNumber;
-    @NotBlank
     private String keyResult;
 }

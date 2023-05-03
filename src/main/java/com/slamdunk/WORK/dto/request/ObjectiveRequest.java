@@ -9,7 +9,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 public class ObjectiveRequest {
-    @NotBlank
     private String objective;
     private LocalDate startdate;
     private LocalDate enddate;
