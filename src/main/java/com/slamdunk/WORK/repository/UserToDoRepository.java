@@ -23,11 +23,11 @@ public interface UserToDoRepository extends JpaRepository<UserToDo, Long> {
         @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.user.id = :userId AND t.deleteState = false AND t.completion = false AND t.endDate >= :today order by t.endDate")
         List<UserToDo> findAllByUserIdAndCompletionFalseAndProgress(@Param("userId") Long userId, @Param("today")LocalDate today);
         @Query("select ut from ToDo t inner join UserToDo ut on ut.toDo.id = t.id where ut.user.id = :userId AND t.deleteState = false AND t.completion = false AND t.endDate >= :targetDay AND t.startDate <= :targetDay AND t.endDate >= :today")
-        List<UserToDo> findAllByUserIdAndCompletionFalseAndProgress(@Param("userId") Long userId, @Param("targetDay")LocalDate targetDay, @Param("today")LocalDate today, Sort sort);
+        List<UserToDo> findAllByUserIdAndCompletionFalseAndProgress(@Param("userId") Long userId, @Param("targetDay")LocalDate targetDay, @Param("today")LocalDate today);
         @Query("select ut from ToDo t inner join UserToDo ut on ut.toDo.id = t.id where ut.user.id = :userId AND t.deleteState = false AND t.completion = false AND t.endDate >= :targetDay AND t.startDate <= :targetDay AND t.endDate < :today")
-        List<UserToDo> findAllByUserIdAndCompletionFalseAndExpiration(@Param("userId") Long userId, @Param("targetDay")LocalDate targetDay, @Param("today")LocalDate today, Sort sort);
+        List<UserToDo> findAllByUserIdAndCompletionFalseAndExpiration(@Param("userId") Long userId, @Param("targetDay")LocalDate targetDay, @Param("today")LocalDate today);
         @Query("select ut from ToDo t inner join UserToDo ut on ut.toDo.id = t.id where ut.user.id = :userId AND t.deleteState = false AND t.completion = true AND t.endDate >= :targetDay AND t.startDate <= :targetDay")
-        List<UserToDo> findAllByUserIdAndCompletionTrueAndCompletion(@Param("userId") Long userId, @Param("targetDay")LocalDate targetDay, Sort sort);
+        List<UserToDo> findAllByUserIdAndCompletionTrueAndCompletion(@Param("userId") Long userId, @Param("targetDay")LocalDate targetDay);
         @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.user.id = :userId AND t.deleteState = false AND t.endDate >= :today order by t.endDate desc")
         List<UserToDo> findByUserIdAndLastEndDate(@Param("userId") Long userId, @Param("today")LocalDate today);
         @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.user.id = :userId AND t.deleteState = false AND t.completion = true AND t.endDate < :today order by t.endDate")

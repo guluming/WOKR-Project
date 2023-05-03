@@ -9,6 +9,9 @@ import com.slamdunk.WORK.dto.response.*;
 import com.slamdunk.WORK.entity.*;
 import com.slamdunk.WORK.repository.*;
 import com.slamdunk.WORK.security.UserDetailsImpl;
+import com.slamdunk.WORK.sort.CreatedDateSort;
+import com.slamdunk.WORK.sort.EndDateSort;
+import com.slamdunk.WORK.sort.PrioritySort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -214,12 +217,11 @@ public class ToDoService {
     //할일 기간만료 목록 조회
     public ResponseEntity<?> getExpirationToDo(UserDetailsImpl userDetails, TeamMemberToDoRequest teamMemberToDoRequest) {
         List<User> selectedTeamMember = userRepository.findAllById(teamMemberToDoRequest.getTeamMembers());
-        Sort sort = sortBy(teamMemberToDoRequest.getOrderby(), teamMemberToDoRequest.getOrderbyrole());
         List<ToDoExpirationResponse> toDoExpirationResponseList = new ArrayList<>();
         for (int k = 0; k < selectedTeamMember.size(); k++) {
             List<UserToDo> teamToDoList
                     = userToDoRepository.findAllByUserIdAndCompletionFalseAndExpiration(
-                    selectedTeamMember.get(k).getId(), teamMemberToDoRequest.getTargetDate(), LocalDate.now(), sort);
+                    selectedTeamMember.get(k).getId(), teamMemberToDoRequest.getTargetDate(), LocalDate.now());
 
             List<UserToDo> resultTeamToDoList = new ArrayList<>();
             for (int i = 0; i < teamMemberToDoRequest.getKeyResultIds().size(); i++) {
@@ -235,23 +237,25 @@ public class ToDoService {
                 }
             }
 
+            List<UserToDo> resultSortTeamToDoList = sort(resultTeamToDoList, teamMemberToDoRequest);
+
             List<ToDoExpirationResponse.expirationTodo> expirationTodoList = new ArrayList<>();
-            for (int i = 0; i < resultTeamToDoList.size(); i++) {
+            for (int i = 0; i < resultSortTeamToDoList.size(); i++) {
                 ToDoExpirationResponse.expirationTodo expirationTodo = ToDoExpirationResponse.expirationTodo.builder()
-                        .keyResultId(resultTeamToDoList.get(i).getToDo().getKeyResult() != null ? resultTeamToDoList.get(i).getToDo().getKeyResult().getId() : null)
-                        .krNumber(resultTeamToDoList.get(i).getToDo().getKeyResult() != null ? resultTeamToDoList.get(i).getToDo().getKeyResult().getKrNumber() : 0)
-                        .toDoId(resultTeamToDoList.get(i).getToDo().getId())
-                        .toDo(resultTeamToDoList.get(i).getToDo().getToDo())
-                        .memo(resultTeamToDoList.get(i).getToDo().getMemo())
-                        .startDate(resultTeamToDoList.get(i).getToDo().getStartDate())
-                        .startDateTime(resultTeamToDoList.get(i).getToDo().getStartDateTime())
-                        .endDate(resultTeamToDoList.get(i).getToDo().getEndDate())
-                        .endDateTime(resultTeamToDoList.get(i).getToDo().getEndDateTime())
-                        .fstartDate(resultTeamToDoList.get(i).getToDo().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-                        .fendDate(resultTeamToDoList.get(i).getToDo().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-                        .priority(resultTeamToDoList.get(i).getToDo().getPriority())
-                        .completion(resultTeamToDoList.get(i).getToDo().isCompletion())
-                        .color(resultTeamToDoList.get(i).getToDo().getObjective() != null ? resultTeamToDoList.get(i).getToDo().getObjective().getColor() : null)
+                        .keyResultId(resultSortTeamToDoList.get(i).getToDo().getKeyResult() != null ? resultSortTeamToDoList.get(i).getToDo().getKeyResult().getId() : null)
+                        .krNumber(resultSortTeamToDoList.get(i).getToDo().getKeyResult() != null ? resultSortTeamToDoList.get(i).getToDo().getKeyResult().getKrNumber() : 0)
+                        .toDoId(resultSortTeamToDoList.get(i).getToDo().getId())
+                        .toDo(resultSortTeamToDoList.get(i).getToDo().getToDo())
+                        .memo(resultSortTeamToDoList.get(i).getToDo().getMemo())
+                        .startDate(resultSortTeamToDoList.get(i).getToDo().getStartDate())
+                        .startDateTime(resultSortTeamToDoList.get(i).getToDo().getStartDateTime())
+                        .endDate(resultSortTeamToDoList.get(i).getToDo().getEndDate())
+                        .endDateTime(resultSortTeamToDoList.get(i).getToDo().getEndDateTime())
+                        .fstartDate(resultSortTeamToDoList.get(i).getToDo().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .fendDate(resultSortTeamToDoList.get(i).getToDo().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .priority(resultSortTeamToDoList.get(i).getToDo().getPriority())
+                        .completion(resultSortTeamToDoList.get(i).getToDo().isCompletion())
+                        .color(resultSortTeamToDoList.get(i).getToDo().getObjective() != null ? resultSortTeamToDoList.get(i).getToDo().getObjective().getColor() : null)
                         .build();
                 expirationTodoList.add(expirationTodo);
             }
@@ -274,12 +278,11 @@ public class ToDoService {
     //할일 진행 목록 조회
     public ResponseEntity<?> getProgressToDo(UserDetailsImpl userDetails, TeamMemberToDoRequest teamMemberToDoRequest) {
         List<User> selectedTeamMember = userRepository.findAllById(teamMemberToDoRequest.getTeamMembers());
-        Sort sort = sortBy(teamMemberToDoRequest.getOrderby(), teamMemberToDoRequest.getOrderbyrole());
         List<ToDoProgressResponse> toDoProgressResponseList = new ArrayList<>();
         for (int k = 0; k < selectedTeamMember.size(); k++) {
             List<UserToDo> teamToDoList
                     = userToDoRepository.findAllByUserIdAndCompletionFalseAndProgress(
-                    selectedTeamMember.get(k).getId(), teamMemberToDoRequest.getTargetDate(), LocalDate.now(), sort);
+                    selectedTeamMember.get(k).getId(), teamMemberToDoRequest.getTargetDate(), LocalDate.now());
 
             List<UserToDo> resultTeamToDoList = new ArrayList<>();
             for (int i = 0; i < teamMemberToDoRequest.getKeyResultIds().size(); i++) {
@@ -295,23 +298,25 @@ public class ToDoService {
                 }
             }
 
+            List<UserToDo> resultSortTeamToDoList = sort(resultTeamToDoList, teamMemberToDoRequest);
+
             List<ToDoProgressResponse.progressTodo> progressTodoList = new ArrayList<>();
-            for (int i = 0; i < resultTeamToDoList.size(); i++) {
+            for (int i = 0; i < resultSortTeamToDoList.size(); i++) {
                 ToDoProgressResponse.progressTodo progressTodo = ToDoProgressResponse.progressTodo.builder()
-                        .keyResultId(resultTeamToDoList.get(i).getToDo().getKeyResult() != null ? resultTeamToDoList.get(i).getToDo().getKeyResult().getId() : null)
-                        .krNumber(resultTeamToDoList.get(i).getToDo().getKeyResult() != null ? resultTeamToDoList.get(i).getToDo().getKeyResult().getKrNumber() : 0)
-                        .toDoId(resultTeamToDoList.get(i).getToDo().getId())
-                        .toDo(resultTeamToDoList.get(i).getToDo().getToDo())
-                        .memo(resultTeamToDoList.get(i).getToDo().getMemo())
-                        .startDate(resultTeamToDoList.get(i).getToDo().getStartDate())
-                        .startDateTime(resultTeamToDoList.get(i).getToDo().getStartDateTime())
-                        .endDate(resultTeamToDoList.get(i).getToDo().getEndDate())
-                        .endDateTime(resultTeamToDoList.get(i).getToDo().getEndDateTime())
-                        .fstartDate(resultTeamToDoList.get(i).getToDo().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-                        .fendDate(resultTeamToDoList.get(i).getToDo().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-                        .priority(resultTeamToDoList.get(i).getToDo().getPriority())
-                        .completion(resultTeamToDoList.get(i).getToDo().isCompletion())
-                        .color(resultTeamToDoList.get(i).getToDo().getObjective() != null ? resultTeamToDoList.get(i).getToDo().getObjective().getColor() : null)
+                        .keyResultId(resultSortTeamToDoList.get(i).getToDo().getKeyResult() != null ? resultSortTeamToDoList.get(i).getToDo().getKeyResult().getId() : null)
+                        .krNumber(resultSortTeamToDoList.get(i).getToDo().getKeyResult() != null ? resultSortTeamToDoList.get(i).getToDo().getKeyResult().getKrNumber() : 0)
+                        .toDoId(resultSortTeamToDoList.get(i).getToDo().getId())
+                        .toDo(resultSortTeamToDoList.get(i).getToDo().getToDo())
+                        .memo(resultSortTeamToDoList.get(i).getToDo().getMemo())
+                        .startDate(resultSortTeamToDoList.get(i).getToDo().getStartDate())
+                        .startDateTime(resultSortTeamToDoList.get(i).getToDo().getStartDateTime())
+                        .endDate(resultSortTeamToDoList.get(i).getToDo().getEndDate())
+                        .endDateTime(resultSortTeamToDoList.get(i).getToDo().getEndDateTime())
+                        .fstartDate(resultSortTeamToDoList.get(i).getToDo().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .fendDate(resultSortTeamToDoList.get(i).getToDo().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .priority(resultSortTeamToDoList.get(i).getToDo().getPriority())
+                        .completion(resultSortTeamToDoList.get(i).getToDo().isCompletion())
+                        .color(resultSortTeamToDoList.get(i).getToDo().getObjective() != null ? resultSortTeamToDoList.get(i).getToDo().getObjective().getColor() : null)
                         .build();
                 progressTodoList.add(progressTodo);
             }
@@ -334,12 +339,11 @@ public class ToDoService {
     //할일 완료 목록 조회
     public ResponseEntity<?> getCompletionToDo(UserDetailsImpl userDetails, TeamMemberToDoRequest teamMemberToDoRequest) {
         List<User> selectedTeamMember = userRepository.findAllById(teamMemberToDoRequest.getTeamMembers());
-        Sort sort = sortBy(teamMemberToDoRequest.getOrderby(), teamMemberToDoRequest.getOrderbyrole());
         List<ToDoCompletionResponse> toDoCompletionResponseList = new ArrayList<>();
         for (int k = 0; k < selectedTeamMember.size(); k++) {
             List<UserToDo> teamToDoList
                     = userToDoRepository.findAllByUserIdAndCompletionTrueAndCompletion(
-                    selectedTeamMember.get(k).getId(), teamMemberToDoRequest.getTargetDate(), sort);
+                    selectedTeamMember.get(k).getId(), teamMemberToDoRequest.getTargetDate());
 
             List<UserToDo> resultTeamToDoList = new ArrayList<>();
             for (int i = 0; i < teamMemberToDoRequest.getKeyResultIds().size(); i++) {
@@ -355,23 +359,25 @@ public class ToDoService {
                 }
             }
 
+            List<UserToDo> resultSortTeamToDoList = sort(resultTeamToDoList, teamMemberToDoRequest);
+
             List<ToDoCompletionResponse.completionTodo> completionTodoList = new ArrayList<>();
-            for (int i = 0; i < resultTeamToDoList.size(); i++) {
+            for (int i = 0; i < resultSortTeamToDoList.size(); i++) {
                 ToDoCompletionResponse.completionTodo completionTodo = ToDoCompletionResponse.completionTodo.builder()
-                        .keyResultId(resultTeamToDoList.get(i).getToDo().getKeyResult() != null ? resultTeamToDoList.get(i).getToDo().getKeyResult().getId() : null)
-                        .krNumber(resultTeamToDoList.get(i).getToDo().getKeyResult() != null ? resultTeamToDoList.get(i).getToDo().getKeyResult().getKrNumber() : 0)
-                        .toDoId(resultTeamToDoList.get(i).getToDo().getId())
-                        .toDo(resultTeamToDoList.get(i).getToDo().getToDo())
-                        .memo(resultTeamToDoList.get(i).getToDo().getMemo())
-                        .startDate(resultTeamToDoList.get(i).getToDo().getStartDate())
-                        .startDateTime(resultTeamToDoList.get(i).getToDo().getStartDateTime())
-                        .endDate(resultTeamToDoList.get(i).getToDo().getEndDate())
-                        .endDateTime(resultTeamToDoList.get(i).getToDo().getEndDateTime())
-                        .fstartDate(resultTeamToDoList.get(i).getToDo().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-                        .fendDate(resultTeamToDoList.get(i).getToDo().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-                        .priority(resultTeamToDoList.get(i).getToDo().getPriority())
-                        .completion(resultTeamToDoList.get(i).getToDo().isCompletion())
-                        .color(resultTeamToDoList.get(i).getToDo().getObjective() != null ? resultTeamToDoList.get(i).getToDo().getObjective().getColor() : null)
+                        .keyResultId(resultSortTeamToDoList.get(i).getToDo().getKeyResult() != null ? resultSortTeamToDoList.get(i).getToDo().getKeyResult().getId() : null)
+                        .krNumber(resultSortTeamToDoList.get(i).getToDo().getKeyResult() != null ? resultSortTeamToDoList.get(i).getToDo().getKeyResult().getKrNumber() : 0)
+                        .toDoId(resultSortTeamToDoList.get(i).getToDo().getId())
+                        .toDo(resultSortTeamToDoList.get(i).getToDo().getToDo())
+                        .memo(resultSortTeamToDoList.get(i).getToDo().getMemo())
+                        .startDate(resultSortTeamToDoList.get(i).getToDo().getStartDate())
+                        .startDateTime(resultSortTeamToDoList.get(i).getToDo().getStartDateTime())
+                        .endDate(resultSortTeamToDoList.get(i).getToDo().getEndDate())
+                        .endDateTime(resultSortTeamToDoList.get(i).getToDo().getEndDateTime())
+                        .fstartDate(resultSortTeamToDoList.get(i).getToDo().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .fendDate(resultSortTeamToDoList.get(i).getToDo().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .priority(resultSortTeamToDoList.get(i).getToDo().getPriority())
+                        .completion(resultSortTeamToDoList.get(i).getToDo().isCompletion())
+                        .color(resultSortTeamToDoList.get(i).getToDo().getObjective() != null ? resultSortTeamToDoList.get(i).getToDo().getObjective().getColor() : null)
                         .build();
                 completionTodoList.add(completionTodo);
             }
@@ -392,12 +398,29 @@ public class ToDoService {
     }
 
     //할일 목록 정렬
-    private Sort sortBy(String orderBy, String orderByRole) {
-        if (orderByRole.equals("asc")) {
-            return Sort.by(Sort.Direction.ASC, orderBy);
+    private List<UserToDo> sort(List<UserToDo> resultTeamToDoList,
+                                 TeamMemberToDoRequest teamMemberToDoRequest) {
+        if (teamMemberToDoRequest.getOrderby().equals("priority")) {
+            if (teamMemberToDoRequest.getOrderbyrole().equals("desc")) {
+                resultTeamToDoList.sort(new PrioritySort().reversed());
+            } else {
+                resultTeamToDoList.sort(new PrioritySort());
+            }
+        } else if (teamMemberToDoRequest.getOrderby().equals("createdDate")) {
+            if (teamMemberToDoRequest.getOrderbyrole().equals("desc")) {
+                resultTeamToDoList.sort(new CreatedDateSort().reversed());
+            } else {
+                resultTeamToDoList.sort(new CreatedDateSort());
+            }
         } else {
-            return Sort.by(Sort.Direction.DESC, orderBy);
+            if (teamMemberToDoRequest.getOrderbyrole().equals("desc")) {
+                resultTeamToDoList.sort(new EndDateSort().reversed());
+            } else {
+                resultTeamToDoList.sort(new EndDateSort());
+            }
         }
+
+        return resultTeamToDoList;
     }
 
     //할일 대시보드 조회
