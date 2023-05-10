@@ -100,7 +100,7 @@ public class UserToDoService {
 
     //회원-투두 생성 갯수 확인
     public int createToDoCount(Long userId) {
-        List<UserToDo> userToDoList = userToDoRepository.findAllByUserIdAndCompletionFalseAndProgress(userId, LocalDate.now());
+        List<UserToDo> userToDoList = userToDoRepository.findAllByUserIdAndCompletionFalseAndProgress(userId, LocalDate.now(), LocalDate.now());
         return userToDoList.size();
     }
 
