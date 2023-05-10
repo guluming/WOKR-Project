@@ -14,6 +14,7 @@ import com.slamdunk.WORK.entity.ToDo;
 import com.slamdunk.WORK.entity.UserKeyResult;
 import com.slamdunk.WORK.repository.KeyResultRepository;
 import com.slamdunk.WORK.repository.ObjectiveRepository;
+import com.slamdunk.WORK.repository.ToDoRepository;
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,11 +31,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class KeyResultService {
-    private final KeyResultRepository keyResultRepository;
     private final ObjectiveRepository objectiveRepository;
+    private final KeyResultRepository keyResultRepository;
+    private final ToDoRepository toDoRepository;
     private final UserKeyResultService userKeyResultService;
-    private final ObjectiveService objectiveService;
-    private final ToDoService toDoService;
     private final UserToDoService userToDoService;
 
     //핵심결과 생성
@@ -107,23 +107,10 @@ public class KeyResultService {
             KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = keyResultEdit.get().KeyResultToEditor();
             KeyResultEditor keyResultEditor = keyResultEditorBuilder
                     //해당 핵심결과 하위의 완료된 할일 /해당 핵심결과 하위의 전체 할일
-                    .progress(toDoService.keyResultByCompletionToDoCount(targetKeyResult) / toDoService.keyResultByAllToDoCount(targetKeyResult))
+                    .progress(toDoRepository.findAllByKeyResultIdAndDeleteStateFalseAndCompletion(targetKeyResult).size() / toDoRepository.findAllByKeyResultIdAndDeleteStateFalse(targetKeyResult).size())
                     .build();
             keyResultEdit.get().KeyResultEdit(keyResultEditor);
-
-            objectiveService.objectiveProgressEdit(targetKeyResult.getObjective(), userDetails);
         }
-    }
-
-    //특정 목표 하위 핵심결과 진척도 평균
-    public int objectiveByKeyResultProgressAverage(Objective objective) {
-        int result = 0;
-        List<KeyResult> keyResultList = keyResultRepository.findAllByObjectiveId(objective.getId());
-        for (KeyResult keyResult : keyResultList) {
-            result = result + keyResult.getProgress();
-        }
-
-        return result / keyResultList.size();
     }
 
     //핵심결과 자신감 수정

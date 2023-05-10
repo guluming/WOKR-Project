@@ -32,6 +32,7 @@ public class ToDoService {
     private final UserToDoRepository userToDoRepository;
     private final ToDoRepository toDoRepository;
     private final UserRepository userRepository;
+    private final ObjectiveService objectiveService;
     private final KeyResultService keyResultService;
     private final UserToDoService userToDoService;
 
@@ -109,7 +110,7 @@ public class ToDoService {
                         .completion(completionToDoList.get(i).getToDo().isCompletion())
                         .color(completionToDoList.get(i).getObjective() != null ? completionToDoList.get(i).getObjective().getColor() : null)
                         .build();
-                
+
                 completionTodos.add(completionTodo);
             }
 
@@ -165,6 +166,7 @@ public class ToDoService {
                     deletedToDoCheck.get().ToDoEdit(toDoEditor);
                     if (deletedToDoCheck.get().getKeyResult() != null) {
                         keyResultService.keyResultProgressEdit(deletedToDoCheck.get().getKeyResult(), userDetails);
+                        objectiveService.objectiveProgressEdit(deletedToDoCheck.get().getObjective(), userDetails);
                     }
 
                     return new ResponseEntity<>("완료 되었습니다.", HttpStatus.OK);
@@ -176,6 +178,7 @@ public class ToDoService {
                     deletedToDoCheck.get().ToDoEdit(toDoEditor);
                     if (deletedToDoCheck.get().getKeyResult() != null) {
                         keyResultService.keyResultProgressEdit(deletedToDoCheck.get().getKeyResult(), userDetails);
+                        objectiveService.objectiveProgressEdit(deletedToDoCheck.get().getObjective(), userDetails);
                     }
 
                     return new ResponseEntity<>("완료가 취소 되었습니다.", HttpStatus.OK);
@@ -188,15 +191,7 @@ public class ToDoService {
         }
     }
 
-    //특정 핵심결과 하위 투두 전체 카운트
-    public int keyResultByAllToDoCount(KeyResult targetKeyResult) {
-        return toDoRepository.findAllByKeyResultIdAndDeleteStateFalse(targetKeyResult).size();
-    }
 
-    //특정 핵심결과 하위 완료된 투두 카운트
-    public int keyResultByCompletionToDoCount(KeyResult targetKeyResult) {
-        return toDoRepository.findAllByKeyResultIdAndDeleteStateFalseAndCompletion(targetKeyResult).size();
-    }
 
     //투두 수정
     @Transactional

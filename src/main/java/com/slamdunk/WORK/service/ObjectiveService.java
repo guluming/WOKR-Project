@@ -11,6 +11,7 @@ import com.slamdunk.WORK.dto.response.ObjectiveResponse;
 import com.slamdunk.WORK.entity.KeyResult;
 import com.slamdunk.WORK.entity.Objective;
 import com.slamdunk.WORK.entity.ToDo;
+import com.slamdunk.WORK.repository.KeyResultRepository;
 import com.slamdunk.WORK.repository.ObjectiveRepository;
 import com.slamdunk.WORK.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ import java.util.Optional;
 @Service
 public class ObjectiveService {
     private final ObjectiveRepository objectiveRepository;
-    private final KeyResultService keyResultService;
+    private final KeyResultRepository keyResultRepository;
     private final UserObjectiveService userObjectiveService;
     private final UserKeyResultService userKeyResultService;
     private final UserToDoService userToDoService;
@@ -113,10 +114,21 @@ public class ObjectiveService {
             ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = editObjective.get().ObjectiveToEditor();
             ObjectiveEditor objectiveEditor = objectiveEditorBuilder
                     //목표에 속한 핵심결과들의 진척도의 평균
-                    .progress(keyResultService.objectiveByKeyResultProgressAverage(objective))
+                    .progress(objectiveByKeyResultProgressAverage(objective))
                     .build();
             editObjective.get().ObjectiveEdit(objectiveEditor);
         }
+    }
+
+    //특정 목표 하위 핵심결과 진척도 평균
+    private int objectiveByKeyResultProgressAverage(Objective objective) {
+        int result = 0;
+        List<KeyResult> keyResultList = keyResultRepository.findAllByObjectiveId(objective.getId());
+        for (KeyResult keyResult : keyResultList) {
+            result = result + keyResult.getProgress();
+        }
+
+        return result / keyResultList.size();
     }
 
     //목표 수정
