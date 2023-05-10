@@ -14,8 +14,6 @@ import java.util.Optional;
 public interface UserToDoRepository extends JpaRepository<UserToDo, Long> {
         List<UserToDo> findAllByUserId(Long userId);
         Optional<UserToDo> findByToDoIdAndUserId(Long ToDoId, Long userId);
-        List<UserToDo> findAllByKeyResult(KeyResult keyResult);
-        Optional<UserToDo> findByToDoId(Long ToDoId);
         @Query("select ut from UserToDo ut inner join Objective o on ut.objective.id = o.id where ut.objective.id = :objectiveId AND ut.user.id = :userId AND o.deleteState = false")
         List<UserToDo> findAllByObjectiveIdAndUserId(@Param("objectiveId") Long objectiveId, @Param("userId") Long userId);
         @Query("select ut from UserToDo ut inner join KeyResult kr on ut.keyResult.id = kr.id where ut.keyResult.id = :keyResultId AND ut.user.id = :userId AND kr.deleteState = false")
@@ -32,6 +30,5 @@ public interface UserToDoRepository extends JpaRepository<UserToDo, Long> {
         List<UserToDo> findByUserIdAndFirstEndDate(@Param("userId") Long userId, @Param("today")LocalDate today);
         @Query("select ut from UserToDo ut inner join ToDo t on ut.toDo.id = t.id where ut.user.id = :userId AND t.deleteState = false AND t.endDate >= :targetDay AND t.startDate <= :targetDay")
         List<UserToDo> findAllByUserIdAndCheckDate(@Param("userId") Long userId, @Param("targetDay")LocalDate targetDay);
-        List<UserToDo> findAllByUserIdIn(List<Long> teamMemberIds);
 }
 

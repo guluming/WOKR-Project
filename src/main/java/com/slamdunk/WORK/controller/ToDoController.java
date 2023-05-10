@@ -27,10 +27,10 @@ public class ToDoController {
         return toDoService.createToDo(objectiveId, keyResultId, toDoRequest, userDetails);
     }
 
-    //할일 전체 조회
+    //할일 대시보드 조회
     @GetMapping("/api/todo")
-    public ResponseEntity<?> getAllToDos(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return toDoService.getAllToDos(userDetails);
+    public ResponseEntity<?> getDashToDo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return toDoService.getDashToDo(userDetails);
     }
 
     //할일 상세 조회
@@ -101,11 +101,5 @@ public class ToDoController {
         } else {
             return toDoService.getCompletionToDo(userDetails, teamMemberToDoRequest);
         }
-    }
-
-   //할일 대시보드 조회
-    @GetMapping("api/todo/completion")
-    public ResponseEntity<?> getDashToDo(@AuthenticationPrincipal UserDetailsImpl userDetails){
-        return toDoService.getDashToDo(userDetails);
     }
 }

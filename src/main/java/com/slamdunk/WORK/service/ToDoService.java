@@ -32,6 +32,7 @@ public class ToDoService {
     private final UserToDoRepository userToDoRepository;
     private final ToDoRepository toDoRepository;
     private final UserRepository userRepository;
+    private final ObjectiveService objectiveService;
     private final KeyResultService keyResultService;
     private final UserToDoService userToDoService;
 
@@ -63,33 +64,68 @@ public class ToDoService {
     }
 
     //투두 전체 조회
-    public ResponseEntity<?> getAllToDos(UserDetailsImpl userDetails) {
-        List<Long> todoId = userToDoService.allToDo(userDetails.getUser().getId());
-        List<ToDoResponse> toDoResponseList = new ArrayList<>();
-        for (int i = 0; i < todoId.size(); i++) {
-            Optional<ToDo> toDo = toDoRepository.findByIdAndDeleteStateFalse(todoId.get(i));
-            if (toDo.isPresent()) {
-                ToDoResponse toDoResponse = ToDoResponse.builder()
-                        .myToDo(userToDoService.checkMyToDo(toDo.get().getId(), userDetails))
-                        .keyResultId(toDo.get().getKeyResult() != null ? toDo.get().getKeyResult().getId() : null)
-                        .krNumber(toDo.get().getKeyResult() != null ? toDo.get().getKeyResult().getKrNumber() : 0)
-                        .toDoId(toDo.get().getId())
-                        .toDo(toDo.get().getToDo())
-                        .memo(toDo.get().getMemo())
-                        .startDate(toDo.get().getStartDate())
-                        .startDateTime(toDo.get().getStartDateTime())
-                        .endDate(toDo.get().getEndDate())
-                        .endDateTime(toDo.get().getEndDateTime())
-                        .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-                        .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-                        .priority(toDo.get().getPriority())
-                        .completion(toDo.get().isCompletion())
-                        .color(toDo.get().getObjective() != null ? toDo.get().getObjective().getColor() : null)
+    public ResponseEntity<?> getDashToDo(UserDetailsImpl userDetails) {
+        Optional<User> checkUser = userRepository.findById(userDetails.getUser().getId());
+        if (checkUser.isPresent()) {
+            List<UserToDo> progressToDoList = userToDoRepository.findAllByUserIdAndCompletionFalseAndProgress(userDetails.getUser().getId(), LocalDate.now(), LocalDate.now());
+            List<UserToDo> completionToDoList = userToDoRepository.findAllByUserIdAndCompletionTrueAndCompletion(userDetails.getUser().getId(), LocalDate.now());
+
+            List<ToDoDashResponse.progressTodo> progressTodos = new ArrayList<>();
+            for (int i = 0; i < progressToDoList.size(); i++) {
+                ToDoDashResponse.progressTodo progressTodo = ToDoDashResponse.progressTodo.builder()
+                        .keyResultId(progressToDoList.get(i).getKeyResult() != null ? progressToDoList.get(i).getToDo().getKeyResult().getId() : null)
+                        .krNumber(progressToDoList.get(i).getKeyResult() != null ? progressToDoList.get(i).getToDo().getKeyResult().getKrNumber() : 0)
+                        .toDoId(progressToDoList.get(i).getToDo().getId())
+                        .toDo(progressToDoList.get(i).getToDo().getToDo())
+                        .memo(progressToDoList.get(i).getToDo().getMemo())
+                        .startDate(progressToDoList.get(i).getToDo().getStartDate())
+                        .startDateTime(progressToDoList.get(i).getToDo().getStartDateTime())
+                        .endDate(progressToDoList.get(i).getToDo().getEndDate())
+                        .endDateTime(progressToDoList.get(i).getToDo().getEndDateTime())
+                        .fstartDate(progressToDoList.get(i).getToDo().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .fendDate(progressToDoList.get(i).getToDo().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .priority(progressToDoList.get(i).getToDo().getPriority())
+                        .completion(progressToDoList.get(i).getToDo().isCompletion())
+                        .color(progressToDoList.get(i).getObjective() != null ? progressToDoList.get(i).getObjective().getColor() : null)
                         .build();
-                toDoResponseList.add(toDoResponse);
+
+                progressTodos.add(progressTodo);
             }
+
+            List<ToDoDashResponse.completionTodo> completionTodos = new ArrayList<>();
+            for (int i = 0; i < completionToDoList.size(); i++) {
+                ToDoDashResponse.completionTodo completionTodo = ToDoDashResponse.completionTodo.builder()
+                        .keyResultId(completionToDoList.get(i).getKeyResult() != null ? completionToDoList.get(i).getToDo().getKeyResult().getId() : null)
+                        .krNumber(completionToDoList.get(i).getKeyResult() != null ? completionToDoList.get(i).getToDo().getKeyResult().getKrNumber() : 0)
+                        .toDoId(completionToDoList.get(i).getToDo().getId())
+                        .toDo(completionToDoList.get(i).getToDo().getToDo())
+                        .memo(completionToDoList.get(i).getToDo().getMemo())
+                        .startDate(completionToDoList.get(i).getToDo().getStartDate())
+                        .startDateTime(completionToDoList.get(i).getToDo().getStartDateTime())
+                        .endDate(completionToDoList.get(i).getToDo().getEndDate())
+                        .endDateTime(completionToDoList.get(i).getToDo().getEndDateTime())
+                        .fstartDate(completionToDoList.get(i).getToDo().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .fendDate(completionToDoList.get(i).getToDo().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
+                        .priority(completionToDoList.get(i).getToDo().getPriority())
+                        .completion(completionToDoList.get(i).getToDo().isCompletion())
+                        .color(completionToDoList.get(i).getObjective() != null ? completionToDoList.get(i).getObjective().getColor() : null)
+                        .build();
+
+                completionTodos.add(completionTodo);
+            }
+
+            ToDoDashResponse toDoDashResponse = ToDoDashResponse.builder()
+                    .myToDo(true)
+                    .userId(userDetails.getUser().getId())
+                    .createUser(userDetails.getUser().getName())
+                    .progressTodo(progressTodos)
+                    .completionTodo(completionTodos)
+                    .build();
+
+            return new ResponseEntity<>(toDoDashResponse, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-        return new ResponseEntity<>(toDoResponseList, HttpStatus.OK);
     }
 
     //투두 상세 조회
@@ -130,6 +166,7 @@ public class ToDoService {
                     deletedToDoCheck.get().ToDoEdit(toDoEditor);
                     if (deletedToDoCheck.get().getKeyResult() != null) {
                         keyResultService.keyResultProgressEdit(deletedToDoCheck.get().getKeyResult(), userDetails);
+                        objectiveService.objectiveProgressEdit(deletedToDoCheck.get().getObjective(), userDetails);
                     }
 
                     return new ResponseEntity<>("완료 되었습니다.", HttpStatus.OK);
@@ -141,6 +178,7 @@ public class ToDoService {
                     deletedToDoCheck.get().ToDoEdit(toDoEditor);
                     if (deletedToDoCheck.get().getKeyResult() != null) {
                         keyResultService.keyResultProgressEdit(deletedToDoCheck.get().getKeyResult(), userDetails);
+                        objectiveService.objectiveProgressEdit(deletedToDoCheck.get().getObjective(), userDetails);
                     }
 
                     return new ResponseEntity<>("완료가 취소 되었습니다.", HttpStatus.OK);
@@ -153,15 +191,6 @@ public class ToDoService {
         }
     }
 
-    //특정 핵심결과 하위 투두 전체 카운트
-    public int keyResultByAllToDoCount(KeyResult targetKeyResult) {
-        return toDoRepository.findAllByKeyResultIdAndDeleteStateFalse(targetKeyResult).size();
-    }
-
-    //특정 핵심결과 하위 완료된 투두 카운트
-    public int keyResultByCompletionToDoCount(KeyResult targetKeyResult) {
-        return toDoRepository.findAllByKeyResultIdAndDeleteStateFalseAndCompletion(targetKeyResult).size();
-    }
 
 
     //투두 수정
@@ -440,37 +469,6 @@ public class ToDoService {
         }
 
         return resultTeamToDoList;
-    }
-
-    //할일 대시보드 조회
-    public ResponseEntity<?> getDashToDo(UserDetailsImpl userDetails) {
-        List<Long> todoId = userToDoService.allToDo(userDetails.getUser().getId());
-        List<ToDoResponse> dashToDoResponseList = new ArrayList<>();
-        for (int n = 0; n < todoId.size(); n++) {
-            Optional<ToDo> toDo = toDoRepository.findByIdAndDeleteStateFalse(todoId.get(n));
-            if (toDo != null && toDo.get().getEndDate().isEqual(LocalDate.now())
-                    && toDo.get().isCompletion()) {
-                ToDoResponse dashToDoResponse = ToDoResponse.builder()
-                        .myToDo(userToDoService.checkMyToDo(toDo.get().getId(), userDetails))
-                        .keyResultId(toDo.get().getKeyResult() != null ? toDo.get().getKeyResult().getId() : null)
-                        .krNumber(toDo.get().getKeyResult() != null ? toDo.get().getKeyResult().getKrNumber() : 0)
-                        .toDoId(toDo.get().getId())
-                        .toDo(toDo.get().getToDo())
-                        .memo(toDo.get().getMemo())
-                        .startDate(toDo.get().getStartDate())
-                        .startDateTime(toDo.get().getStartDateTime())
-                        .endDate(toDo.get().getEndDate())
-                        .endDateTime(toDo.get().getEndDateTime())
-                        .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-                        .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-                        .priority(toDo.get().getPriority())
-                        .completion(toDo.get().isCompletion())
-                        .color(toDo.get().getObjective() != null ? toDo.get().getObjective().getColor() : null)
-                        .build();
-                dashToDoResponseList.add(dashToDoResponse);
-            }
-        }
-        return new ResponseEntity<>(dashToDoResponseList, HttpStatus.OK);
     }
 }
 

@@ -44,20 +44,6 @@ public class UserToDoService {
         }
     }
 
-    //회원-투두 전체 조회
-    public List<Long> allToDo(Long userId) {
-        List<UserToDo> userToDoList = userToDoRepository.findAllByUserId(userId);
-
-        List<Long> toDoId = new ArrayList<>();
-        for (UserToDo userToDo : userToDoList) {
-            Optional<ToDo> toDoDeleteCheck = toDoRepository.findByIdAndDeleteStateFalse(userToDo.getToDo().getId());
-            if (toDoDeleteCheck.isPresent()) {
-                toDoId.add(userToDo.getToDo().getId());
-            }
-        }
-        return toDoId;
-    }
-
     //회원-투두 상세 조회
     public boolean checkMyToDo(Long toDoId, UserDetailsImpl userDetails) {
         Optional<UserToDo> checkDate = userToDoRepository.findByToDoIdAndUserId(toDoId, userDetails.getUser().getId());
