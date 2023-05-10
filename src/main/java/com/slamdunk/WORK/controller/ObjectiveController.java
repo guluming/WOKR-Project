@@ -40,13 +40,13 @@ public class ObjectiveController {
     }
 
     //목표 진척도 수정
-    @PatchMapping("api/objective/progress/{objective_id}")
-    public ResponseEntity<?> objectiveProgressEdit(
-            @PathVariable("objective_id") Long objectiveId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody @Valid ProgressRequest progressRequest) {
-        return objectiveService.objectiveProgressEdit(objectiveId, userDetails, progressRequest);
-    }
+//    @PatchMapping("api/objective/progress/{objective_id}")
+//    public ResponseEntity<?> objectiveProgressEdit(
+//            @PathVariable("objective_id") Long objectiveId,
+//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+//            @RequestBody @Valid ProgressRequest progressRequest) {
+//        return objectiveService.objectiveProgressEdit(objectiveId, userDetails, progressRequest);
+//    }
 
     //목표 수정
     @PatchMapping("api/objective/{objective_id}")

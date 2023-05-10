@@ -105,31 +105,31 @@ public class ObjectiveService {
     }
 
     //목표 진척도 수정
-    @Transactional
-    public ResponseEntity<String> objectiveProgressEdit(Long objectiveId, UserDetailsImpl userDetails, ProgressRequest progressRequest) {
-        Optional<Objective> objectiveProgressEdit = objectiveRepository.findByObjectiveIdAndTeam(objectiveId, userDetails.getUser().getTeam());
-        if (objectiveProgressEdit.isPresent()) {
-            ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = objectiveProgressEdit.get().ObjectiveToEditor();
-
-            if (progressRequest.getProgress() > 0) {
-                ObjectiveEditor objectiveEditor = objectiveEditorBuilder
-                        .progress(progressRequest.getProgress())
-                        .build();
-                objectiveProgressEdit.get().ObjectiveEdit(objectiveEditor);
-            } else if (progressRequest.getProgress() == 0) {
-                ObjectiveEditor objectiveEditor = objectiveEditorBuilder
-                        .progress(0)
-                        .build();
-                objectiveProgressEdit.get().ObjectiveEdit(objectiveEditor);
-                return new ResponseEntity<>("진척도가 초기화 되었습니다.", HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("입력된 진척도가 없습니다.", HttpStatus.BAD_REQUEST);
-            }
-            return new ResponseEntity<>("진척도를 수정 했습니다.", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("존재하지 않는 목표이거나, 해당 목표의 소속팀이 아닙니다.", HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @Transactional
+//    public ResponseEntity<String> objectiveProgressEdit(Long objectiveId, UserDetailsImpl userDetails, ProgressRequest progressRequest) {
+//        Optional<Objective> objectiveProgressEdit = objectiveRepository.findByObjectiveIdAndTeam(objectiveId, userDetails.getUser().getTeam());
+//        if (objectiveProgressEdit.isPresent()) {
+//            ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = objectiveProgressEdit.get().ObjectiveToEditor();
+//
+//            if (progressRequest.getProgress() > 0) {
+//                ObjectiveEditor objectiveEditor = objectiveEditorBuilder
+//                        .progress(progressRequest.getProgress())
+//                        .build();
+//                objectiveProgressEdit.get().ObjectiveEdit(objectiveEditor);
+//            } else if (progressRequest.getProgress() == 0) {
+//                ObjectiveEditor objectiveEditor = objectiveEditorBuilder
+//                        .progress(0)
+//                        .build();
+//                objectiveProgressEdit.get().ObjectiveEdit(objectiveEditor);
+//                return new ResponseEntity<>("진척도가 초기화 되었습니다.", HttpStatus.OK);
+//            } else {
+//                return new ResponseEntity<>("입력된 진척도가 없습니다.", HttpStatus.BAD_REQUEST);
+//            }
+//            return new ResponseEntity<>("진척도를 수정 했습니다.", HttpStatus.OK);
+//        } else {
+//            return new ResponseEntity<>("존재하지 않는 목표이거나, 해당 목표의 소속팀이 아닙니다.", HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
     //목표 수정
     @Transactional

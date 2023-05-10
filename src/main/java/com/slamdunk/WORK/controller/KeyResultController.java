@@ -44,22 +44,22 @@ public class KeyResultController {
     }
 
     //핵심결과 진척도 수정
-    @PatchMapping("api/keyresult/progress/{keyresult_id}")
-    public ResponseEntity<?> keyResultProgressEdit(
-            @PathVariable("keyresult_id") Long keyResultId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody @Valid ProgressRequest progressRequest) {
-        return keyResultService.keyResultProgressEdit(keyResultId, userDetails, progressRequest);
-    }
+//    @PatchMapping("api/keyresult/progress/{keyresult_id}")
+//    public ResponseEntity<?> keyResultProgressEdit(
+//            @PathVariable("keyresult_id") Long keyResultId,
+//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+//            @RequestBody @Valid ProgressRequest progressRequest) {
+//        return keyResultService.keyResultProgressEdit(keyResultId, userDetails, progressRequest);
+//    }
 
     //핵심결과 자신감 수정
-    @PatchMapping("api/keyresult/emoticon/{keyresult_id}")
-    public ResponseEntity<?> keyResultEmoticonEdit(
-            @PathVariable("keyresult_id") Long keyResultId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody @Valid EmoticonRequest emoticonRequest) {
-        return keyResultService.keyResultEmoticonEdit(keyResultId, userDetails, emoticonRequest);
-    }
+//    @PatchMapping("api/keyresult/emoticon/{keyresult_id}")
+//    public ResponseEntity<?> keyResultEmoticonEdit(
+//            @PathVariable("keyresult_id") Long keyResultId,
+//            @AuthenticationPrincipal UserDetailsImpl userDetails,
+//            @RequestBody @Valid EmoticonRequest emoticonRequest) {
+//        return keyResultService.keyResultEmoticonEdit(keyResultId, userDetails, emoticonRequest);
+//    }
 
     //핵심결과 수정
     @PatchMapping("api/keyresult/{keyresult_id}")
