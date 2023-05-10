@@ -33,6 +33,8 @@ public class KeyResultService {
     private final KeyResultRepository keyResultRepository;
     private final ObjectiveRepository objectiveRepository;
     private final UserKeyResultService userKeyResultService;
+    private final ObjectiveService objectiveService;
+    private final ToDoService toDoService;
     private final UserToDoService userToDoService;
 
     //핵심결과 생성
@@ -99,57 +101,57 @@ public class KeyResultService {
 
     //핵심결과 진척도 수정
     @Transactional
-    public ResponseEntity<String> keyResultProgressEdit(Long keyResultId, UserDetailsImpl userDetails, ProgressRequest progressRequest) {
-        Optional<KeyResult> keyResultProgressEdit = keyResultRepository.findByKeyResultIdAndTeam(keyResultId, userDetails.getUser().getTeam());
-        if (keyResultProgressEdit.isPresent()) {
-            KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = keyResultProgressEdit.get().KeyResultToEditor();
+    public void keyResultProgressEdit(KeyResult targetKeyResult, UserDetailsImpl userDetails) {
+        Optional<KeyResult> keyResultEdit = keyResultRepository.findByKeyResultIdAndTeam(targetKeyResult.getId(), userDetails.getUser().getTeam());
+        if (keyResultEdit.isPresent()) {
+            KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = keyResultEdit.get().KeyResultToEditor();
+            KeyResultEditor keyResultEditor = keyResultEditorBuilder
+                    //해당 핵심결과 하위의 완료된 할일 /해당 핵심결과 하위의 전체 할일
+                    .progress(toDoService.keyResultByCompletionToDoCount(targetKeyResult) / toDoService.keyResultByAllToDoCount(targetKeyResult))
+                    .build();
+            keyResultEdit.get().KeyResultEdit(keyResultEditor);
 
-            if (progressRequest.getProgress() > 0) {
-                KeyResultEditor keyResultEditor = keyResultEditorBuilder
-                        .progress(progressRequest.getProgress())
-                        .build();
-                keyResultProgressEdit.get().KeyResultEdit(keyResultEditor);
-                return new ResponseEntity<>("진척도를 수정 했습니다.", HttpStatus.OK);
-            } else if (progressRequest.getProgress() == 0) {
-                KeyResultEditor keyResultEditor = keyResultEditorBuilder
-                        .progress(0)
-                        .build();
-                keyResultProgressEdit.get().KeyResultEdit(keyResultEditor);
-                return new ResponseEntity<>("진척도가 초기화 되었습니다.", HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("입력된 진척도가 없습니다.", HttpStatus.BAD_REQUEST);
-            }
-        } else {
-            return new ResponseEntity<>("존재하지 않는 핵심결과이거나, 해당 핵심결과의 소속팀이 아닙니다.", HttpStatus.BAD_REQUEST);
+            objectiveService.objectiveProgressEdit(targetKeyResult.getObjective(), userDetails);
         }
+    }
+
+    //특정 목표 하위 핵심결과 진척도 평균
+    public int objectiveByKeyResultProgressAverage(Objective objective) {
+        int result = 0;
+        List<KeyResult> keyResultList = keyResultRepository.findAllByObjectiveId(objective.getId());
+        for (KeyResult keyResult : keyResultList) {
+            result = result + keyResult.getProgress();
+        }
+
+        return result / keyResultList.size();
     }
 
     //핵심결과 자신감 수정
-    @Transactional
-    public ResponseEntity<String> keyResultEmoticonEdit(Long keyResultId, UserDetailsImpl userDetails, EmoticonRequest emoticonRequest) {
-        Optional<KeyResult> keyResultEmoticonEdit = keyResultRepository.findByKeyResultIdAndTeam(keyResultId, userDetails.getUser().getTeam());
-        if (keyResultEmoticonEdit.isPresent()) {
-            KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = keyResultEmoticonEdit.get().KeyResultToEditor();
-
-            if (emoticonRequest.getEmoticon() > 0) {
-                KeyResultEditor keyResultEditor = keyResultEditorBuilder
-                        .emoticon(emoticonRequest.getEmoticon())
-                        .build();
-                keyResultEmoticonEdit.get().KeyResultEdit(keyResultEditor);
-                return new ResponseEntity<>("자신감을 수정 했습니다.", HttpStatus.OK);
-            } else if (emoticonRequest.getEmoticon() == 0) {
-                KeyResultEditor keyResultEditor = keyResultEditorBuilder
-                        .emoticon(0)
-                        .build();
-                keyResultEmoticonEdit.get().KeyResultEdit(keyResultEditor);
-                return new ResponseEntity<>("자신감이 초기화 되었습니다.", HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("입력된 자신감이 없습니다.", HttpStatus.BAD_REQUEST);
-            }
-        } else {
-            return new ResponseEntity<>("존재하지 않는 핵심결과이거나, 해당 핵심결과의 소속팀이 아닙니다.", HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @Transactional
+//    public ResponseEntity<String> keyResultEmoticonEdit(Long keyResultId, UserDetailsImpl userDetails, EmoticonRequest emoticonRequest) {
+//        Optional<KeyResult> keyResultEmoticonEdit = keyResultRepository.findByKeyResultIdAndTeam(keyResultId, userDetails.getUser().getTeam());
+//        if (keyResultEmoticonEdit.isPresent()) {
+//            KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = keyResultEmoticonEdit.get().KeyResultToEditor();
+//
+//            if (emoticonRequest.getEmoticon() > 0) {
+//                KeyResultEditor keyResultEditor = keyResultEditorBuilder
+//                        .emoticon(emoticonRequest.getEmoticon())
+//                        .build();
+//                keyResultEmoticonEdit.get().KeyResultEdit(keyResultEditor);
+//                return new ResponseEntity<>("자신감을 수정 했습니다.", HttpStatus.OK);
+//            } else if (emoticonRequest.getEmoticon() == 0) {
+//                KeyResultEditor keyResultEditor = keyResultEditorBuilder
+//                        .emoticon(0)
+//                        .build();
+//                keyResultEmoticonEdit.get().KeyResultEdit(keyResultEditor);
+//                return new ResponseEntity<>("자신감이 초기화 되었습니다.", HttpStatus.OK);
+//            } else {
+//                return new ResponseEntity<>("입력된 자신감이 없습니다.", HttpStatus.BAD_REQUEST);
+//            }
+//        } else {
+//            return new ResponseEntity<>("존재하지 않는 핵심결과이거나, 해당 핵심결과의 소속팀이 아닙니다.", HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
     //핵심결과 수정
     @Transactional

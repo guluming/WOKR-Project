@@ -29,11 +29,11 @@ import java.util.stream.Collectors;
 public class ToDoService {
     private final ObjectiveRepository objectiveRepository;
     private final KeyResultRepository keyResultRepository;
-    private final UserKeyResultService userKeyResultService;
     private final UserToDoRepository userToDoRepository;
     private final ToDoRepository toDoRepository;
-    private final UserToDoService userToDoService;
     private final UserRepository userRepository;
+    private final KeyResultService keyResultService;
+    private final UserToDoService userToDoService;
 
     //할일 생성
     @Transactional
@@ -128,6 +128,10 @@ public class ToDoService {
                             .completion(true)
                             .build();
                     deletedToDoCheck.get().ToDoEdit(toDoEditor);
+                    if (deletedToDoCheck.get().getKeyResult() != null) {
+                        keyResultService.keyResultProgressEdit(deletedToDoCheck.get().getKeyResult(), userDetails);
+                    }
+
                     return new ResponseEntity<>("완료 되었습니다.", HttpStatus.OK);
                 } else {
                     ToDoEditor.ToDoEditorBuilder toDoEditorBuilder = deletedToDoCheck.get().ToDoToEditor();
@@ -135,6 +139,10 @@ public class ToDoService {
                             .completion(false)
                             .build();
                     deletedToDoCheck.get().ToDoEdit(toDoEditor);
+                    if (deletedToDoCheck.get().getKeyResult() != null) {
+                        keyResultService.keyResultProgressEdit(deletedToDoCheck.get().getKeyResult(), userDetails);
+                    }
+
                     return new ResponseEntity<>("완료가 취소 되었습니다.", HttpStatus.OK);
                 }
             } else {
@@ -144,6 +152,17 @@ public class ToDoService {
             return new ResponseEntity<>("삭제된 할일 입니다.", HttpStatus.BAD_REQUEST);
         }
     }
+
+    //특정 핵심결과 하위 투두 전체 카운트
+    public int keyResultByAllToDoCount(KeyResult targetKeyResult) {
+        return toDoRepository.findAllByKeyResultIdAndDeleteStateFalse(targetKeyResult).size();
+    }
+
+    //특정 핵심결과 하위 완료된 투두 카운트
+    public int keyResultByCompletionToDoCount(KeyResult targetKeyResult) {
+        return toDoRepository.findAllByKeyResultIdAndDeleteStateFalseAndCompletion(targetKeyResult).size();
+    }
+
 
     //투두 수정
     @Transactional
@@ -453,36 +472,5 @@ public class ToDoService {
         }
         return new ResponseEntity<>(dashToDoResponseList, HttpStatus.OK);
     }
-//    //할일 대시보드 조회 (투두 설정 날짜 전체 )
-//    public ResponseEntity<?> getDashToDo(UserDetailsImpl userDetails) {
-//        List<Long> todoId = userToDoService.allToDo(userDetails);
-//        List<ToDoResponse> dashToDoResponseList = new ArrayList<>();
-//        for (int n = 0; n < todoId.size(); n++) {
-//            Optional<ToDo> toDo = toDoRepository.findByIdAndDeleteStateFalse(todoId.get(n));
-//            if (toDo != null && toDo.get().getEndDate().isAfter(LocalDate.now()) &&
-//                    toDo.get().getStartDate().isBefore(LocalDate.now().plusDays(1)) &&
-//                    toDo.get().isCompletion()) {
-//                ToDoResponse dashToDoResponse = ToDoResponse.builder()
-//                        .myToDo(userToDoService.checkMyToDo(toDo.get().getId(), userDetails))
-//                        .keyResultId(toDo.get().getKeyResult() != null ? toDo.get().getKeyResult().getId() : null)
-//                        .krNumber(toDo.get().getKeyResult() != null ? toDo.get().getKeyResult().getKrNumber() : 0)
-//                        .toDoId(toDo.get().getId())
-//                        .toDo(toDo.get().getToDo())
-//                        .memo(toDo.get().getMemo())
-//                        .startDate(toDo.get().getStartDate())
-//                        .startDateTime(toDo.get().getStartDateTime())
-//                        .endDate(toDo.get().getEndDate())
-//                        .endDateTime(toDo.get().getEndDateTime())
-//                        .fstartDate(toDo.get().getStartDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-//                        .fendDate(toDo.get().getEndDate().format(DateTimeFormatter.ofPattern("MM월 dd일")))
-//                        .priority(toDo.get().getPriority())
-//                        .completion(toDo.get().isCompletion())
-//                        .color(toDo.get().getObjective() != null ? toDo.get().getObjective().getColor() : null)
-//                        .build();
-//                dashToDoResponseList.add(dashToDoResponse);
-//            }
-//        }
-//        return new ResponseEntity<>(dashToDoResponseList, HttpStatus.OK);
-//    }
 }
 

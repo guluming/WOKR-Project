@@ -29,6 +29,7 @@ import java.util.Optional;
 @Service
 public class ObjectiveService {
     private final ObjectiveRepository objectiveRepository;
+    private final KeyResultService keyResultService;
     private final UserObjectiveService userObjectiveService;
     private final UserKeyResultService userKeyResultService;
     private final UserToDoService userToDoService;
@@ -105,31 +106,18 @@ public class ObjectiveService {
     }
 
     //목표 진척도 수정
-//    @Transactional
-//    public ResponseEntity<String> objectiveProgressEdit(Long objectiveId, UserDetailsImpl userDetails, ProgressRequest progressRequest) {
-//        Optional<Objective> objectiveProgressEdit = objectiveRepository.findByObjectiveIdAndTeam(objectiveId, userDetails.getUser().getTeam());
-//        if (objectiveProgressEdit.isPresent()) {
-//            ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = objectiveProgressEdit.get().ObjectiveToEditor();
-//
-//            if (progressRequest.getProgress() > 0) {
-//                ObjectiveEditor objectiveEditor = objectiveEditorBuilder
-//                        .progress(progressRequest.getProgress())
-//                        .build();
-//                objectiveProgressEdit.get().ObjectiveEdit(objectiveEditor);
-//            } else if (progressRequest.getProgress() == 0) {
-//                ObjectiveEditor objectiveEditor = objectiveEditorBuilder
-//                        .progress(0)
-//                        .build();
-//                objectiveProgressEdit.get().ObjectiveEdit(objectiveEditor);
-//                return new ResponseEntity<>("진척도가 초기화 되었습니다.", HttpStatus.OK);
-//            } else {
-//                return new ResponseEntity<>("입력된 진척도가 없습니다.", HttpStatus.BAD_REQUEST);
-//            }
-//            return new ResponseEntity<>("진척도를 수정 했습니다.", HttpStatus.OK);
-//        } else {
-//            return new ResponseEntity<>("존재하지 않는 목표이거나, 해당 목표의 소속팀이 아닙니다.", HttpStatus.BAD_REQUEST);
-//        }
-//    }
+    @Transactional
+    public void objectiveProgressEdit(Objective objective, UserDetailsImpl userDetails) {
+        Optional<Objective> editObjective = objectiveRepository.findByObjectiveIdAndTeam(objective.getId(), userDetails.getUser().getTeam());
+        if (editObjective.isPresent()) {
+            ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = editObjective.get().ObjectiveToEditor();
+            ObjectiveEditor objectiveEditor = objectiveEditorBuilder
+                    //목표에 속한 핵심결과들의 진척도의 평균
+                    .progress(keyResultService.objectiveByKeyResultProgressAverage(objective))
+                    .build();
+            editObjective.get().ObjectiveEdit(objectiveEditor);
+        }
+    }
 
     //목표 수정
     @Transactional
