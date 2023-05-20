@@ -23,8 +23,9 @@ public class WebConfig implements WebMvcConfigurer {
 
                 // 주소 수정 부분
                 .allowedOrigins(
-                        "https://www.wokr.kr", "http://www.wokr.kr",
-                        "https://wokr.kr", "http://wokr.kr",
+//                        "https://www.wokr.kr", "http://www.wokr.kr",
+//                        "https://wokr.kr", "http://wokr.kr",
+                        "https://wokr.shop", "http://wokr.shop",
                         "https://localhost:3000", "http://localhost:3000")
                 .allowedMethods("POST", "GET", "PATCH", "DELETE", "HEAD", "OPTIONS")
                 .allowCredentials(true);

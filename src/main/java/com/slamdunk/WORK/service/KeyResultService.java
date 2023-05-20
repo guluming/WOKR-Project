@@ -107,7 +107,7 @@ public class KeyResultService {
             KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = keyResultEdit.get().KeyResultToEditor();
             KeyResultEditor keyResultEditor = keyResultEditorBuilder
                     //해당 핵심결과 하위의 완료된 할일 /해당 핵심결과 하위의 전체 할일
-                    .progress(toDoRepository.findAllByKeyResultIdAndDeleteStateFalseAndCompletion(targetKeyResult).size() / toDoRepository.findAllByKeyResultIdAndDeleteStateFalse(targetKeyResult).size())
+                    .progress(toDoRepository.findAllByKeyResultIdAndDeleteStateFalseAndCompletion(targetKeyResult).size() / toDoRepository.findAllByKeyResultIdAndDeleteStateFalse(targetKeyResult).size() * 100)
                     .build();
             keyResultEdit.get().KeyResultEdit(keyResultEditor);
         }
