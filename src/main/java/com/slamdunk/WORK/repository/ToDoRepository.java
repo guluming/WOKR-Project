@@ -14,8 +14,8 @@ import java.util.Optional;
 public interface ToDoRepository extends JpaRepository<ToDo, Long> {
     @Query("SELECT t FROM ToDo t WHERE t.id = :todoId AND t.deleteState = false")
     Optional<ToDo> findByIdAndDeleteStateFalse(@Param("todoId")Long todoId);
-    @Query("SELECT t FROM ToDo t WHERE t.keyResult = :keyResult AND t.deleteState = false")
-    List<ToDo> findAllByKeyResultIdAndDeleteStateFalse(@Param("keyResult")KeyResult keyResult);
-    @Query("SELECT t FROM ToDo t WHERE t.keyResult = :keyResult AND t.deleteState = false AND t.completion = true")
-    List<ToDo> findAllByKeyResultIdAndDeleteStateFalseAndCompletion(@Param("keyResult")KeyResult keyResult);
+    @Query("SELECT t FROM ToDo t WHERE t.keyResult.id = :keyResultId AND t.deleteState = false")
+    List<ToDo> findAllByKeyResultIdAndDeleteStateFalse(@Param("keyResultId")Long keyResultId);
+    @Query("SELECT t FROM ToDo t WHERE t.keyResult.id = :keyResultId AND t.deleteState = false AND t.completion = true")
+    List<ToDo> findAllByKeyResultIdAndDeleteStateFalseAndCompletion(@Param("keyResultId")Long keyResultId);
 }

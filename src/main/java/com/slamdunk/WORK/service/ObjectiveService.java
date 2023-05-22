@@ -107,16 +107,16 @@ public class ObjectiveService {
     }
 
     //목표 진척도 수정
-    @Transactional
+//    @Transactional
     public void objectiveProgressEdit(Objective objective, UserDetailsImpl userDetails) {
-        Optional<Objective> editObjective = objectiveRepository.findByObjectiveIdAndTeam(objective.getId(), userDetails.getUser().getTeam());
-        if (editObjective.isPresent()) {
-            ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = editObjective.get().ObjectiveToEditor();
+//        Optional<Objective> editObjective = objectiveRepository.findByObjectiveIdAndTeam(objective.getId(), userDetails.getUser().getTeam());
+        if (objective != null) {
+            ObjectiveEditor.ObjectiveEditorBuilder objectiveEditorBuilder = objective.ObjectiveToEditor();
             ObjectiveEditor objectiveEditor = objectiveEditorBuilder
                     //목표에 속한 핵심결과들의 진척도의 평균
                     .progress(objectiveByKeyResultProgressAverage(objective))
                     .build();
-            editObjective.get().ObjectiveEdit(objectiveEditor);
+            objective.ObjectiveEdit(objectiveEditor);
         }
     }
 

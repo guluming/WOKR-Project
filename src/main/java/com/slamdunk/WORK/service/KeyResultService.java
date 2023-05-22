@@ -100,16 +100,17 @@ public class KeyResultService {
     }
 
     //핵심결과 진척도 수정
-    @Transactional
+//    @Transactional
     public void keyResultProgressEdit(KeyResult targetKeyResult, UserDetailsImpl userDetails) {
-        Optional<KeyResult> keyResultEdit = keyResultRepository.findByKeyResultIdAndTeam(targetKeyResult.getId(), userDetails.getUser().getTeam());
-        if (keyResultEdit.isPresent()) {
-            KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = keyResultEdit.get().KeyResultToEditor();
+//        Optional<KeyResult> keyResultEdit = keyResultRepository.findByKeyResultIdAndTeam(targetKeyResult.getId(), userDetails.getUser().getTeam());
+        if (targetKeyResult != null) {
+            float temp = (float) toDoRepository.findAllByKeyResultIdAndDeleteStateFalseAndCompletion(targetKeyResult.getId()).size() /(float) toDoRepository.findAllByKeyResultIdAndDeleteStateFalse(targetKeyResult.getId()).size();
+            KeyResultEditor.KeyResultEditorBuilder keyResultEditorBuilder = targetKeyResult.KeyResultToEditor();
             KeyResultEditor keyResultEditor = keyResultEditorBuilder
                     //해당 핵심결과 하위의 완료된 할일 /해당 핵심결과 하위의 전체 할일
-                    .progress(toDoRepository.findAllByKeyResultIdAndDeleteStateFalseAndCompletion(targetKeyResult).size() / toDoRepository.findAllByKeyResultIdAndDeleteStateFalse(targetKeyResult).size() * 100)
+                    .progress((int)(temp * 100))
                     .build();
-            keyResultEdit.get().KeyResultEdit(keyResultEditor);
+            targetKeyResult.KeyResultEdit(keyResultEditor);
         }
     }
 
